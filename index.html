@@ -1,0 +1,1100 @@
+<title>Society Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a society's office register — grouped index of registers on the left, ledger-style tables on the right; stacks to a top tab strip on phones. Light only. */
+:root{
+  --bg:#ECF0ED; --surface:#FFFFFF; --sunk:#F5F8F6; --ink:#16302B; --muted:#5A6C66; --line:#D3DDD8;
+  --accent:#1E6B58; --accent-ink:#FFFFFF; --accent-soft:#DCEDE6; --brass:#A97A24; --brass-soft:#F4EAD4;
+  --good:#1F7A4D; --good-soft:#DDF1E5; --warn:#9A6400; --warn-soft:#FBEFD6; --bad:#B23A30; --bad-soft:#F8E1DE;
+  --display:"Young Serif", Georgia, "Times New Roman", serif;
+  --body:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r:10px; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+small.muted{display:block}
+
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}
+.side{border-right:1px solid var(--line);background:var(--sunk);padding:20px 12px;display:flex;flex-direction:column;gap:14px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;align-self:start;overflow-y:auto}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px}
+.seal{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--brass);display:grid;place-items:center;font-family:var(--display);color:var(--brass);font-size:17px;flex:none}
+.brand b{font-family:var(--display);font-weight:400;font-size:17px;line-height:1.2;display:block}
+.brand small{color:var(--muted);font-size:12px}
+.me{display:flex;gap:9px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:13px}
+.me img{width:28px;height:28px;border-radius:50%;flex:none}
+.me b{display:block;font-weight:600;line-height:1.2}
+.nav{display:flex;flex-direction:column;gap:1px}
+.grp{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--brass);font-weight:600;padding:12px 10px 4px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:8px;color:var(--muted);font-weight:500;white-space:nowrap;font-size:14px}
+.nav button:hover{background:var(--surface);color:var(--ink)}
+.nav button:focus-visible{outline:2px solid var(--accent)}
+.nav button[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:inset 3px 0 0 var(--accent)}
+.badge{font-family:var(--mono);font-size:11.5px;padding:1px 7px;border-radius:99px;background:var(--brass-soft);color:var(--brass)}
+.badge.red{background:var(--bad-soft);color:var(--bad)}
+
+.main{padding-block:26px 72px;padding-inline:clamp(16px,3.5vw,44px);min-width:0;max-width:1260px;width:100%}
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:20px}
+.head>div:first-child{min-width:0}
+.eyebrow{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--brass);font-weight:600;margin-bottom:4px}
+.head h1{font-size:clamp(25px,3.4vw,33px)}
+.head p{margin:4px 0 0;color:var(--muted);max-width:66ch}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.small{padding:4px 10px;font-size:13px;font-weight:500}
+.btn.link{border:0;background:none;padding:4px 6px;color:var(--accent);font-weight:600}
+.btn.danger{color:var(--bad)}
+.btn.primary.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.export{font-family:var(--mono);font-size:12.5px;font-weight:500;padding:6px 10px}
+.btn[disabled]{opacity:.55;cursor:default}
+input[type=text],input[type=search],input[type=number],input[type=date],input[type=time],input[type=month],input[type=tel],input[type=email],input[type=url],select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0;width:100%}
+.tools input,.tools select{width:auto}
+textarea{resize:vertical;min-height:84px}
+
+.banner{border:1px solid var(--line);background:var(--brass-soft);border-radius:var(--r);padding:10px 14px;margin-bottom:18px;font-size:14px}
+.note{border-left:3px solid var(--brass);background:var(--surface);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;color:var(--muted);margin-bottom:16px;max-width:80ch}
+.demo{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--brass);color:#fff;border-radius:4px;padding:1px 6px;vertical-align:middle}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.kpi b{font-family:var(--mono);font-weight:500;font-size:21px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi small{font-size:12.5px;color:var(--muted)}
+button.kpi{text-align:left;cursor:pointer;font:inherit}
+button.kpi:hover{border-color:var(--muted)}
+.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:18px}
+.split{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:18px}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.sec+.sec,.tw+.sec,.sec+.tw,.tw+.tw{margin-top:18px}
+.grid2 .sec+.sec,.split .sec+.sec{margin-top:0}
+.sec h2{font-size:19px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec h2 .btn{font-family:var(--body)}
+h2.sub{font-size:20px;margin:26px 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line);min-width:0}
+.list li:first-child{border-top:0}
+.list .t{min-width:0}
+.list .t b{font-weight:600;display:block;overflow-wrap:anywhere}
+.list .t small{color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;padding:6px 0;margin:0}
+
+.tw{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+.t th{text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--sunk);white-space:nowrap}
+.t td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.t tr:last-child td{border-bottom:0}
+.t td.r,.t th.r{text-align:right}
+.t .acts{white-space:nowrap;text-align:right}
+.t tr.dim td{color:var(--muted)}
+.t small{color:var(--muted)}
+.flat{font-family:var(--mono);font-weight:500;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:6px;white-space:nowrap;font-size:13px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.neutral{background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+.pill.info{background:var(--accent-soft);color:var(--accent)}
+.sample{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--brass);border:1px dashed var(--brass);border-radius:5px;padding:0 5px;margin-left:6px;vertical-align:middle}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.att{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.att button{border:0;background:var(--surface);padding:4px 10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.att button+button{border-left:1px solid var(--line)}
+.att button[aria-pressed="true"].P{background:var(--good-soft);color:var(--good)}
+.att button[aria-pressed="true"].A{background:var(--bad-soft);color:var(--bad)}
+.att button[aria-pressed="true"].L{background:var(--warn-soft);color:var(--warn)}
+
+.notices{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.notice{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.notice.pinned{border-color:var(--brass)}
+.notice h3{font-size:18px}
+.notice p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.notice .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-top:auto;flex-wrap:wrap}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{font-size:18px}
+.card .row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.party{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;flex-wrap:wrap}
+.party img{height:44px;max-width:150px;background:#fff;border-radius:4px}
+
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;margin:4px 0 2px}
+.flow span{border:1px solid var(--line);background:var(--sunk);border-radius:99px;padding:3px 10px}
+.flow i{color:var(--brass);font-style:normal}
+
+.timeline{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:8px;font-size:13.5px}
+.timeline li{position:relative}
+.timeline li::before{content:"";position:absolute;left:-20px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--brass)}
+.timeline small{color:var(--muted)}
+.check{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:4px 14px;font-size:14px}
+
+.steps{counter-reset:s;list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps li{counter-increment:s;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brass);color:var(--brass);display:grid;place-items:center;font-family:var(--display);flex:none}
+.steps li.done{color:var(--muted);text-decoration:line-through}
+
+.setform{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px 18px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.wide{grid-column:1/-1}
+.field label{font-size:13px;font-weight:600}
+.field small{color:var(--muted);font-size:12.5px}
+.req{color:var(--bad)}
+.chk{display:flex;gap:8px;align-items:flex-start;font-weight:500!important;font-size:14px}
+.chk input{margin-top:4px}
+.pad{width:100%;height:170px;border:1.5px dashed var(--muted);border-radius:8px;background:#fff;touch-action:none;cursor:crosshair;display:block}
+
+.scrim{position:fixed;inset:0;background:rgba(10,20,17,.45);display:grid;place-items:center;padding:16px;z-index:20}
+#secScrim{z-index:25}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:14px;width:min(600px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:22px}
+.modal h2{font-size:22px;margin-bottom:14px}
+.modal .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.mErr{margin-top:12px;color:var(--bad);font-size:14px}
+.mFoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;flex-wrap:wrap}
+.code{font-family:var(--mono);font-size:26px;letter-spacing:.25em;background:var(--sunk);border:1px dashed var(--brass);border-radius:8px;padding:8px 14px;display:inline-block}
+.otp{font-family:var(--mono);font-size:22px;letter-spacing:.3em;text-align:center;max-width:220px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:9px;font-size:14px;z-index:40;max-width:calc(100% - 32px)}
+
+.gate{position:fixed;inset:0;background:var(--bg);z-index:30;display:grid;place-items:center;padding:16px;overflow:auto}
+.gatebox{width:min(440px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.gatebox h1{font-size:26px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px 16px;cursor:pointer;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.inbox{border:1px solid var(--line);background:var(--sunk);border-radius:9px;padding:10px 12px;font-size:13.5px}
+
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);height:auto;z-index:10;border-right:0;border-bottom:1px solid var(--line);padding:10px 16px 0;gap:8px;overflow:visible}
+  .me{display:none}
+  .nav{flex-direction:row;overflow-x:auto;gap:2px;padding-bottom:8px}
+  .grp{display:none}
+  .nav button[aria-current="page"]{box-shadow:inset 0 -2px 0 var(--accent)}
+  .modal .fields{grid-template-columns:1fr}
+  .split{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="seal" id="seal">S</div><div><b id="brandName">Society Register</b><small id="brandSub">Housing society office</small></div></div>
+    <div class="me" id="meBox" hidden></div>
+    <nav class="nav" id="nav" aria-label="Registers"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <form id="mForm" novalidate>
+      <h2 id="mTitle"></h2>
+      <div id="mBody" class="fields"></div>
+      <div class="mErr" id="mErr" hidden></div>
+      <div class="mFoot" id="mFoot"><button type="button" class="btn" data-act="closeModal">Cancel</button><button type="submit" class="btn primary" id="mOk">Save</button></div>
+    </form>
+  </div>
+</div>
+<div class="scrim" id="secScrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="secTitle" style="width:min(440px,100%)">
+    <h2 id="secTitle">Confirm it’s you</h2>
+    <div id="secBody"></div>
+    <div class="mErr" id="secErr" hidden></div>
+    <div class="mFoot"><button type="button" class="btn" data-act="secCancel">Cancel</button><button type="button" class="btn primary" data-act="secVerify">Confirm</button></div>
+  </div>
+</div>
+<div class="gate" id="gate" hidden></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+/* =========== helpers =========== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toLocaleDateString('en-CA');
+const thisMonth=()=>today().slice(0,7);
+const monthLabel=m=>{if(!m)return'';const[y,mo]=m.split('-');return new Date(+y,+mo-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'})};
+const fmtDate=d=>{if(!d)return'—';const[y,m,dd]=String(d).slice(0,10).split('-');return new Date(+y,+m-1,+(dd||1)).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})};
+const fmtStamp=iso=>{if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+', '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+const fmtTime=t=>{if(!t)return'';const[h,m]=t.split(':');const d=new Date();d.setHours(+h,+m);return d.toLocaleTimeString('en-GB',{hour:'numeric',minute:'2-digit',hour12:true})};
+const addMonths=(d,n)=>{const[y,m,dd]=d.split('-').map(Number);return new Date(y,m-1+n,dd).toLocaleDateString('en-CA')};
+const daysUntil=d=>{if(!d)return null;const[y,m,dd]=d.split('-').map(Number);const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(y,m-1,dd)-t)/864e5)};
+const sum=(a,k)=>a.reduce((t,x)=>t+(+x[k]||0),0);
+const curCode=()=>S.settings.currency||'INR';
+function money(n){try{return new Intl.NumberFormat(curCode()==='INR'?'en-IN':'en-GB',{style:'currency',currency:curCode(),maximumFractionDigits:0}).format(+n||0)}catch(e){return(+n||0).toLocaleString()}}
+const moneyPlain=n=>(curCode()==='INR'?'Rs. ':curCode()+' ')+Math.round(+n||0).toLocaleString(curCode()==='INR'?'en-IN':'en-GB');
+const flatLabel=f=>f?((f.wing?f.wing+'-':'')+(f.number||'?')):'—';
+const flatById=id=>S.flats.find(f=>f.id===id);
+const sortFlats=a=>[...a].sort((x,y)=>flatLabel(x).localeCompare(flatLabel(y),undefined,{numeric:true}));
+const byDateDesc=(a,k='date')=>[...a].sort((x,y)=>String(y[k]||'').localeCompare(String(x[k]||'')));
+const byDateAsc=(a,k='date')=>[...a].sort((x,y)=>String(x[k]||'').localeCompare(String(y[k]||'')));
+const sampleTag=x=>x&&x.sample?'<span class="sample">Sample</span>':'';
+const C=h=>ME.committee?h:'';
+const by=(col,id)=>(S[col]||[]).find(x=>x.id===id);
+const strip=o=>{const c={...o};delete c.id;return c};
+const fail=m=>{const e=new Error(m);e.userMsg=m;return e};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}};
+const ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
+const vendorName=id=>{const v=by('vendors',id);return v?v.name:''};
+
+/* =========== state =========== */
+const COLS=['flats','dues','bills','payments','fds','staff','attendance','vendors','amc','amcVisits','documents','esign','signatures','notices','complaints','reminders','handovers','tenantdocs','kyc'];
+const S={settings:{},settingsLoaded:false,audit:[],myFiles:[]};COLS.forEach(c=>S[c]=[]);
+const FILES={};
+const UI={horizon:90,tab:lsGet('sr_tab')||'dashboard',month:thisMonth(),q:'',payStatus:'Awaiting',docCat:'All',cmpStatus:'Open',attDate:today(),fdStatus:'Active',remFilter:'All'};
+let db=null,assets=null,DL=null,USER=null,mode='loading';
+const ME={id:null,name:'',avatar:'',committee:false,owner:false};
+const NAMES={};let REPORT=null;
+
+const DOC_CATS=['Registration & bye-laws','Meeting minutes','Audit & accounts','Insurance','Contracts & AMC','Property papers','NOCs & letters','Other'];
+const PAY_CATS=['Security','Security agency','Housekeeping','Staff salaries','Electricity','Water','Lift maintenance','AMC','AMC instalment','Repairs','Gardening','Insurance','Property tax','Loan / EMI','Internet & phone','Admin & stationery','Other'];
+const CMP_CATS=['Plumbing','Electrical','Lift','Security','Cleanliness','Parking','Noise','Other'];
+const PAY_MODES=['UPI','Bank transfer','Cash','Cheque','Card'];
+const OUT_MODES=['Cheque','NEFT / RTGS','UPI','Cash'];
+const EQUIP=['Lift','Fire fighting system','DG set','Water pumps','CCTV','Intercom','STP / WTP','Solar panels','Pest control','Other'];
+const TENANT_TYPES=['Rental / leave & licence agreement','Police verification','ID proof','Photograph','Move-in form','NOC from owner','Other'];
+const FD_PAYOUT=['Cumulative (paid at maturity)','Monthly payout','Quarterly payout'];
+const FREQ={Monthly:1,Quarterly:3,'Half-yearly':6,Yearly:12,'One-time':0};
+const BILL_CATS=['Electricity','Water','Staff salaries','Security agency','AMC instalment','Insurance','Property tax','Loan / EMI','Internet & phone','Other'];
+const addDays=(d,n)=>{const[y,m,dd]=d.split('-').map(Number);return new Date(y,m-1,dd+n).toLocaleDateString('en-CA')};
+const ordinal=n=>n+(['th','st','nd','rd'][((n%100-20)%10+10)%10<4&&!(n%100>=11&&n%100<=13)?n%10:0]||'th');
+function billAmount(b){const st=S.staff.filter(s=>s.active!==false),src=b.amountSource||'Fixed amount';
+  if(src==='Security staff pay')return sum(st.filter(s=>s.role==='Security'),'salary');if(src==='Sweeper staff pay')return sum(st.filter(s=>s.role==='Sweeper'),'salary');if(src==='All staff pay')return sum(st,'salary');return +b.amount||0}
+const emiLeft=b=>b.category==='Loan / EMI'&&+b.totalInstalments?Math.max(0,+b.totalInstalments-(+b.paidInstalments||0)):Infinity;
+function occurrences(b,until){if(b.done||!b.nextDue)return[];const step=FREQ[b.frequency]??1,left=emiLeft(b),out=[];let d=b.nextDue;
+  while(d<=until&&out.length<left&&out.length<60){out.push(d);if(!step)break;d=addMonths(d,step)}return out}
+function upcoming(days){
+  const until=addDays(today(),days),R=[];
+  S.bills.forEach(b=>occurrences(b,until).forEach((d,i)=>R.push({date:d,kind:b.category==='Loan / EMI'?'EMI':'Bill',title:b.name,sub:[b.payee||vendorName(b.vendorId),b.autopay?'Auto-debit':''].filter(Boolean).join(' · '),amount:billAmount(b),dir:'out',bill:b.id,first:i===0})));
+  S.payments.filter(p=>p.status==='Approved').forEach(p=>R.push({date:p.date||today(),kind:'Approved payment',title:p.payee||vendorName(p.vendorId),sub:p.purpose||'',amount:+p.amount||0,dir:'out',tab:'payments'}));
+  S.fds.filter(f=>f.status==='Active'&&f.maturity&&f.maturity<=until).forEach(f=>R.push({date:f.maturity,kind:'FD maturity',title:`${f.bank} FD${f.fdRef?' •••'+f.fdRef:''}`,sub:f.autoRenew?'Set to auto-renew':'Decide: renew or close',amount:+f.maturityAmount||+f.principal||0,dir:'in',tab:'fds'}));
+  const dueDay=+S.settings.dueDay||10;
+  for(let k=0;k<=Math.ceil(days/28);k++){const m=addMonths(thisMonth()+'-01',k).slice(0,7),d=`${m}-${String(dueDay).padStart(2,'0')}`;if(d<today()||d>until)continue;
+    const md=S.dues.filter(x=>x.month===m),exp=md.length?sum(md.filter(x=>!x.paid),'amount'):S.flats.reduce((t,f)=>t+(+(f.monthlyCharge||S.settings.monthlyCharge)||0),0);
+    if(exp)R.push({date:d,kind:'Maintenance',title:`${monthLabel(m)} maintenance from residents`,sub:md.length?`${md.filter(x=>!x.paid).length} flats yet to pay`:'Bills not created yet',amount:exp,dir:'in',tab:'maint'})}
+  return R.sort((a,b)=>a.date.localeCompare(b.date));
+}
+const CHECKLIST=[['cash','Cash in hand counted and handed over'],['bank','Bank statements and passbooks handed over'],['signatory','Bank signatories changed to new committee'],['fds','FD certificates verified'],['docs','Registration, bye-laws and minutes books'],['amc','AMC contracts and vendor list'],['dues','Defaulters list and pending dues'],['keys','Office, terrace and meter room keys'],['stamp','Society stamp and letterhead']];
+
+/* =========== store =========== */
+const store={
+  id(){return db?db.collection('x').doc().id:'m'+Math.random().toString(36).slice(2,12)},
+  async set(col,id,data){
+    if(db){await db.collection(col).doc(id).set(data);return}
+    if(col==='settings'){S.settings=data;render();return}
+    S[col]=S[col]||[];const i=S[col].findIndex(x=>x.id===id),r={id,...data};i>=0?S[col][i]=r:S[col].push(r);render();
+  },
+  async add(col,data){const id=store.id();await store.set(col,id,data);return id},
+  async del(col,id){if(db){await db.collection(col).doc(id).delete();return}S[col]=(S[col]||[]).filter(x=>x.id!==id);render()}
+};
+async function log(action,detail=''){
+  const e={at:new Date().toISOString(),uid:ME.id,action,detail};
+  if(!db){S.audit.unshift({id:store.id(),...e});return}
+  try{await db.collection('audit').add(e)}catch(err){}
+}
+function writeErr(e){
+  if(e&&e.userMsg)return e.userMsg;
+  if(e&&e.code==='invalid_argument')return'Your access doesn’t allow this change. Ask the committee to give you edit access.';
+  if(e&&e.code==='quota_exceeded')return'The register is full. Delete some old records and try again.';
+  return'Couldn’t save just now. Check your connection and try again.';
+}
+const TYPES={pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg',webp:'image/webp',gif:'image/gif',csv:'text/csv',txt:'text/plain',md:'text/markdown',json:'application/json'};
+const ASSET_MSG={too_large:'That file is over 20 MB. Compress it or save a link instead.',unsupported_type:'Upload a PDF or an image. For Word or Excel files, save as PDF or paste a link.',quota_or_state:'File storage is full. Delete an old file and try again.',rate_limited:'Too many uploads at once. Wait a moment and try again.'};
+async function uploadAsset(file){
+  if(!assets)throw fail('File uploads aren’t available for you here. Paste a link instead.');
+  const ext=(file.name.split('.').pop()||'').toLowerCase();const type=Object.values(TYPES).includes(file.type)?file.type:TYPES[ext];
+  if(!type)throw fail(ASSET_MSG.unsupported_type);
+  try{return(await assets.upload(file,{type})).id}catch(e){throw fail(ASSET_MSG[e&&e.code]||'The upload didn’t go through. Try again.')}
+}
+async function withFile(v,old){const file=v.file;delete v.file;const r={...v};if(file){r.assetId=await uploadAsset(file);r.fileName=file.name}else if(old&&old.assetId){r.assetId=old.assetId;r.fileName=old.fileName}return r}
+const fileHref=x=>x&&x.assetId?'/_blob/'+x.assetId:(x&&x.link)||'';
+const fileBtn=(x,label='Open')=>{const h=fileHref(x);return h?`<a class="btn small" href="${esc(h)}" target="_blank" rel="noopener">${label}</a>`:''};
+async function smallDataUrl(file){
+  if(file.type.startsWith('image/')){
+    const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(fail('That image couldn’t be read.'));i.src=URL.createObjectURL(file)});
+    let w=img.naturalWidth,h=img.naturalHeight,scale=Math.min(1,1600/Math.max(w,h)),q=.78,out='';
+    for(let k=0;k<6;k++){const c=document.createElement('canvas');c.width=Math.round(w*scale);c.height=Math.round(h*scale);const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(img,0,0,c.width,c.height);out=c.toDataURL('image/jpeg',q);if(out.length<230000)break;scale*=.78;q=Math.max(.5,q-.06)}
+    if(out.length>=230000)throw fail('That photo is too large even after shrinking. Try a smaller photo.');return out;
+  }
+  if(file.type==='application/pdf'||/\.pdf$/i.test(file.name)){
+    if(file.size>170000)throw fail('PDFs must be under 170 KB here. Take a photo of the page instead, or give the paper to the committee.');
+    return await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(fail('That file couldn’t be read.'));r.readAsDataURL(file)});
+  }
+  throw fail('Upload a photo (JPG/PNG) or a small PDF.');
+}
+function dataUrlToBlob(u){const[h,b]=u.split(',');const mime=h.match(/:(.*?);/)[1];const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:mime})}
+
+/* =========== names =========== */
+let nameTimer;
+function scheduleNames(){clearTimeout(nameTimer);nameTimer=setTimeout(resolveNames,120)}
+async function resolveNames(){
+  if(!USER)return;const ids=new Set();
+  const add=u=>{if(u)ids.add(u)};
+  S.payments.forEach(p=>{add(p.requestedBy);(p.approvals||[]).forEach(a=>add(a.uid));add(p.paidBy)});
+  S.handovers.forEach(h=>{(h.approvals||[]).forEach(a=>add(a.uid));(h.log||[]).forEach(l=>add(l.uid))});
+  S.audit.forEach(a=>add(a.uid));S.signatures.forEach(s=>add(s.uid));(S.settings.signatories||[]).forEach(add);
+  S.tenantdocs.forEach(t=>add(t.id));
+  const need=[...ids];if(!need.length)return;
+  try{const ps=await USER.profiles(need);let ch=false;for(const id of need){const n=(ps[id]&&ps[id].name)||'';if(NAMES[id]!==n){NAMES[id]=n;ch=true}}if(ch)render()}catch(e){}
+}
+const who=uid=>!uid?'Someone':(uid===ME.id?(NAMES[uid]||ME.name||'You')+' (you)':(NAMES[uid]||'Committee member'));
+
+/* =========== reminders engine =========== */
+function computeReminders(){
+  const R=[],t=today(),push=(date,kind,text,tab,days)=>R.push({date,kind,text,tab,days:days??daysUntil(date)});
+  S.amcVisits.filter(v=>v.status==='Scheduled').forEach(v=>{const c=by('amc',v.contractId);const d=daysUntil(v.date);if(d<=7)push(v.date,'AMC visit',`${c?c.equipment:'AMC'} service visit${c&&vendorName(c.vendorId)?' by '+vendorName(c.vendorId):''}${v.time?' at '+fmtTime(v.time):''}${d<0?' was due and isn’t marked done':''}`,'amc')});
+  S.amc.forEach(c=>{const d=daysUntil(c.end);if(d!==null&&d<=60)push(c.end,'AMC renewal',`${c.equipment} AMC with ${vendorName(c.vendorId)||'vendor'} ${d<0?'expired':'expires'} — ${d<0?'renew now':d<=7?'renew this week':'get renewal quote'}`,'amc')});
+  S.bills.forEach(b=>{if(b.done||!b.nextDue||emiLeft(b)<=0)return;const d=daysUntil(b.nextDue);if(d<=(+b.leadDays||7))push(b.nextDue,b.category==='Loan / EMI'?'EMI due':'Bill due',`${b.name} — ${money(billAmount(b))}${b.payee||vendorName(b.vendorId)?' to '+(b.payee||vendorName(b.vendorId)):''}${b.autopay?' (auto-debit, keep balance ready)':''}${d<0?' is overdue':''}`,'bills')});
+  S.fds.filter(f=>f.status==='Active').forEach(f=>{const d=daysUntil(f.maturity);if(d!==null&&d<=30)push(f.maturity,'FD maturity',`FD ${f.fdRef?'•••'+f.fdRef+' ':''}at ${f.bank} (${money(f.principal)} → ${money(f.maturityAmount)}) ${d<0?'has matured — renew or close it':f.autoRenew?'matures and is set to auto-renew; confirm the new rate':'matures — decide whether to renew or close'}`,'fds')});
+  S.documents.filter(x=>x.expiry).forEach(x=>{const d=daysUntil(x.expiry);if(d<=30)push(x.expiry,'Document expiry',`${x.title} ${d<0?'has expired':'expires'}`,'documents')});
+  const dueDay=+S.settings.dueDay||10,dd=`${thisMonth()}-${String(dueDay).padStart(2,'0')}`;
+  const unpaid=S.dues.filter(x=>x.month===thisMonth()&&!x.paid);
+  if(unpaid.length&&t>dd)push(dd,'Maintenance',`${unpaid.length} flat${unpaid.length>1?'s have':' has'} not paid ${monthLabel(thisMonth())} maintenance (${money(sum(unpaid,'amount'))})`,'maint');
+  S.payments.filter(p=>p.status==='Pending approval').forEach(p=>push(p.date||t,'Approval',`Payment of ${money(p.amount)} to ${p.payee||vendorName(p.vendorId)} needs ${2-(p.approvals||[]).length} more signatory approval`,'payments',0));
+  S.esign.forEach(r=>{const left=(r.parties||[]).filter(p=>!sigFor(r.id,p.role));if(left.length)push(r.date||t,'E-signature',`${r.title} awaits signature from ${left.map(p=>p.role.toLowerCase()).join(' and ')}`,'esign',0)});
+  S.reminders.filter(r=>!r.done).forEach(r=>{const d=daysUntil(r.date);if(d<=(+r.leadDays||7))push(r.date,'Reminder',r.title,'reminders')});
+  return R.sort((a,b)=>a.date.localeCompare(b.date));
+}
+const remLevel=d=>d<0?['bad','Overdue']:d===0?['warn','Today']:d<=7?['warn',`In ${d} day${d>1?'s':''}`]:['info',`In ${d} days`];
+
+/* =========== nav =========== */
+const NAV=[['Overview',[['dashboard','Dashboard'],['reminders','Reminders']]],
+  ['Residents',[['flats','Flats & residents'],['complaints','Complaints'],['notices','Notice board'],['tenant','Tenant documents'],['esign','E-signatures']]],
+  ['Money',[['bills','Upcoming payments'],['maint','Maintenance'],['payments','Payments'],['fds','Fixed deposits']]],
+  ['Staff & services',[['security','Security'],['sweepers','Sweepers'],['vendors','Vendors'],['amc','AMC contracts']]],
+  ['Office',[['documents','Documents'],['handover','Committee handover'],['audit','Audit log'],['settings','Settings']]]];
+function navHTML(){
+  const rem=computeReminders(),over=rem.filter(r=>r.days<0).length;
+  const soon=upcoming(7).filter(x=>x.dir==='out'),billsOver=soon.some(x=>daysUntil(x.date)<0);
+  const b={bills:[soon.length,billsOver?'red':''],reminders:[rem.length,over?'red':''],maint:[S.dues.filter(d=>d.month===thisMonth()&&!d.paid).length],complaints:[S.complaints.filter(c=>c.status!=='Resolved').length],payments:[S.payments.filter(p=>p.status==='Pending approval').length,'red'],esign:[S.esign.filter(r=>(r.parties||[]).some(p=>!sigFor(r.id,p.role))).length]};
+  return NAV.map(([g,items])=>`<div class="grp">${g}</div>`+items.map(([k,l])=>{const x=b[k];return`<button data-act="tab" data-k="${k}" ${UI.tab===k?'aria-current="page"':''}>${l}${x&&x[0]?`<span class="badge ${x[1]||''}">${x[0]}</span>`:''}</button>`}).join('')).join('');
+}
+
+/* =========== page chrome =========== */
+function banner(){
+  if(mode==='local')return`<div class="banner">This copy isn’t connected to saved storage, so anything you add disappears when you close it. Open the register from claude.ai while signed in to keep records.</div>`;
+  if(!ME.committee)return`<div class="banner">You’re signed in as a resident. You can read the register, raise complaints, upload your tenant documents and sign documents sent to you. Committee members manage everything else.</div>`;
+  return'';
+}
+function head(eyebrow,title,sub,tools=''){
+  const ex=REPORT?`<button class="btn export" data-act="export" data-k="pdf" title="Download this register as PDF">PDF</button><button class="btn export" data-act="export" data-k="csv" title="Download this register as CSV">CSV</button>`:'';
+  return`${banner()}<div class="head"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1>${sub?`<p>${sub}</p>`:''}</div><div class="tools">${tools}${ex}</div></div>`;
+}
+const emptyCard=(t,p,btn='')=>`<section class="sec"><h2>${t}</h2><p class="empty" style="max-width:62ch">${p}</p>${btn?`<p style="margin:12px 0 0">${btn}</p>`:''}</section>`;
+const statusPill=s=>`<span class="pill ${s==='Resolved'?'good':s==='In progress'?'warn':'bad'}">${esc(s||'Open')}</span>`;
+const editDel=(col,id,label)=>C(`<button class="btn small" data-act="crud" data-op="edit" data-col="${col}" data-id="${id}">Edit</button> <button class="btn small danger" data-act="crud" data-op="del" data-col="${col}" data-id="${id}">Delete</button>`);
+const addBtn=(col,label)=>C(`<button class="btn primary" data-act="crud" data-op="add" data-col="${col}">${label}</button>`);
+
+/* =========== computed money =========== */
+const fundBalance=()=>(+S.settings.openingBalance||0)+sum(S.dues.filter(d=>d.paid),'amount')-sum(S.payments.filter(p=>p.status==='Paid'),'amount');
+const activeFDs=()=>S.fds.filter(f=>f.status==='Active');
+const attFor=d=>{const a=S.attendance.find(x=>x.id===d);return(a&&a.marks)||{}};
+const sigFor=(rid,role)=>S.signatures.find(s=>s.requestId===rid&&s.role===role);
+
+/* =========== DASHBOARD =========== */
+function vDashboard(){
+  REPORT=null;
+  const st=S.settings,m=thisMonth(),md=S.dues.filter(d=>d.month===m);
+  const billed=sum(md,'amount'),coll=sum(md.filter(d=>d.paid),'amount'),pct=billed?Math.round(coll/billed*100):0;
+  const fds=activeFDs(),rem=computeReminders(),pend=S.payments.filter(p=>p.status==='Pending approval'),up30=upcoming(30);
+  const open=S.complaints.filter(c=>c.status!=='Resolved');
+  const staffOn=S.staff.filter(s=>s.active!==false),att=attFor(today()),present=staffOn.filter(s=>att[s.id]==='P').length;
+  const visits=byDateAsc(S.amcVisits.filter(v=>v.status==='Scheduled')).slice(0,4);
+  const owed={};S.dues.filter(d=>!d.paid).forEach(d=>{(owed[d.flatId]=owed[d.flatId]||{t:0,n:0}).t+=+d.amount||0;owed[d.flatId].n++});
+  const owedList=Object.entries(owed).sort((a,b)=>b[1].t-a[1].t).slice(0,6);
+  const setup=(!S.flats.length||!st.name)&&ME.committee?`<section class="sec" style="margin-bottom:18px"><h2>Set up your register</h2><ol class="steps">
+    <li class="${st.name?'done':''}">Add your society’s name, address and monthly charge. ${st.name?'':'<button class="btn small" data-act="tab" data-k="settings">Open settings</button>'}</li>
+    <li class="${S.flats.length?'done':''}">Add each flat with its owner and phone number. ${S.flats.length?'':'<button class="btn small" data-act="crud" data-op="add" data-col="flats">Add a flat</button>'}</li>
+    <li class="${md.length?'done':''}">Create this month’s maintenance bills. ${md.length?'':'<button class="btn small" data-act="tab" data-k="maint">Maintenance</button>'}</li></ol></section>`:'';
+  const committee=['chairman','secretary','treasurer'].filter(k=>st[k]).map(k=>`<li><div class="t"><b>${esc(st[k])}</b><small>${k[0].toUpperCase()+k.slice(1)}</small></div></li>`).join('');
+  return head(fmtDate(today()),esc(st.name||'Your housing society'),esc(st.address||'Maintenance, staff, AMC, payments and records in one register.'))+setup+`
+  <div class="kpis">
+    <button class="kpi" data-act="tab" data-k="payments"><span>Society fund</span><b>${money(fundBalance())}</b><small>Opening + collections − payments</small></button>
+    <button class="kpi" data-act="tab" data-k="maint"><span>Collected · ${monthLabel(m)}</span><b>${money(coll)}</b><small>of ${money(billed)} billed</small><div class="bar"><i style="width:${pct}%"></i></div></button>
+    <button class="kpi" data-act="tab" data-k="fds"><span>Fixed deposits</span><b>${fds.length} · ${money(sum(fds,'principal'))}</b><small>Maturity value ${money(sum(fds,'maturityAmount'))}</small></button>
+    <button class="kpi" data-act="tab" data-k="bills"><span>To pay · next 30 days</span><b>${money(sum(up30.filter(x=>x.dir==='out'),'amount'))}</b><small>${up30.filter(x=>x.dir==='out').length} bills and EMIs${up30.some(x=>x.dir==='out'&&daysUntil(x.date)<0)?' · some overdue':''}</small></button>
+    <button class="kpi" data-act="tab" data-k="payments"><span>Awaiting approval</span><b>${pend.length}</b><small>${money(sum(pend,'amount'))} in payments</small></button>
+    <button class="kpi" data-act="tab" data-k="security"><span>Staff present today</span><b>${present} / ${staffOn.length}</b><small>Security and sweepers</small></button>
+    <button class="kpi" data-act="tab" data-k="complaints"><span>Open complaints</span><b>${open.length}</b><small>${S.flats.length} flats on record</small></button>
+  </div>
+  <div class="grid2">
+    <section class="sec"><h2>Upcoming payments <button class="btn link" data-act="tab" data-k="bills">Next 90 days</button></h2>
+      ${up30.length?`<ul class="list">${up30.slice(0,7).map(x=>`<li><div class="t"><b>${esc(x.title)}</b><small>${esc(x.kind)} · ${fmtDate(x.date)}${x.sub?' · '+esc(x.sub):''}</small></div><span style="text-align:right"><span class="num" style="color:${x.dir==='in'?'var(--good)':'inherit'}">${x.dir==='in'?'+':''}${money(x.amount)}</span><br>${remPill(x.date)}</span></li>`).join('')}</ul>`:'<p class="empty">Nothing due in the next 30 days. Add the society’s recurring bills and EMIs under Upcoming payments.</p>'}</section>
+    <section class="sec"><h2>Reminders <button class="btn link" data-act="tab" data-k="reminders">All reminders</button></h2>
+      ${rem.length?`<ul class="list">${rem.slice(0,6).map(r=>{const[c,l]=remLevel(r.days);return`<li><div class="t"><b>${esc(r.text)}</b><small>${esc(r.kind)} · ${fmtDate(r.date)}</small></div><span class="pill ${c}">${l}</span></li>`}).join('')}</ul>`:'<p class="empty">Nothing due. AMC visits, renewals, FD maturities and approvals appear here automatically.</p>'}</section>
+    <section class="sec"><h2>Upcoming AMC visits <button class="btn link" data-act="tab" data-k="amc">AMC</button></h2>
+      ${visits.length?`<ul class="list">${visits.map(v=>{const c=by('amc',v.contractId);return`<li><div class="t"><b>${esc(c?c.equipment:'AMC')} · ${esc(c?vendorName(c.vendorId):'')}</b><small>${fmtDate(v.date)}${v.time?', '+fmtTime(v.time):''}${v.engineer?' · '+esc(v.engineer):''}</small></div>${remPill(v.date)}</li>`}).join('')}</ul>`:'<p class="empty">No visits scheduled.</p>'}</section>
+    <section class="sec"><h2>Payments awaiting approval <button class="btn link" data-act="tab" data-k="payments">Payments</button></h2>
+      ${pend.length?`<ul class="list">${pend.map(p=>`<li><div class="t"><b>${esc(p.payee||vendorName(p.vendorId))}${sampleTag(p)}</b><small>${esc(p.purpose||'')} · ${(p.approvals||[]).length}/2 approved</small></div><span class="num">${money(p.amount)}</span></li>`).join('')}</ul>`:'<p class="empty">No payments waiting for signatories.</p>'}</section>
+    <section class="sec"><h2>Outstanding dues <button class="btn link" data-act="tab" data-k="maint">Maintenance</button></h2>
+      ${owedList.length?`<ul class="list">${owedList.map(([id,o])=>{const f=flatById(id);return`<li><div class="t"><b><span class="flat">${esc(flatLabel(f))}</span> ${esc(f?f.owner:'')}</b><small>${o.n} unpaid month${o.n>1?'s':''}</small></div><span class="num">${money(o.t)}</span></li>`}).join('')}</ul>`:'<p class="empty">All maintenance bills are paid.</p>'}</section>
+    <section class="sec"><h2>Notice board <button class="btn link" data-act="tab" data-k="notices">Notices</button></h2>
+      ${S.notices.length?`<ul class="list">${sortNotices().slice(0,3).map(n=>`<li><div class="t"><b>${n.pinned?'Pinned · ':''}${esc(n.title)}${sampleTag(n)}</b><small>${fmtDate(n.date)}</small></div></li>`).join('')}</ul>`:'<p class="empty">No notices posted.</p>'}</section>
+    ${committee?`<section class="sec"><h2>Managing committee</h2><ul class="list">${committee}</ul></section>`:''}
+  </div>`;
+}
+const remPill=d=>{const[c,l]=remLevel(daysUntil(d));return`<span class="pill ${c}">${l}</span>`};
+
+/* =========== REMINDERS =========== */
+function vReminders(){
+  const all=computeReminders(),kinds=['All',...new Set(all.map(r=>r.kind))];
+  if(!kinds.includes(UI.remFilter))UI.remFilter='All';
+  const list=all.filter(r=>UI.remFilter==='All'||r.kind===UI.remFilter);
+  REPORT={title:'Reminders',cols:['Due','Type','Reminder','Status'],rows:list.map(r=>[fmtDate(r.date),r.kind,r.text,remLevel(r.days)[1]])};
+  const manual=byDateAsc(S.reminders);
+  return head('Reminder desk','Reminders','Raised automatically from AMC visits and renewals, FD maturities, document expiry, unpaid maintenance, pending approvals and signatures — plus your own.',C('<button class="btn primary" data-act="crud" data-op="add" data-col="reminders">Add reminder</button>'))+
+  `<div class="chips">${kinds.map(k=>`<button class="chip" data-act="set" data-k="remFilter" data-v="${esc(k)}" aria-pressed="${UI.remFilter===k}">${esc(k)}</button>`).join('')}</div>
+  ${list.length?`<div class="tw"><table class="t"><thead><tr><th>Due</th><th>Type</th><th>Reminder</th><th>Status</th><th></th></tr></thead><tbody>${list.map(r=>{const[c,l]=remLevel(r.days);return`<tr><td style="white-space:nowrap">${fmtDate(r.date)}</td><td>${esc(r.kind)}</td><td>${esc(r.text)}</td><td><span class="pill ${c}">${l}</span></td><td class="acts"><button class="btn small" data-act="tab" data-k="${r.tab}">Open</button></td></tr>`}).join('')}</tbody></table></div>`:emptyCard('Nothing due','You’re up to date.')}
+  <h2 class="sub">Your own reminders</h2>
+  ${manual.length?`<div class="tw"><table class="t"><thead><tr><th>Date</th><th>Reminder</th><th>Show from</th><th>Status</th><th></th></tr></thead><tbody>${manual.map(r=>`<tr class="${r.done?'dim':''}"><td>${fmtDate(r.date)}</td><td><b>${esc(r.title)}</b>${sampleTag(r)}${r.notes?`<br><small>${esc(r.notes)}</small>`:''}</td><td>${+r.leadDays||7} days before</td><td>${r.done?'<span class="pill good">Done</span>':remPill(r.date)}</td>
+  <td class="acts">${C(`<button class="btn small" data-act="remDone" data-id="${r.id}">${r.done?'Reopen':'Mark done'}</button> `)}${editDel('reminders',r.id)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Add reminders for things like the AGM, property tax, water tank cleaning or insurance renewal.</p>'}`;
+}
+
+/* =========== FLATS =========== */
+function vFlats(){
+  const q=UI.q.toLowerCase(),owed={};S.dues.filter(d=>!d.paid).forEach(d=>owed[d.flatId]=(owed[d.flatId]||0)+(+d.amount||0));
+  const rows=sortFlats(S.flats).filter(f=>!q||[flatLabel(f),f.owner,f.tenant,f.phone,f.email,f.parking].join(' ').toLowerCase().includes(q));
+  const occ=o=>o==='Vacant'?'neutral':o==='Tenant'?'warn':'good';
+  REPORT={title:'Flats and residents',cols:['Flat','Owner','Phone','Email','Occupancy','Tenant','Area (sq ft)','Parking','Dues owed'],rows:rows.map(f=>[flatLabel(f),f.owner,f.phone||'',f.email||'',f.occupancy||'Owner',f.tenant||'',f.area||'',f.parking||'',owed[f.id]?moneyPlain(owed[f.id]):''])};
+  return head('Register of members','Flats & residents',`${S.flats.length} flats on record`,`<input type="search" id="flatSearch" data-inp="q" placeholder="Search flat, name or phone" value="${esc(UI.q)}" aria-label="Search flats">${addBtn('flats','Add flat')}`)+
+  (S.flats.length?`<div class="tw"><table class="t"><thead><tr><th>Flat</th><th>Owner</th><th>Contact</th><th>Occupancy</th><th class="r">Area (sq ft)</th><th>Parking</th><th class="r">Dues owed</th><th></th></tr></thead><tbody>
+  ${rows.map(f=>`<tr><td><span class="flat">${esc(flatLabel(f))}</span></td><td><b>${esc(f.owner)}</b>${sampleTag(f)}${f.tenant?`<br><small>Tenant: ${esc(f.tenant)}${f.tenantPhone?' · '+esc(f.tenantPhone):''}</small>`:''}</td>
+  <td>${esc(f.phone||'—')}${f.email?`<br><small>${esc(f.email)}</small>`:''}</td><td><span class="pill ${occ(f.occupancy)}">${esc(f.occupancy||'Owner')}</span></td>
+  <td class="r num">${f.area?esc(f.area):'—'}</td><td>${esc(f.parking||'—')}</td><td class="r num" style="${owed[f.id]?'color:var(--bad)':''}">${owed[f.id]?money(owed[f.id]):'—'}</td>
+  <td class="acts">${editDel('flats',f.id)}</td></tr>`).join('')||`<tr><td colspan="8" class="empty">No flats match “${esc(UI.q)}”.</td></tr>`}
+  </tbody></table></div>`:emptyCard('No flats yet','Add each flat with the owner’s name and phone number. Maintenance bills, complaints, tenant documents and e-signatures all link to this list.',C('<button class="btn primary" data-act="crud" data-op="add" data-col="flats">Add the first flat</button>')));
+}
+
+/* =========== COMPLAINTS =========== */
+function vComplaints(){
+  const sts=['Open','In progress','Resolved','All'];
+  const list=byDateDesc(S.complaints.filter(c=>UI.cmpStatus==='All'||(c.status||'Open')===UI.cmpStatus));
+  REPORT={title:'Complaints',cols:['Raised','Flat','Complaint','Category','Status','Resolved on'],rows:list.map(c=>[fmtDate(c.date),flatLabel(flatById(c.flatId)),c.title,c.category||'',c.status||'Open',c.resolvedOn?fmtDate(c.resolvedOn):''])};
+  const h=head('Complaint register','Complaints','Issues raised by residents, tracked until they’re fixed.',S.flats.length?'<button class="btn primary" data-act="crud" data-op="add" data-col="complaints">Log complaint</button>':'');
+  if(!S.complaints.length)return h+emptyCard('No complaints logged',S.flats.length?'When a resident reports a leak, a lift fault or a parking issue, log it here and update its status as it’s handled.':'Flats need to be added before complaints can be logged against them.');
+  return h+`<div class="chips">${sts.map(s=>`<button class="chip" data-act="set" data-k="cmpStatus" data-v="${s}" aria-pressed="${UI.cmpStatus===s}">${s} <span class="num">${s==='All'?S.complaints.length:S.complaints.filter(c=>(c.status||'Open')===s).length}</span></button>`).join('')}</div>
+  <div class="tw"><table class="t"><thead><tr><th>Raised</th><th>Flat</th><th>Complaint</th><th>Category</th><th>Status</th><th></th></tr></thead><tbody>
+  ${list.map(c=>`<tr><td style="white-space:nowrap">${fmtDate(c.date)}</td><td><span class="flat">${esc(flatLabel(flatById(c.flatId)))}</span></td><td><b>${esc(c.title)}</b>${sampleTag(c)}${c.detail?`<br><small>${esc(c.detail)}</small>`:''}</td><td>${esc(c.category||'')}</td>
+  <td>${ME.committee?`<select data-chg="cmpSet" data-id="${c.id}" aria-label="Status" style="width:auto">${['Open','In progress','Resolved'].map(s=>`<option ${s===(c.status||'Open')?'selected':''}>${s}</option>`).join('')}</select>`:statusPill(c.status)}</td>
+  <td class="acts">${editDel('complaints',c.id)}</td></tr>`).join('')||`<tr><td colspan="6" class="empty">Nothing ${UI.cmpStatus.toLowerCase()} right now.</td></tr>`}
+  </tbody></table></div>`;
+}
+
+/* =========== NOTICES =========== */
+const sortNotices=()=>[...S.notices].sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||String(b.date).localeCompare(String(a.date)));
+function vNotices(){
+  REPORT={title:'Notices',cols:['Date','Title','Notice','Issued by'],rows:sortNotices().map(n=>[fmtDate(n.date),n.title,n.body,n.by||''])};
+  const h=head('Notice board','Notices','Meeting announcements, water cuts, festival plans and rules for residents.',addBtn('notices','Post notice'));
+  if(!S.notices.length)return h+emptyCard('No notices yet','Post the next AGM date, a water supply cut or a reminder about maintenance dues.');
+  return h+`<div class="notices">${sortNotices().map(n=>`<article class="notice ${n.pinned?'pinned':''}">${n.pinned?'<span class="pill neutral" style="align-self:flex-start;color:var(--brass);border-color:var(--brass)">Pinned</span>':''}<h3>${esc(n.title)}${sampleTag(n)}</h3><p>${esc(n.body)}</p>
+  <div class="meta"><span>${fmtDate(n.date)}${n.by?' · '+esc(n.by):''}</span><span>${editDel('notices',n.id)}</span></div></article>`).join('')}</div>`;
+}
+
+/* =========== TENANT DOCUMENTS =========== */
+function vTenant(){
+  REPORT=null;
+  const intro=`<div class="note">Tenants can upload their rental agreement, police verification and ID proof here. Files are visible only to the person who uploaded them and the committee. Photos are shrunk automatically; PDFs must be under 170 KB.</div>`;
+  const upBtn=S.flats.length&&(ME.id||mode==='local')?'<button class="btn primary" data-act="tenantUpload">Upload a document</button>':'';
+  let mine='';
+  if(!ME.committee){
+    mine=`<h2 class="sub">Your uploads</h2>`+(S.myFiles.length?`<div class="tw"><table class="t"><thead><tr><th>Document</th><th>Flat</th><th>Uploaded</th><th>Status</th><th></th></tr></thead><tbody>${byDateDesc(S.myFiles).map(f=>`<tr><td><b>${esc(f.type)}</b><br><small>${esc(f.fileName||'')}</small></td><td><span class="flat">${esc(flatLabel(flatById(f.flatId)))}</span></td><td>${fmtDate(f.date)}</td><td>${f.status==='Verified'?'<span class="pill good">Verified</span>':f.status==='Rejected'?'<span class="pill bad">Re-upload needed</span>':'<span class="pill warn">Awaiting review</span>'}</td><td class="acts"><button class="btn small" data-act="viewFile" data-src="mine" data-id="${f.id}">View</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">You haven’t uploaded anything yet.</p>');
+    return head('Tenant verification','Tenant documents','Upload the papers the society needs from tenants.',upBtn)+intro+mine;
+  }
+  const kyc=byDateDesc(S.kyc),subs=S.tenantdocs;
+  REPORT={title:'Tenant documents',cols:['Flat','Tenant','Document','Date','Status','Source'],rows:[...kyc.map(k=>[flatLabel(flatById(k.flatId)),k.tenantName||'',k.type,fmtDate(k.date),k.status||'Verified','Committee']),...subs.flatMap(t=>(FILES[t.id]||[]).map(f=>[flatLabel(flatById(f.flatId)),f.tenantName||t.tenantName||'',f.type,fmtDate(f.date),f.status||'Awaiting review','Tenant upload']))]};
+  return head('Tenant verification','Tenant documents','Papers collected from tenants, either uploaded by the tenant or added by the committee.',upBtn)+intro+
+  `<h2 class="sub">Uploaded by tenants</h2>${subs.length?`<div class="cards">${subs.map(t=>{const files=FILES[t.id];return`<div class="card"><div class="row"><h3>${esc(t.tenantName||who(t.id))}</h3><span class="flat">${esc(flatLabel(flatById(t.flatId)))}</span></div>
+    <small class="muted">${t.count||0} file${t.count==1?'':'s'} · last upload ${fmtDate(t.updated)}</small>
+    ${files?(files.length?`<ul class="list">${files.map(f=>`<li><div class="t"><b>${esc(f.type)}</b><small>${fmtDate(f.date)} · ${esc(f.status||'Awaiting review')}</small></div><span><button class="btn small" data-act="viewFile" data-src="t" data-uid="${t.id}" data-id="${f.id}">View</button> ${f.status!=='Verified'?`<button class="btn small" data-act="verifyFile" data-uid="${t.id}" data-id="${f.id}" data-v="Verified">Verify</button>`:''} ${f.status!=='Rejected'?`<button class="btn small danger" data-act="verifyFile" data-uid="${t.id}" data-id="${f.id}" data-v="Rejected">Reject</button>`:''}</span></li>`).join('')}</ul>`:'<p class="empty">No files.</p>'):`<button class="btn small" data-act="loadTenant" data-uid="${t.id}" style="align-self:flex-start">Show files</button>`}</div>`}).join('')}</div>`:'<p class="empty">No tenant has uploaded documents yet. Tenants need edit-level access to the register to upload.</p>'}
+  <h2 class="sub">Collected by the committee</h2>${kyc.length?`<div class="tw"><table class="t"><thead><tr><th>Flat</th><th>Tenant</th><th>Document</th><th>Date</th><th></th></tr></thead><tbody>${kyc.map(k=>`<tr><td><span class="flat">${esc(flatLabel(flatById(k.flatId)))}</span></td><td>${esc(k.tenantName||'')}${sampleTag(k)}</td><td><b>${esc(k.type)}</b>${k.note?`<br><small>${esc(k.note)}</small>`:''}</td><td>${fmtDate(k.date)}</td><td class="acts"><button class="btn small" data-act="viewFile" data-src="kyc" data-id="${k.id}">View</button> <button class="btn small danger" data-act="crud" data-op="del" data-col="kyc" data-id="${k.id}">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">Nothing added by the committee yet. Use “Upload a document” to scan papers a tenant hands in.</p>'}`;
+}
+
+/* =========== E-SIGNATURES =========== */
+function vEsign(){
+  const list=byDateDesc(S.esign);
+  REPORT={title:'E-signature register',cols:['Date','Document','Flat','Owner signed','Tenant signed','Status'],rows:list.map(r=>{const st=role=>{const s=sigFor(r.id,role);return s?`${s.name}, ${fmtStamp(s.at)}`:(r.parties||[]).some(p=>p.role===role)?'Pending':'—'};const done=(r.parties||[]).every(p=>sigFor(r.id,p.role));return[fmtDate(r.date),r.title,flatLabel(flatById(r.flatId)),st('Owner'),st('Tenant'),done?'Complete':'Awaiting signatures']})};
+  const h=head('Signing desk','E-signatures','Owners and tenants sign leave & licence agreements, NOCs and undertakings on screen. Each signature records the name, drawn signature, time and the signed-in account.',C(S.flats.length?'<button class="btn primary" data-act="esignNew">New signing request</button>':''));
+  const note=`<div class="note">These are simple electronic signatures for the society’s own records. They are not Aadhaar eSign or a certified digital signature, so use a certified service for documents that legally require one, such as registered leave & licence agreements.</div>`;
+  if(!list.length)return h+note+emptyCard('No signing requests',ME.committee?'Create a request for a flat, attach the document, and the owner and tenant can sign on their own phones or on yours in person.':'Nothing has been sent for signing yet.');
+  return h+note+`<div class="cards">${list.map(r=>{const done=(r.parties||[]).every(p=>sigFor(r.id,p.role));return`<div class="card">
+    <div class="row"><h3>${esc(r.title)}${sampleTag(r)}</h3>${done?'<span class="pill good">Complete</span>':'<span class="pill warn">Awaiting signatures</span>'}</div>
+    <div class="row"><span><span class="flat">${esc(flatLabel(flatById(r.flatId)))}</span> <small class="muted" style="display:inline">${fmtDate(r.date)}</small></span>${fileBtn(r,'Open document')}</div>
+    ${(r.parties||[]).map(p=>{const s=sigFor(r.id,p.role);return`<div class="party"><div><b>${esc(p.role)}</b> · ${esc(p.name)}<br><small class="muted" style="display:inline">${s?`Signed ${fmtStamp(s.at)} by ${esc(who(s.uid))}${s.inPerson?' (in person)':''}`:'Not signed yet'}</small></div>${s?`<img src="${esc(s.image)}" alt="Signature of ${esc(s.name)}">`:`<button class="btn small primary" data-act="esignSign" data-id="${r.id}" data-role="${esc(p.role)}">Sign as ${esc(p.role.toLowerCase())}</button>`}</div>`}).join('')}
+    <div class="row"><span>${done?`<button class="btn small" data-act="esignCert" data-id="${r.id}">Download signed record (PDF)</button>`:''}</span><span>${C(`<button class="btn small danger" data-act="crud" data-op="del" data-col="esign" data-id="${r.id}">Delete</button>`)}</span></div></div>`}).join('')}</div>`;
+}
+
+/* =========== UPCOMING PAYMENTS =========== */
+function vBills(){
+  const H=+UI.horizon||90,items=upcoming(H),out=items.filter(x=>x.dir==='out');
+  const grp=x=>{const d=daysUntil(x.date);return d<0?'Overdue':d<=6?'Next 7 days':d<=13?'In 1–2 weeks':d<=30?'Later this month':'31–'+H+' days'};
+  const order=['Overdue','Next 7 days','In 1–2 weeks','Later this month','31–'+H+' days'];
+  const groups=order.map(g=>[g,items.filter(x=>grp(x)===g)]).filter(([,l])=>l.length);
+  const loans=S.bills.filter(b=>b.category==='Loan / EMI'&&!b.done);
+  const bills=byDateAsc(S.bills.filter(b=>!b.done),'nextDue').concat(S.bills.filter(b=>b.done));
+  REPORT={title:`Upcoming payments — next ${H} days`,cols:['Due','Type','Item','Payee / note','Amount','Direction','Status'],rows:items.map(x=>[fmtDate(x.date),x.kind,x.title,x.sub||'',moneyPlain(x.amount),x.dir==='in'?'Incoming':'Outgoing',remLevel(daysUntil(x.date))[1]])};
+  const tools=`<select id="horizon" data-chg="horizon" aria-label="Look ahead" style="width:auto">${[30,60,90,180,365].map(n=>`<option value="${n}" ${n===H?'selected':''}>Next ${n} days</option>`).join('')}</select>`+addBtn('bills','Add recurring bill');
+  const h=head('Payment calendar','Upcoming payments','Every bill, salary and EMI the society has to pay, with FD maturities and maintenance coming in. Bills due within their reminder window also appear in Reminders and the weekly summary.',tools);
+  const kp=`<div class="kpis">
+    <div class="kpi"><span>Overdue</span><b style="color:${out.some(x=>daysUntil(x.date)<0)?'var(--bad)':'inherit'}">${money(sum(out.filter(x=>daysUntil(x.date)<0),'amount'))}</b><small>${out.filter(x=>daysUntil(x.date)<0).length} items</small></div>
+    <div class="kpi"><span>To pay · next 7 days</span><b>${money(sum(out.filter(x=>{const d=daysUntil(x.date);return d>=0&&d<=7}),'amount'))}</b><small>${out.filter(x=>{const d=daysUntil(x.date);return d>=0&&d<=7}).length} items</small></div>
+    <div class="kpi"><span>To pay · next ${H} days</span><b>${money(sum(out,'amount'))}</b><small>Fund today ${money(fundBalance())}</small></div>
+    <div class="kpi"><span>FDs maturing · ${H} days</span><b>${money(sum(items.filter(x=>x.kind==='FD maturity'),'amount'))}</b><small>${items.filter(x=>x.kind==='FD maturity').length} deposits</small></div>
+    ${loans.length?`<div class="kpi"><span>Loan EMIs left</span><b>${loans.reduce((t,b)=>t+(emiLeft(b)===Infinity?0:emiLeft(b)),0)}</b><small>${money(loans.reduce((t,b)=>t+(emiLeft(b)===Infinity?0:emiLeft(b)*billAmount(b)),0))} still to pay</small></div>`:''}</div>`;
+  const tl=groups.length?groups.map(([g,l])=>`<h2 class="sub" style="margin-top:18px">${g} <span class="num" style="font-family:var(--mono);font-size:14px;color:var(--muted)">${money(sum(l.filter(x=>x.dir==='out'),'amount'))} to pay${l.some(x=>x.dir==='in')?' · '+money(sum(l.filter(x=>x.dir==='in'),'amount'))+' coming in':''}</span></h2>
+    <div class="tw"><table class="t"><tbody>${l.map(x=>{const b=x.bill&&by('bills',x.bill);return`<tr><td style="white-space:nowrap;width:120px">${fmtDate(x.date)}</td><td><b>${esc(x.title)}</b>${b?sampleTag(b):''}<br><small>${esc(x.kind)}${x.sub?' · '+esc(x.sub):''}</small></td><td class="r num" style="color:${x.dir==='in'?'var(--good)':'inherit'};white-space:nowrap">${x.dir==='in'?'+ ':''}${money(x.amount)}</td><td style="width:110px">${remPill(x.date)}</td>
+    <td class="acts">${b&&x.first?C(b.autopay?`<button class="btn small primary" data-act="billAuto" data-id="${b.id}">Record auto-debit</button>`:`<button class="btn small primary" data-act="billPay" data-id="${b.id}">Raise payment</button>`)+C(` <button class="btn small" data-act="billSkip" data-id="${b.id}">Paid elsewhere</button>`):x.tab?`<button class="btn small" data-act="tab" data-k="${x.tab}">Open</button>`:''}</td></tr>`}).join('')}</tbody></table></div>`).join(''):emptyCard('Nothing due',`No bills, EMIs or FD maturities in the next ${H} days.`);
+  const tbl=`<h2 class="sub">Recurring bills & EMIs</h2>${bills.length?`<div class="tw"><table class="t"><thead><tr><th>Bill</th><th>Paid to</th><th class="r">Amount</th><th>Repeats</th><th>Next due</th><th>Remind</th><th></th></tr></thead><tbody>${bills.map(b=>{const left=emiLeft(b);return`<tr class="${b.done||left<=0?'dim':''}"><td><b>${esc(b.name)}</b>${sampleTag(b)}<br><small>${esc(b.category)}${b.autopay?' · Auto-debit':''}${b.category==='Loan / EMI'&&+b.totalInstalments?` · ${+b.paidInstalments||0} of ${b.totalInstalments} EMIs paid`:''}${b.amountSource&&b.amountSource!=='Fixed amount'?' · '+esc(b.amountSource):''}</small></td>
+    <td>${esc(b.payee||vendorName(b.vendorId)||'—')}${b.lender?`<br><small>${esc(b.lender)}</small>`:''}</td><td class="r num">${money(billAmount(b))}</td><td>${esc(b.frequency)}</td><td style="white-space:nowrap">${b.done||left<=0?'<span class="pill neutral">Finished</span>':fmtDate(b.nextDue)+'<br>'+remPill(b.nextDue)}</td><td>${+b.leadDays||7} days before</td><td class="acts">${editDel('bills',b.id)}</td></tr>`}).join('')}</tbody></table></div>`:emptyCard('No recurring bills yet','Add electricity, water, guard and sweeper salaries, AMC instalments, insurance premium, property tax and any loan EMI. Each one gets a due date and repeats automatically.')}`;
+  return h+kp+tl+tbl;
+}
+
+/* =========== MAINTENANCE =========== */
+function vMaint(){
+  const m=UI.month,flats=sortFlats(S.flats),md=S.dues.filter(d=>d.month===m),byF=Object.fromEntries(md.map(d=>[d.flatId,d]));
+  const missing=flats.filter(f=>!byF[f.id]),billed=sum(md,'amount'),coll=sum(md.filter(d=>d.paid),'amount'),pct=billed?Math.round(coll/billed*100):0;
+  const dueDay=+S.settings.dueDay||10;
+  REPORT={title:`Maintenance ${monthLabel(m)}`,cols:['Flat','Member','Amount','Status','Paid on','Mode','Reference'],rows:flats.map(f=>{const d=byF[f.id];return d?[flatLabel(f),f.owner,moneyPlain(d.amount),d.paid?'Paid':'Unpaid',d.paid?fmtDate(d.paidOn):'',d.mode||'',d.ref||'']:[flatLabel(f),f.owner,'','No bill','','','']})};
+  const anyUnpaid=S.dues.some(x=>!x.paid);
+  const tools=`<input type="month" id="mMonth" data-chg="month" value="${m}" aria-label="Month">`+C(anyUnpaid?'<button class="btn" data-act="dueMsgAll">Reminder messages</button>':'')+C(missing.length?`<button class="btn primary" data-act="genBills">Create ${missing.length} bill${missing.length>1?'s':''}</button>`:'');
+  let body;
+  if(!flats.length)body=emptyCard('Add flats first','Bills are created per flat. Add your flats, set the monthly charge in Settings, then come back here.');
+  else body=`<div class="kpis">
+    <div class="kpi"><span>Billed</span><b>${money(billed)}</b><small>${md.length} of ${flats.length} flats</small></div>
+    <div class="kpi"><span>Collected</span><b>${money(coll)}</b><small>${pct}% of billed</small><div class="bar"><i style="width:${pct}%"></i></div></div>
+    <div class="kpi"><span>Pending</span><b style="color:${billed-coll?'var(--bad)':'inherit'}">${money(billed-coll)}</b><small>${md.filter(d=>!d.paid).length} flats yet to pay</small></div>
+    <div class="kpi"><span>Due by</span><b>${dueDay} ${monthLabel(m).split(' ')[0].slice(0,3)}</b><small>Standard charge ${money(S.settings.monthlyCharge)}</small></div></div>
+  <div class="tw"><table class="t"><thead><tr><th>Flat</th><th>Member</th><th class="r">Amount</th><th>Status</th><th>Paid on</th><th>Mode · Ref</th><th></th></tr></thead><tbody>
+  ${flats.map(f=>{const d=byF[f.id];if(!d)return`<tr class="dim"><td><span class="flat">${esc(flatLabel(f))}</span></td><td>${esc(f.owner)}</td><td class="r">—</td><td><span class="pill neutral">No bill</span></td><td></td><td></td><td class="acts">${C(`<button class="btn small" data-act="billOne" data-id="${f.id}">Create bill</button>`)}</td></tr>`;
+    const late=!d.paid&&today()>`${m}-${String(dueDay).padStart(2,'0')}`;
+    return`<tr><td><span class="flat">${esc(flatLabel(f))}</span></td><td>${esc(f.owner)}${sampleTag(d)}</td><td class="r num">${money(d.amount)}</td>
+    <td>${d.paid?'<span class="pill good">Paid</span>':late?'<span class="pill bad">Overdue</span>':'<span class="pill warn">Due</span>'}</td><td>${d.paid?fmtDate(d.paidOn):'—'}</td><td>${d.paid?esc([d.mode,d.ref].filter(Boolean).join(' · ')):''}</td>
+    <td class="acts">${C(d.paid?`<button class="btn small" data-act="unpay" data-id="${d.id}">Mark unpaid</button> <button class="btn small" data-act="editDue" data-id="${d.id}">Edit</button>`:`<button class="btn small primary" data-act="pay" data-id="${d.id}">Record payment</button> <button class="btn small" data-act="dueMsg" data-id="${f.id}">Remind</button> <button class="btn small" data-act="editDue" data-id="${d.id}">Edit</button>`)}</td></tr>`}).join('')}
+  </tbody></table></div>`;
+  return head('Maintenance register',`Maintenance · ${monthLabel(m)}`,'Create the month’s bills from your flat list, then record each payment as it arrives.',tools)+body;
+}
+
+/* =========== PAYMENTS (dual approval) =========== */
+function vPayments(){
+  const sts={Awaiting:p=>p.status==='Pending approval',Approved:p=>p.status==='Approved',Paid:p=>p.status==='Paid',Rejected:p=>p.status==='Rejected',All:()=>true};
+  const list=byDateDesc(S.payments.filter(sts[UI.payStatus]||sts.All));
+  const sig=S.settings.signatories||[];
+  REPORT={title:`Payments (${UI.payStatus})`,cols:['Date','Payee','Purpose','Category','Amount','Mode','Approvals','Status','Paid on','Ref'],rows:list.map(p=>[fmtDate(p.date),p.payee||vendorName(p.vendorId),p.purpose||'',p.category||'',moneyPlain(p.amount),p.mode||'',(p.approvals||[]).map(a=>who(a.uid)).join('; '),p.status,p.paidOn?fmtDate(p.paidOn):'',p.ref||''])};
+  const paid=S.payments.filter(p=>p.status==='Paid'),m=thisMonth();
+  const h=head('Payments book','Payments','Every outgoing payment needs approval from two different bank signatories before it can be paid.',C('<button class="btn primary" data-act="payNew">Raise payment</button>'));
+  const sigNote=`<div class="note">${sig.length?`Bank signatories: <b>${sig.map(u=>esc(who(u))).join(', ')}</b>. Two of them must approve each payment.`:'No bank signatories set yet, so any two committee members can approve. Add signatories in Settings.'} Approving asks you to confirm with a passkey or a one-time code.</div>`;
+  const cats={};paid.filter(p=>(p.paidOn||p.date||'').startsWith(m)).forEach(p=>cats[p.category||'Other']=(cats[p.category||'Other']||0)+(+p.amount||0));
+  return h+sigNote+`<div class="kpis">
+    <div class="kpi"><span>Awaiting approval</span><b>${S.payments.filter(sts.Awaiting).length}</b><small>${money(sum(S.payments.filter(sts.Awaiting),'amount'))}</small></div>
+    <div class="kpi"><span>Approved, not yet paid</span><b>${S.payments.filter(sts.Approved).length}</b><small>${money(sum(S.payments.filter(sts.Approved),'amount'))}</small></div>
+    <div class="kpi"><span>Paid · ${monthLabel(m)}</span><b>${money(Object.values(cats).reduce((a,b)=>a+b,0))}</b><small>${Object.keys(cats).length} categories</small></div>
+    <div class="kpi"><span>Society fund</span><b>${money(fundBalance())}</b><small>After all paid payments</small></div></div>
+  <div class="chips">${Object.keys(sts).map(k=>`<button class="chip" data-act="set" data-k="payStatus" data-v="${k}" aria-pressed="${UI.payStatus===k}">${k} <span class="num">${S.payments.filter(sts[k]).length}</span></button>`).join('')}</div>
+  ${list.length?`<div class="tw"><table class="t"><thead><tr><th>Date</th><th>Payee</th><th class="r">Amount</th><th>Approvals</th><th>Status</th><th></th></tr></thead><tbody>${list.map(p=>{const ap=p.approvals||[];return`<tr>
+    <td style="white-space:nowrap">${fmtDate(p.date)}</td><td><b>${esc(p.payee||vendorName(p.vendorId))}</b>${sampleTag(p)}<br><small>${esc([p.purpose,p.category,p.mode,p.chequeNo?'Chq '+p.chequeNo:''].filter(Boolean).join(' · '))}</small><br><small>Raised by ${esc(who(p.requestedBy))}</small></td>
+    <td class="r num">${money(p.amount)}</td>
+    <td>${p.autopay?'<small style="display:inline">Auto-debit · no approval needed</small>':[0,1].map(i=>ap[i]?`<div><span class="pill good">✓</span> <small style="display:inline">${esc(who(ap[i].uid))}, ${fmtStamp(ap[i].at)}</small></div>`:`<div><span class="pill neutral">Signatory ${i+1}</span></div>`).join('')}</td>
+    <td>${p.status==='Paid'?`<span class="pill good">Paid</span><br><small>${fmtDate(p.paidOn)}${p.ref?' · '+esc(p.ref):''}</small>`:p.status==='Approved'?'<span class="pill info">Approved</span>':p.status==='Rejected'?`<span class="pill bad">Rejected</span>${p.rejectReason?`<br><small>${esc(p.rejectReason)}</small>`:''}`:'<span class="pill warn">Pending approval</span>'}</td>
+    <td class="acts">${fileBtn(p,'Invoice')} ${C(p.status==='Pending approval'?`<button class="btn small primary" data-act="payApprove" data-id="${p.id}">Approve</button> <button class="btn small danger" data-act="payReject" data-id="${p.id}">Reject</button>`:p.status==='Approved'?`<button class="btn small primary" data-act="payPaid" data-id="${p.id}">Mark paid</button>`:'')} ${C(p.status!=='Paid'?`<button class="btn small danger" data-act="crud" data-op="del" data-col="payments" data-id="${p.id}">Delete</button>`:'')}</td></tr>`}).join('')}</tbody></table></div>`:emptyCard('Nothing here',UI.payStatus==='Awaiting'?'No payments are waiting for approval.':'No payments in this list.')}`;
+}
+
+/* =========== FIXED DEPOSITS =========== */
+const fdProgress=f=>{if(!f.start||!f.maturity)return 0;const a=new Date(f.start),b=new Date(f.maturity),n=new Date();return Math.max(0,Math.min(100,Math.round((n-a)/(b-a)*100)))};
+const fdYearlyInterest=f=>(+f.principal||0)*(+f.rate||0)/100;
+function vFds(){
+  const sts=['Active','Matured','Renewed','Closed','All'];
+  const list=byDateAsc(S.fds.filter(f=>UI.fdStatus==='All'||f.status===UI.fdStatus),'maturity');
+  const act=activeFDs(),next=byDateAsc(act,'maturity')[0],in90=act.filter(f=>daysUntil(f.maturity)<=90);
+  REPORT={title:`Fixed deposits (${UI.fdStatus})`,cols:['Bank','Branch','FD ref','Held by','Nominee','Principal','Rate %','Interest','Start','Maturity','Maturity amount','Auto-renew','Status'],rows:list.map(f=>[f.bank,f.branch||'',f.fdRef?'XXXX'+f.fdRef:'',f.holder||'',f.nominee||'',moneyPlain(f.principal),f.rate||'',f.payout||'',fmtDate(f.start),fmtDate(f.maturity),moneyPlain(f.maturityAmount),f.autoRenew?'Yes':'No',f.status])};
+  return head('Investments','Fixed deposits','Every society FD with its maturity date. You’re reminded 30 days before each one matures, and it shows in Upcoming payments and the weekly summary.',addBtn('fds','Add FD'))+
+  `<div class="kpis"><div class="kpi"><span>Active FDs</span><b>${act.length}</b><small>${S.fds.length} on record</small></div>
+  <div class="kpi"><span>Total invested</span><b>${money(sum(act,'principal'))}</b><small>Principal in active FDs</small></div>
+  <div class="kpi"><span>Total at maturity</span><b>${money(sum(act,'maturityAmount'))}</b><small>Interest ≈ ${money(act.reduce((t,f)=>t+fdYearlyInterest(f),0))} a year</small></div>
+  <div class="kpi"><span>Maturing · 90 days</span><b>${in90.length} · ${money(sum(in90,'maturityAmount'))}</b><small>${next?'Next: '+fmtDate(next.maturity)+', '+esc(next.bank):'No active FDs'}</small></div></div>
+  <div class="chips">${sts.map(s=>`<button class="chip" data-act="set" data-k="fdStatus" data-v="${s}" aria-pressed="${UI.fdStatus===s}">${s} <span class="num">${s==='All'?S.fds.length:S.fds.filter(f=>f.status===s).length}</span></button>`).join('')}</div>
+  ${list.length?`<div class="cards">${list.map(f=>{const d=daysUntil(f.maturity),pg=fdProgress(f);return`<div class="card">
+    <div class="row"><h3>${esc(f.bank)}${sampleTag(f)}</h3><span class="pill ${f.status==='Active'?(d<0?'bad':d<=30?'warn':'good'):'neutral'}">${f.status==='Active'?(d<0?'Matured — act now':d<=30?`Matures in ${d} day${d===1?'':'s'}`:'Active'):esc(f.status)}</span></div>
+    <div class="row"><span class="num" style="font-size:22px">${money(f.principal)}</span><span class="muted" style="font-size:14px">→ <span class="num">${money(f.maturityAmount)}</span> at ${f.rate?esc(f.rate)+'%':'—'}</span></div>
+    ${f.status==='Active'?`<div><div class="bar"><i style="width:${pg}%;background:var(--brass)"></i></div><small class="muted">${fmtDate(f.start)} → ${fmtDate(f.maturity)} · ${pg}% of term done</small></div>`:''}
+    <dl class="kv">${f.branch?`<dt>Branch</dt><dd>${esc(f.branch)}</dd>`:''}${f.fdRef?`<dt>FD number</dt><dd class="num">•••• ${esc(f.fdRef)}</dd>`:''}<dt>Interest</dt><dd>${esc(f.payout||'Cumulative (paid at maturity)')}</dd><dt>On maturity</dt><dd>${f.autoRenew?'Auto-renews':'Needs a decision: renew or close'}</dd>${f.holder?`<dt>Held by</dt><dd>${esc(f.holder)}</dd>`:''}${f.nominee?`<dt>Nominee</dt><dd>${esc(f.nominee)}</dd>`:''}${f.notes?`<dt>Notes</dt><dd>${esc(f.notes)}</dd>`:''}</dl>
+    <div class="row"><span>${fileBtn(f,'Receipt')}</span><span>${C(f.status==='Active'?`<button class="btn small primary" data-act="fdRenew" data-id="${f.id}">Renew</button> <button class="btn small" data-act="fdClose" data-id="${f.id}">Close</button> `:'')}${editDel('fds',f.id)}</span></div></div>`}).join('')}</div>`:emptyCard('No FDs here','Add each fixed deposit with its bank, principal, rate and maturity date.')}`;
+}
+/* =========== STAFF (security / sweepers) =========== */
+function vStaff(role){
+  const staff=S.staff.filter(s=>s.role===role).sort((a,b)=>(a.active===false)-(b.active===false)||String(a.name).localeCompare(b.name));
+  const active=staff.filter(s=>s.active!==false),d=UI.attDate,att=attFor(d),m=d.slice(0,7);
+  const monthDocs=S.attendance.filter(a=>a.id.startsWith(m));
+  const cnt=id=>monthDocs.filter(a=>(a.marks||{})[id]==='P').length;
+  REPORT={title:`${role} staff — ${monthLabel(m)}`,cols:['Name','Phone','Post','Shift','Agency','Monthly pay',`Present (${monthLabel(m)})`,`On ${fmtDate(d)}`,'Status'],rows:staff.map(s=>[s.name,s.phone||'',s.post||'',s.shift||'',s.agency||'',moneyPlain(s.salary),cnt(s.id),({P:'Present',A:'Absent',L:'Leave'})[att[s.id]]||'Not marked',s.active===false?'Left':'Active'])};
+  const isSec=role==='Security';
+  return head('Staff register',isSec?'Security':'Sweepers',isSec?'Guards on roll, their posts and shifts, and daily attendance.':'Housekeeping staff, their areas and daily attendance.',`<input type="date" id="attDate" data-chg="attDate" value="${d}" aria-label="Attendance date">`+C(`<button class="btn primary" data-act="staffNew" data-role="${role}">Add ${isSec?'guard':'sweeper'}</button>`))+
+  `<div class="kpis"><div class="kpi"><span>On roll</span><b>${active.length}</b><small>${staff.length-active.length} left</small></div>
+  <div class="kpi"><span>Present · ${fmtDate(d)}</span><b>${active.filter(s=>att[s.id]==='P').length} / ${active.length}</b><small>${active.filter(s=>!att[s.id]).length} not marked</small></div>
+  <div class="kpi"><span>Monthly wages</span><b>${money(sum(active,'salary'))}</b><small>Active staff</small></div>
+  <div class="kpi"><span>Agencies</span><b>${new Set(active.map(s=>s.agency).filter(Boolean)).size}</b><small>${esc([...new Set(active.map(s=>s.agency).filter(Boolean))].join(', ')||'Direct hires')}</small></div></div>
+  ${staff.length?`<div class="tw"><table class="t"><thead><tr><th>Name</th><th>${isSec?'Post':'Area'} · Shift</th><th>Agency</th><th class="r">Monthly pay</th><th>${fmtDate(d)}</th><th class="r">Present in ${monthLabel(m).split(' ')[0]}</th><th></th></tr></thead><tbody>${staff.map(s=>`<tr class="${s.active===false?'dim':''}"><td><b>${esc(s.name)}</b>${sampleTag(s)}<br><small>${esc(s.phone||'')}${s.idProof?' · ID: '+esc(s.idProof):''}${s.active===false?' · Left':''}</small></td><td>${esc(s.post||'—')}<br><small>${esc(s.shift||'')}</small></td><td>${esc(s.agency||'Direct')}</td><td class="r num">${money(s.salary)}</td>
+  <td>${s.active===false?'—':ME.committee?`<div class="att" role="group" aria-label="Attendance for ${esc(s.name)}">${['P','A','L'].map(k=>`<button class="${k}" aria-pressed="${att[s.id]===k}" data-act="mark" data-id="${s.id}" data-v="${k}" title="${({P:'Present',A:'Absent',L:'Leave'})[k]}">${k}</button>`).join('')}</div>`:(({P:'<span class="pill good">Present</span>',A:'<span class="pill bad">Absent</span>',L:'<span class="pill warn">Leave</span>'})[att[s.id]]||'<span class="pill neutral">Not marked</span>')}</td>
+  <td class="r num">${cnt(s.id)} days</td><td class="acts">${editDel('staff',s.id)}</td></tr>`).join('')}</tbody></table></div>`:emptyCard(`No ${isSec?'guards':'sweepers'} yet`,`Add each ${isSec?'guard':'sweeper'} with their phone, ${isSec?'post':'area'}, shift and pay, then mark attendance daily with P / A / L.`)}`;
+}
+
+/* =========== VENDORS =========== */
+function vVendors(){
+  const list=[...S.vendors].sort((a,b)=>String(a.name).localeCompare(b.name));
+  const paidTo=id=>sum(S.payments.filter(p=>p.vendorId===id&&p.status==='Paid'),'amount');
+  REPORT={title:'Vendors',cols:['Vendor','Service','Contact person','Phone','Email','GSTIN','AMC contracts','Total paid'],rows:list.map(v=>[v.name,v.service||'',v.contact||'',v.phone||'',v.email||'',v.gst||'',S.amc.filter(c=>c.vendorId===v.id).length,moneyPlain(paidTo(v.id))])};
+  return head('Vendor register','Vendors','Agencies and contractors the society works with, their contacts and what’s been paid to them.',addBtn('vendors','Add vendor'))+
+  (list.length?`<div class="tw"><table class="t"><thead><tr><th>Vendor</th><th>Service</th><th>Contact</th><th>GSTIN</th><th class="r">AMCs</th><th class="r">Total paid</th><th></th></tr></thead><tbody>${list.map(v=>`<tr><td><b>${esc(v.name)}</b>${sampleTag(v)}${v.address?`<br><small>${esc(v.address)}</small>`:''}</td><td>${esc(v.service||'')}</td><td>${esc(v.contact||'')}<br><small>${esc([v.phone,v.email].filter(Boolean).join(' · '))}</small></td><td class="num">${esc(v.gst||'—')}</td><td class="r num">${S.amc.filter(c=>c.vendorId===v.id).length}</td><td class="r num">${money(paidTo(v.id))}</td><td class="acts">${editDel('vendors',v.id)}</td></tr>`).join('')}</tbody></table></div>`:emptyCard('No vendors yet','Add your security agency, housekeeping contractor, lift company, plumber and electrician. AMC contracts and payments link to vendors.'));
+}
+
+/* =========== AMC =========== */
+function amcState(c){const d=daysUntil(c.end);if(d===null)return['neutral','No end date'];if(d<0)return['bad','Expired'];if(d<=60)return['warn',`Renew in ${d} days`];return['good','Active']}
+function vAmc(){
+  const list=byDateAsc(S.amc,'end');
+  REPORT={title:'AMC contracts and visits',cols:['Equipment','Vendor','Start','End','Value','Visits/yr','Status','Last visit','Next visit'],rows:list.map(c=>{const vs=S.amcVisits.filter(v=>v.contractId===c.id);const last=byDateDesc(vs.filter(v=>v.status==='Completed'))[0],nx=byDateAsc(vs.filter(v=>v.status==='Scheduled'))[0];return[c.equipment,vendorName(c.vendorId),fmtDate(c.start),fmtDate(c.end),moneyPlain(c.value),c.visitsPerYear||'',amcState(c)[1],last?fmtDate(last.date):'',nx?fmtDate(nx.date)+(nx.time?' '+fmtTime(nx.time):''):'']})};
+  const flow=`<section class="sec" style="margin-bottom:18px"><h2>How AMC reminders run</h2>
+    <div class="flow"><span>Visit scheduled</span><i>→</i><span>Reminder 7 days before</span><i>→</i><span>Visit day</span><i>→</i><span>Engineer details & service report recorded</span><i>→</i><span>Next visit booked automatically</span></div>
+    <div class="flow"><span>Contract end date</span><i>→</i><span>Renewal reminder from 60 days before</span><i>→</i><span>Urgent in the final week</span><i>→</i><span>Expired flag</span></div>
+    <small class="muted">Next visits are spaced by the contract’s visits per year. Missed visits stay flagged as overdue until they’re marked done.</small></section>`;
+  if(!list.length)return head('Annual maintenance contracts','AMC contracts','Lift, fire system, DG set, pumps and CCTV service contracts, with every engineer visit on record.',C(S.vendors.length?'<button class="btn primary" data-act="amcNew">Add AMC contract</button>':''))+flow+emptyCard('No AMC contracts yet',S.vendors.length?'Add each service contract with its start and end dates and how many visits a year it covers. Visits are then scheduled for you.':'Add the vendor in Vendors first, then add the contract here.',C(S.vendors.length?'':'<button class="btn primary" data-act="tab" data-k="vendors">Go to vendors</button>'));
+  return head('Annual maintenance contracts','AMC contracts','Lift, fire system, DG set, pumps and CCTV service contracts, with every engineer visit on record.',C('<button class="btn primary" data-act="amcNew">Add AMC contract</button>'))+flow+
+  `<div class="cards">${list.map(c=>{const[cl,lb]=amcState(c);const vs=byDateDesc(S.amcVisits.filter(v=>v.contractId===c.id));return`<div class="card">
+    <div class="row"><h3>${esc(c.equipment)}${sampleTag(c)}</h3><span class="pill ${cl}">${lb}</span></div>
+    <dl class="kv"><dt>Vendor</dt><dd>${esc(vendorName(c.vendorId)||'—')}</dd><dt>Period</dt><dd>${fmtDate(c.start)} – ${fmtDate(c.end)}</dd><dt>Value</dt><dd class="num">${money(c.value)}</dd><dt>Visits</dt><dd>${c.visitsPerYear?esc(c.visitsPerYear)+' a year':'On call'}</dd>${c.contractNo?`<dt>Contract no.</dt><dd>${esc(c.contractNo)}</dd>`:''}</dl>
+    <div class="row"><b style="font-size:14px">Engineer visits</b>${C(`<button class="btn small" data-act="visitNew" data-id="${c.id}">Add visit</button>`)}</div>
+    ${vs.length?`<ul class="list">${vs.slice(0,5).map(v=>`<li><div class="t"><b>${fmtDate(v.date)}${v.time?', '+fmtTime(v.time):''} · ${esc(v.status)}</b><small>${esc([v.engineer,v.engineerPhone].filter(Boolean).join(' · ')||'Engineer not recorded')}${v.work?' — '+esc(v.work):''}</small></div><span style="white-space:nowrap">${fileBtn(v,'Report')} ${C(v.status==='Scheduled'?`<button class="btn small primary" data-act="visitDone" data-id="${v.id}">Record visit</button>`:`<button class="btn small" data-act="visitEdit" data-id="${v.id}">Edit</button>`)}</span></li>`).join('')}</ul>`:'<p class="empty">No visits recorded.</p>'}
+    <div class="row"><span>${fileBtn(c,'Contract document')}</span><span>${editDel('amc',c.id)}</span></div></div>`}).join('')}</div>`;
+}
+
+/* =========== DOCUMENTS =========== */
+function vDocs(){
+  const cats=['All',...DOC_CATS.filter(c=>S.documents.some(d=>d.category===c))];
+  if(!cats.includes(UI.docCat))UI.docCat='All';
+  const list=byDateDesc(S.documents.filter(d=>UI.docCat==='All'||d.category===UI.docCat));
+  REPORT={title:'Documents',cols:['Title','Category','Dated','Expires','File'],rows:list.map(d=>[d.title,d.category,fmtDate(d.date),d.expiry?fmtDate(d.expiry):'',d.fileName||d.link||''])};
+  const h=head('Document locker','Documents','Bye-laws, minutes, audit reports, insurance policies and property papers in one place. Add an expiry date and it shows up in Reminders.',addBtn('documents','Add document'));
+  if(!S.documents.length)return h+emptyCard('No documents yet','Upload PDFs or photos of scanned papers, or save a link to a file kept in Google Drive or OneDrive.');
+  return h+`<div class="chips">${cats.map(c=>`<button class="chip" data-act="set" data-k="docCat" data-v="${esc(c)}" aria-pressed="${UI.docCat===c}">${esc(c)}</button>`).join('')}</div>
+  <div class="tw"><table class="t"><thead><tr><th>Document</th><th>Category</th><th>Dated</th><th>Expires</th><th></th></tr></thead><tbody>
+  ${list.map(d=>`<tr><td><b>${esc(d.title)}</b>${sampleTag(d)}${d.note?`<br><small>${esc(d.note)}</small>`:''}</td><td>${esc(d.category)}</td><td style="white-space:nowrap">${fmtDate(d.date)}</td><td>${d.expiry?fmtDate(d.expiry)+'<br>'+remPill(d.expiry):'—'}</td><td class="acts">${fileBtn(d,d.assetId?'Open file':'Open link')} ${editDel('documents',d.id)}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+/* =========== HANDOVER =========== */
+function vHandover(){
+  const list=byDateDesc(S.handovers);
+  REPORT={title:'Committee handovers',cols:['Date','Handover','Outgoing','Incoming','Status','Approvals','Checklist done'],rows:list.map(h=>[fmtDate(h.date),h.title,h.outgoing||'',h.incoming||'',h.status,(h.approvals||[]).map(a=>`${a.side}: ${who(a.uid)} ${fmtStamp(a.at)}`).join('; '),`${CHECKLIST.filter(([k])=>(h.checklist||{})[k]).length}/${CHECKLIST.length}`])};
+  const h0=head('Committee records','Committee handover','Hand charge from the outgoing committee to the new one with a checklist, two approvals and a permanent audit trail.',C('<button class="btn primary" data-act="hoNew">Start handover</button>'));
+  if(!list.length)return h0+emptyCard('No handovers yet','When a new committee takes charge after the AGM, start a handover here. The outgoing and incoming representatives each approve it, and every step is recorded.');
+  return h0+list.map(h=>{const ap=h.approvals||[],ck=h.checklist||{},locked=h.status==='Approved';const side=s=>ap.find(a=>a.side===s);return`<section class="sec">
+    <h2><span>${esc(h.title)}${sampleTag(h)}</span><span class="pill ${locked?'good':h.status==='Pending approval'?'warn':'neutral'}">${esc(h.status)}</span></h2>
+    <div class="split"><div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <dl class="kv"><dt>Date</dt><dd>${fmtDate(h.date)}</dd><dt>Outgoing</dt><dd>${esc(h.outgoing||'—')}</dd><dt>Incoming</dt><dd>${esc(h.incoming||'—')}</dd>
+      <dt>Cash in hand</dt><dd class="num">${money(h.cash)}</dd><dt>Bank balance</dt><dd class="num">${money(h.bank)}</dd>${h.snapshot?`<dt>FDs at handover</dt><dd class="num">${h.snapshot.fdCount} · ${money(h.snapshot.fdTotal)}</dd><dt>Dues outstanding</dt><dd class="num">${money(h.snapshot.dues)}</dd>`:''}</dl>
+      <div><b style="font-size:14px">Checklist · ${CHECKLIST.filter(([k])=>ck[k]).length}/${CHECKLIST.length}</b><div class="check" style="margin-top:6px">${CHECKLIST.map(([k,l])=>`<label class="chk"><input type="checkbox" ${ck[k]?'checked':''} ${locked||!ME.committee||h.status!=='Draft'?'disabled':''} data-chg="hoCheck" data-id="${h.id}" data-k="${k}"> ${esc(l)}</label>`).join('')}</div></div>
+      ${h.notes?`<p style="margin:0;white-space:pre-wrap">${esc(h.notes)}</p>`:''}
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">${['Outgoing','Incoming'].map(s=>{const a=side(s);return a?`<span class="pill good">${s} approved · ${esc(who(a.uid))}</span>`:h.status==='Pending approval'?C(`<button class="btn small primary" data-act="hoApprove" data-id="${h.id}" data-side="${s}">Approve as ${s.toLowerCase()}</button>`):`<span class="pill neutral">${s} approval</span>`}).join('')}
+      ${C(h.status==='Draft'?`<button class="btn small primary" data-act="hoSubmit" data-id="${h.id}">Submit for approval</button> <button class="btn small" data-act="hoEdit" data-id="${h.id}">Edit</button>`:'')}</div>
+    </div><div style="min-width:0"><b style="font-size:14px">Audit trail</b><ol class="timeline" style="margin-top:8px">${(h.log||[]).map(l=>`<li>${esc(l.action)}<br><small>${esc(who(l.uid))} · ${fmtStamp(l.at)}</small></li>`).join('')}</ol></div></div></section>`}).join('');
+}
+
+/* =========== AUDIT =========== */
+function vAudit(){
+  const list=S.audit;
+  REPORT={title:'Audit log',cols:['When','Who','Action','Detail'],rows:list.map(a=>[fmtStamp(a.at),who(a.uid),a.action,a.detail||''])};
+  return head('Audit trail','Audit log','Every change made by committee members, newest first. Entries can’t be edited from the register.')+
+  (list.length?`<div class="tw"><table class="t"><thead><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th></tr></thead><tbody>${list.map(a=>`<tr><td style="white-space:nowrap">${fmtStamp(a.at)}</td><td>${esc(who(a.uid))}</td><td><b>${esc(a.action)}</b></td><td>${esc(a.detail||'')}</td></tr>`).join('')}</tbody></table></div>`:emptyCard('No activity yet','Changes made by committee members are recorded here automatically.'));
+}
+
+/* =========== SETTINGS =========== */
+const SET_FIELDS=[
+  {k:'name',label:'Society name',req:1},{k:'regNo',label:'Registration number'},{k:'address',label:'Address',wide:1},
+  {k:'currency',label:'Currency',type:'select',options:['INR','GBP','USD','EUR','AED'],def:'INR'},
+  {k:'monthlyCharge',label:'Standard monthly maintenance',type:'number',hint:'Used when creating bills. A flat can override it.'},
+  {k:'dueDay',label:'Payment due by (day of month)',type:'number',def:10},
+  {k:'openingBalance',label:'Opening fund balance',type:'number',hint:'Money in the society account before you started this register.'},
+  {k:'payInfo',label:'How residents pay maintenance',type:'textarea',wide:1,hint:'Shown in reminder messages, e.g. UPI ID, account name and IFSC.'},
+  {k:'chairman',label:'Chairman'},{k:'secretary',label:'Secretary'},{k:'treasurer',label:'Treasurer'},
+  {k:'otpDemo',label:'Show the OTP sign-in screen (demo) when the register opens',type:'checkbox',wide:1,def:true}];
+function vSettings(){
+  REPORT=null;
+  const sig=S.settings.signatories||[],hasSample=COLS.some(c=>(S[c]||[]).some(x=>x.sample));
+  return head('Settings','Society settings','Details shown across the register, bank signatories and sign-in options.')+
+  `<section class="sec"><form id="setForm" class="setform">${SET_FIELDS.map(f=>fieldHTML(f,S.settings[f.k]??(f.k==='otpDemo'?true:undefined))).join('')}
+  ${C('<div class="field wide"><div><button class="btn primary" type="submit">Save settings</button></div></div>')}</form></section>
+  <section class="sec"><h2>Bank signatories</h2><p class="empty" style="max-width:66ch">Payments need approval from two different people on this list. Each signatory adds themselves while signed in, so approvals are tied to their own account.</p>
+    ${sig.length?`<ul class="list">${sig.map(u=>`<li><div class="t"><b>${esc(who(u))}</b></div>${C(`<button class="btn small danger" data-act="sigRemove" data-id="${u}">Remove</button>`)}</li>`).join('')}</ul>`:''}
+    ${C(ME.id&&!sig.includes(ME.id)?'<p style="margin:10px 0 0"><button class="btn" data-act="sigAdd">Add me as a signatory</button></p>':'')}</section>
+  <section class="sec"><h2>Sign-in and security</h2><div style="max-width:72ch;font-size:14px;display:flex;flex-direction:column;gap:8px">
+    <p style="margin:0"><b>Who can get in:</b> only people signed in to claude.ai whom you’ve shared this register with. Use the Share menu: give committee members <b>Editor</b> access and residents <b>Viewer</b> access. The database enforces this on the server: only Editors can change records, and residents can only raise complaints, upload their own tenant papers and sign.</p>
+    <p style="margin:0"><b>OTP screen</b> <span class="demo">Demo</span> The email/SMS code screen shows how a one-time-code login would look. No message is sent and it doesn’t add protection; the claude.ai sign-in above is what protects the data.</p>
+    <p style="margin:0"><b>Passkey-protected actions:</b> approving payments and handovers, and deleting records, ask for your device passkey (fingerprint, face or PIN) where your browser allows it here, and fall back to a demo one-time code otherwise.</p></div></section>
+  ${hasSample&&ME.committee?`<section class="sec"><h2>Sample records</h2><p class="empty" style="max-width:62ch">Records tagged <span class="sample">Sample</span> were added so you could see how each register works. Remove them when you’re ready to enter your society’s real data.</p><button class="btn danger" data-act="clearSample">Remove all sample records</button></section>`:''}`;
+}
+
+/* =========== render =========== */
+const VIEWS={bills:vBills,dashboard:vDashboard,reminders:vReminders,flats:vFlats,complaints:vComplaints,notices:vNotices,tenant:vTenant,esign:vEsign,maint:vMaint,payments:vPayments,fds:vFds,security:()=>vStaff('Security'),sweepers:()=>vStaff('Sweeper'),vendors:vVendors,amc:vAmc,documents:vDocs,handover:vHandover,audit:vAudit,settings:vSettings};
+function render(){
+  const a=document.activeElement,aid=a&&a.id,sel=a&&a.selectionStart!=null?[a.selectionStart,a.selectionEnd]:null;
+  $('#nav').innerHTML=navHTML();
+  const st=S.settings;$('#brandName').textContent=st.name||'Society Register';$('#brandSub').textContent=st.regNo?'Reg. '+st.regNo:'Housing society office';
+  $('#seal').textContent=((st.name||'S').trim()[0]||'S').toUpperCase();
+  const mb=$('#meBox');if(mode==='db'){mb.hidden=false;mb.innerHTML=`<img src="${esc(ME.avatar)}" alt=""><div><b>${esc(ME.name||'Signed in')}</b><span class="muted">${ME.committee?'Committee':'Resident'}</span></div>`}else mb.hidden=true;
+  if(mode==='loading'){$('#main').innerHTML='<p class="empty">Opening the register…</p>';return}
+  REPORT=null;
+  if(!VIEWS[UI.tab])UI.tab='dashboard';
+  $('#main').innerHTML=VIEWS[UI.tab]();
+  renderGate();
+  if(aid&&!$('#scrim').contains(a)&&!$('#secScrim').contains(a)&&!$('#gate').contains(a)){const el=document.getElementById(aid);if(el&&el!==a){el.focus();if(sel&&el.setSelectionRange)try{el.setSelectionRange(...sel)}catch(e){}}}
+}
+
+/* =========== modal form =========== */
+function fieldHTML(f,v){
+  const id='f_'+f.k,val=v??f.def??'';
+  const lab=`<label for="${id}">${esc(f.label)}${f.req?' <span class="req">*</span>':''}</label>`;let inp;
+  if(f.type==='select')inp=`<select id="${id}" name="${f.k}">${f.options.map(o=>`<option ${o==val?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  else if(f.type==='flat')inp=`<select id="${id}" name="${f.k}">${sortFlats(S.flats).map(x=>`<option value="${x.id}" ${x.id===val?'selected':''}>${esc(flatLabel(x))} · ${esc(x.owner)}</option>`).join('')}</select>`;
+  else if(f.type==='vendor')inp=`<select id="${id}" name="${f.k}">${f.optional?'<option value="">— Not a listed vendor —</option>':''}${[...S.vendors].sort((a,b)=>String(a.name).localeCompare(b.name)).map(x=>`<option value="${x.id}" ${x.id===val?'selected':''}>${esc(x.name)}${x.service?' · '+esc(x.service):''}</option>`).join('')}</select>`;
+  else if(f.type==='textarea')inp=`<textarea id="${id}" name="${f.k}">${esc(val)}</textarea>`;
+  else if(f.type==='checkbox')return`<div class="field ${f.wide?'wide':''}"><label class="chk"><input type="checkbox" id="${id}" name="${f.k}" ${val?'checked':''}> ${esc(f.label)}</label></div>`;
+  else if(f.type==='file'||f.type==='smallfile')inp=`<input type="file" id="${id}" name="${f.k}" accept="${f.type==='smallfile'?'image/*,.pdf':'.pdf,.png,.jpg,.jpeg,.webp,.gif,.csv,.txt'}">`;
+  else inp=`<input type="${f.type||'text'}" id="${id}" name="${f.k}" value="${esc(val)}" ${f.type==='number'?'step="any" min="0" inputmode="decimal"':''}>`;
+  return`<div class="field ${f.wide?'wide':''}">${lab}${inp}${f.hint?`<small>${esc(f.hint)}</small>`:''}</div>`;
+}
+function readFields(form,fields){
+  const o={};for(const f of fields){const el=form.elements[f.k];if(!el)continue;
+    if(f.type==='checkbox')o[f.k]=el.checked;else if(f.type==='file'||f.type==='smallfile')o[f.k]=el.files[0]||null;
+    else if(f.type==='number')o[f.k]=el.value===''?'':+el.value;else o[f.k]=el.value.trim()}
+  return o;
+}
+let modal=null;
+function openForm({title,fields=[],values={},ok='Save',submit,danger,custom,check}){
+  modal={fields,submit,check};$('#mTitle').textContent=title;$('#mBody').innerHTML=custom||fields.map(f=>fieldHTML(f,values[f.k])).join('');
+  $('#mErr').hidden=true;const b=$('#mOk');b.textContent=ok;b.disabled=false;b.classList.toggle('danger',!!danger);
+  $('#scrim').hidden=false;const first=$('#mBody').querySelector('input:not([type=checkbox]),select,textarea');(first||b).focus();
+}
+function confirmBox(title,text,ok,fn){openForm({title,ok,danger:true,submit:fn,custom:`<p style="grid-column:1/-1;margin:0">${text}</p>`});$('#mOk').focus()}
+function closeModal(){$('#scrim').hidden=true;modal=null}
+$('#mForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!modal)return;const vals=readFields(e.target,modal.fields);
+  const miss=modal.fields.find(f=>f.req&&(vals[f.k]===''||vals[f.k]==null));
+  if(miss){$('#mErr').textContent=`${miss.label} is required.`;$('#mErr').hidden=false;return}
+  const b=$('#mOk');b.disabled=true;const old=b.textContent;b.textContent='Saving…';
+  try{const msg=await modal.submit(vals);closeModal();if(msg)toast(msg)}
+  catch(err){b.disabled=false;b.textContent=old;if(err&&err.cancelled){$('#mErr').hidden=true;return}$('#mErr').textContent=writeErr(err);$('#mErr').hidden=false}
+});
+$('#scrim').addEventListener('click',e=>{if(e.target.id==='scrim')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(SEC)ACT.secCancel();else if(modal)closeModal()}});
+let tt;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,2800)}
+
+/* =========== passkey / OTP check =========== */
+let SEC=null;
+const b64e=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+const b64d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function secureCheck(label){
+  if(window.PublicKeyCredential&&navigator.credentials&&lsGet('sr_pk_off')!=='1'){
+    try{
+      const challenge=crypto.getRandomValues(new Uint8Array(32)),stored=lsGet('sr_pk');
+      if(stored){await navigator.credentials.get({publicKey:{challenge,allowCredentials:[{type:'public-key',id:b64d(stored)}],userVerification:'required',timeout:60000}});toast('Confirmed with passkey');return}
+      const cred=await navigator.credentials.create({publicKey:{challenge,rp:{name:'Society Register'},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:ME.name||'committee',displayName:ME.name||'Committee member'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{userVerification:'required'},timeout:60000}});
+      lsSet('sr_pk',b64e(cred.rawId));toast('Passkey set up and confirmed');return;
+    }catch(e){if(e&&(e.name==='SecurityError'||e.name==='NotSupportedError'))lsSet('sr_pk_off','1')}
+  }
+  return otpCheck(label);
+}
+function otpCheck(label){
+  return new Promise((res,rej)=>{
+    const code=String(Math.floor(100000+Math.random()*900000));SEC={code,res,rej};
+    $('#secTitle').textContent='Confirm it’s you';$('#secErr').hidden=true;
+    $('#secBody').innerHTML=`<p style="margin:0 0 10px">${esc(label)} is a protected action. A passkey isn’t available in this browser view, so confirm with a one-time code.</p>
+      <div class="inbox"><span class="demo">Demo</span> In a live system this code would arrive by SMS. Nothing is actually sent.<br><span class="code" style="margin-top:8px">${code}</span></div>
+      <div class="field" style="margin-top:12px"><label for="secCode">Enter the 6-digit code</label><input id="secCode" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>`;
+    $('#secScrim').hidden=false;$('#secCode').focus();
+  });
+}
+
+/* =========== OTP login gate (demo) =========== */
+const GATE={method:'email',dest:'',code:null,err:''};
+function needGate(){return mode==='db'&&S.settingsLoaded&&S.settings.otpDemo!==false&&ssGet('sr_ok')!=='1'}
+function renderGate(){
+  const g=$('#gate');if(!needGate()){g.hidden=true;return}
+  if(!g.hidden&&g.contains(document.activeElement)&&GATE.rendered===JSON.stringify([GATE.method,!!GATE.code,GATE.err]))return;
+  GATE.rendered=JSON.stringify([GATE.method,!!GATE.code,GATE.err]);
+  g.hidden=false;
+  g.innerHTML=`<div class="gatebox"><div class="brand" style="padding:0"><div class="seal">${esc(((S.settings.name||'S')[0]||'S').toUpperCase())}</div><div><b>${esc(S.settings.name||'Society Register')}</b><small>Secure sign-in</small></div></div>
+  <h1>Verify it’s you <span class="demo">Demo</span></h1>
+  <p class="muted" style="margin:0;font-size:14px">You’re signed in to claude.ai${ME.name?' as <b>'+esc(ME.name)+'</b>':''}. This screen demonstrates a one-time-code step; no email or SMS is actually sent.</p>
+  <div class="seg" role="group" aria-label="Send code by"><button data-act="gateMethod" data-v="email" aria-pressed="${GATE.method==='email'}">Email</button><button data-act="gateMethod" data-v="sms" aria-pressed="${GATE.method==='sms'}">SMS</button></div>
+  ${GATE.code?`<div class="inbox"><b>${GATE.method==='email'?'Demo inbox':'Demo SMS'}</b> to ${esc(GATE.dest)}<br>Your ${esc(S.settings.name||'Society Register')} code is <span class="num" style="font-size:18px;letter-spacing:.15em"><b>${GATE.code}</b></span>. It expires in 10 minutes.</div>
+    <div class="field"><label for="gCode">Enter code</label><input id="gCode" class="otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+    <button class="btn primary" data-act="gateVerify">Verify and continue</button><button class="btn link" data-act="gateResend" style="align-self:flex-start">Send a new code</button>`
+  :`<div class="field"><label for="gDest">${GATE.method==='email'?'Email address':'Mobile number'}</label><input id="gDest" type="${GATE.method==='email'?'email':'tel'}" value="${esc(GATE.dest)}" placeholder="${GATE.method==='email'?'you@example.com':'+91 98xxx xxxxx'}"></div>
+    <button class="btn primary" data-act="gateSend">Send code</button>`}
+  ${GATE.err?`<div class="mErr" style="margin:0">${esc(GATE.err)}</div>`:''}
+  ${ME.committee?'<small class="muted">Committee members can turn this screen off in Settings.</small>':''}</div>`;
+  const f=$('#gCode')||$('#gDest');if(f)f.focus();
+}
+
+/* =========== field sets =========== */
+const F={
+  flats:()=>[{k:'wing',label:'Wing / block',hint:'e.g. A'},{k:'number',label:'Flat number',req:1},{k:'owner',label:'Owner name',req:1},{k:'phone',label:'Owner phone',type:'tel'},
+    {k:'email',label:'Owner email',type:'email'},{k:'occupancy',label:'Occupied by',type:'select',options:['Owner','Tenant','Vacant']},{k:'tenant',label:'Tenant name'},{k:'tenantPhone',label:'Tenant phone',type:'tel'},
+    {k:'area',label:'Area (sq ft)',type:'number'},{k:'parking',label:'Parking slot'},{k:'monthlyCharge',label:'Monthly charge override',type:'number',hint:'Leave blank to use the standard charge.'},{k:'notes',label:'Notes',type:'textarea',wide:1}],
+  complaints:()=>[{k:'flatId',label:'Flat',type:'flat',req:1},{k:'category',label:'Category',type:'select',options:CMP_CATS},{k:'title',label:'Complaint',req:1,wide:1},{k:'detail',label:'Details',type:'textarea',wide:1},{k:'date',label:'Raised on',type:'date',def:today()}],
+  notices:()=>[{k:'title',label:'Title',req:1,wide:1},{k:'body',label:'Notice',type:'textarea',req:1,wide:1},{k:'date',label:'Date',type:'date',def:today()},{k:'by',label:'Issued by',def:'Secretary'},{k:'pinned',label:'Pin to top of the board',type:'checkbox',wide:1}],
+  reminders:()=>[{k:'title',label:'Reminder',req:1,wide:1},{k:'date',label:'Due date',type:'date',req:1},{k:'leadDays',label:'Start reminding (days before)',type:'number',def:7},{k:'notes',label:'Notes',type:'textarea',wide:1}],
+  fds:()=>[{k:'bank',label:'Bank',req:1},{k:'branch',label:'Branch'},{k:'fdRef',label:'FD number (last 4 digits)',hint:'Only the last 4 digits are stored.'},{k:'principal',label:'Principal',type:'number',req:1},{k:'rate',label:'Interest rate (%)',type:'number'},{k:'start',label:'Start date',type:'date',req:1,def:today()},{k:'maturity',label:'Maturity date',type:'date',req:1},{k:'maturityAmount',label:'Maturity amount',type:'number',hint:'Leave blank to estimate from the rate.'},{k:'payout',label:'Interest',type:'select',options:FD_PAYOUT},{k:'holder',label:'Held in the name of',hint:'e.g. Society, signed by Chairman & Treasurer'},{k:'nominee',label:'Nominee'},{k:'autoRenew',label:'Auto-renews on maturity',type:'checkbox'},{k:'status',label:'Status',type:'select',options:['Active','Matured','Renewed','Closed']},...fileF('FD receipt'),{k:'notes',label:'Notes',wide:1}],
+  staff:()=>[{k:'name',label:'Full name',req:1},{k:'phone',label:'Phone',type:'tel'},{k:'role',label:'Role',type:'select',options:['Security','Sweeper']},{k:'post',label:'Post / area',hint:'e.g. Main gate, Wing A'},{k:'shift',label:'Shift',type:'select',options:['Day (8am–8pm)','Night (8pm–8am)','Morning (6am–2pm)','Evening (2pm–10pm)','General']},{k:'agency',label:'Agency',hint:'Leave blank if hired directly'},{k:'salary',label:'Monthly pay',type:'number'},{k:'joined',label:'Joined on',type:'date'},{k:'idProof',label:'ID proof on file',hint:'e.g. Aadhaar seen, police verified'},{k:'active',label:'Currently working here',type:'checkbox',def:true}],
+  vendors:()=>[{k:'name',label:'Vendor name',req:1},{k:'service',label:'Service',hint:'e.g. Lift maintenance'},{k:'contact',label:'Contact person'},{k:'phone',label:'Phone',type:'tel'},{k:'email',label:'Email',type:'email'},{k:'gst',label:'GSTIN'},{k:'address',label:'Address',wide:1},{k:'notes',label:'Notes',wide:1}],
+  amc:()=>[{k:'equipment',label:'Equipment',type:'select',options:EQUIP},{k:'vendorId',label:'Vendor',type:'vendor',req:1},{k:'contractNo',label:'Contract number'},{k:'value',label:'Contract value',type:'number'},{k:'start',label:'Start date',type:'date',req:1,def:today()},{k:'end',label:'End date',type:'date',req:1,def:addMonths(today(),12)},{k:'visitsPerYear',label:'Service visits per year',type:'number',def:4,hint:'Visits are scheduled automatically at this interval.'},...fileF('Contract document')],
+  documents:()=>[{k:'title',label:'Title',req:1,wide:1},{k:'category',label:'Category',type:'select',options:DOC_CATS},{k:'date',label:'Dated',type:'date',def:today()},{k:'expiry',label:'Expires on',type:'date',hint:'Optional. Reminds you 30 days before.'},...fileF('File'),{k:'note',label:'Note',wide:1}],
+  bills:()=>[{k:'name',label:'Bill name',req:1,wide:1,hint:'e.g. Common area electricity, Lift loan EMI'},{k:'category',label:'Type',type:'select',options:BILL_CATS},{k:'vendorId',label:'Vendor',type:'vendor',optional:1},{k:'payee',label:'Payee (if not a listed vendor)'},
+    {k:'amountSource',label:'Amount',type:'select',options:['Fixed amount','Security staff pay','Sweeper staff pay','All staff pay'],hint:'Staff options total the monthly pay of active staff.'},{k:'amount',label:'Fixed amount',type:'number',hint:'For bills that vary, enter the usual amount.'},
+    {k:'frequency',label:'Repeats',type:'select',options:Object.keys(FREQ),def:'Monthly'},{k:'nextDue',label:'Next due date',type:'date',req:1},{k:'leadDays',label:'Remind (days before)',type:'number',def:7},{k:'autopay',label:'Paid by auto-debit / standing instruction',type:'checkbox'},
+    {k:'lender',label:'Lender (loans only)'},{k:'totalInstalments',label:'Total EMIs (loans only)',type:'number'},{k:'paidInstalments',label:'EMIs already paid',type:'number'},{k:'notes',label:'Notes',wide:1}],
+  kyc:()=>[],esign:()=>[],payments:()=>[]
+};
+function fileF(label){return[...(assets?[{k:'file',label:`Upload ${label.toLowerCase()}`,type:'file',wide:1,hint:'PDF or photo, up to 20 MB.'}]:[]),{k:'link',label:assets?'Or paste a link':`Link to ${label.toLowerCase()}`,type:'url',wide:1,hint:'Google Drive, OneDrive or Dropbox share link.'}]}
+const LABEL={bills:x=>`${x.name} (${x.frequency||''})`,flats:x=>`Flat ${flatLabel(x)} (${x.owner})`,complaints:x=>x.title,notices:x=>x.title,reminders:x=>x.title,fds:x=>`${x.bank} FD ${moneyPlain(x.principal)}`,staff:x=>`${x.name} (${x.role})`,vendors:x=>x.name,amc:x=>`${x.equipment} AMC`,documents:x=>x.title,kyc:x=>`${x.type} for flat ${flatLabel(flatById(x.flatId))}`,esign:x=>x.title,payments:x=>`${moneyPlain(x.amount)} to ${x.payee||vendorName(x.vendorId)}`,reminders2:x=>x.title};
+const NOUN={bills:'recurring bill',flats:'flat',complaints:'complaint',notices:'notice',reminders:'reminder',fds:'fixed deposit',staff:'staff member',vendors:'vendor',amc:'AMC contract',documents:'document',kyc:'tenant document',esign:'signing request',payments:'payment'};
+const SENSITIVE_DEL=new Set(['flats','payments','fds','esign','kyc','documents','amc','vendors']);
+function prep(col,v,old){
+  if(col==='fds'&&v.fdRef)v.fdRef=String(v.fdRef).replace(/\D/g,'').slice(-4);
+  if(col==='fds'&&v.maturityAmount===''&&v.principal&&v.payout&&!/^Cumulative/.test(v.payout))v.maturityAmount=v.principal;
+  if(col==='fds'&&v.maturityAmount===''&&v.principal&&v.rate&&v.start&&v.maturity){const yrs=Math.max(0,(new Date(v.maturity)-new Date(v.start))/31557600000);v.maturityAmount=Math.round(v.principal*Math.pow(1+v.rate/400,4*yrs))}
+  if(col==='complaints'&&!old)v.status='Open';
+  return v;
+}
+const CRUD={
+  async add(col){openForm({title:`Add ${NOUN[col]}`,fields:F[col](),ok:'Save',submit:async v=>{const rec=prep(col,await withFile(v),null);const id=await store.add(col,rec);if(col==='amc')await autoSchedule(id,rec);await log(`Added ${NOUN[col]}`,LABEL[col](rec));return`${NOUN[col][0].toUpperCase()+NOUN[col].slice(1)} added`}})},
+  async edit(col,id){const x=by(col,id);openForm({title:`Edit ${NOUN[col]}`,fields:F[col](),values:x,submit:async v=>{const rec=prep(col,await withFile(v,x),x);await store.set(col,id,{...strip(x),...rec});await log(`Edited ${NOUN[col]}`,LABEL[col]({...x,...rec}));return'Saved'}})},
+  async del(col,id){const x=by(col,id);confirmBox(`Delete this ${NOUN[col]}?`,`${esc(LABEL[col](x))} will be removed for everyone.${col==='flats'?' Its maintenance bills will be removed too.':''} This can’t be undone.`,'Delete',async()=>{
+    if(SENSITIVE_DEL.has(col))await secureCheck(`Deleting a ${NOUN[col]}`);
+    if(col==='flats')for(const d of S.dues.filter(d=>d.flatId===id))await store.del('dues',d.id);
+    if(col==='amc')for(const v of S.amcVisits.filter(v=>v.contractId===id))await store.del('amcVisits',v.id);
+    if(col==='esign')for(const s of S.signatures.filter(s=>s.requestId===id))await store.del('signatures',s.id);
+    await store.del(col,id);if(x.assetId&&assets){try{await assets.delete(x.assetId)}catch(e){}}
+    await log(`Deleted ${NOUN[col]}`,LABEL[col](x));return'Deleted'})}
+};
+async function autoSchedule(contractId,c){
+  const n=+c.visitsPerYear;if(!n||!c.start)return;const step=Math.max(1,Math.round(12/n));let d=c.start;
+  while(d<today())d=addMonths(d,step);
+  if(c.end&&d>c.end)return;
+  await store.add('amcVisits',{contractId,date:d,time:'10:00',status:'Scheduled',auto:true});
+}
+
+/* =========== actions =========== */
+const ACT={
+  tab:d=>{UI.tab=d.k;lsSet('sr_tab',d.k);render();window.scrollTo(0,0)},
+  set:d=>{UI[d.k]=d.v;render()},
+  closeModal,
+  crud:d=>CRUD[d.op](d.col,d.id),
+  export:d=>exportReport(d.k),
+  /* maintenance */
+  genBills:async()=>{const m=UI.month,have=new Set(S.dues.filter(d=>d.month===m).map(d=>d.flatId)),miss=S.flats.filter(f=>!have.has(f.id)),rate=+S.settings.monthlyCharge||0;
+    if(!rate&&miss.some(f=>!f.monthlyCharge)){toast('Set the standard monthly charge in Settings first');UI.tab='settings';render();return}
+    try{for(const f of miss)await store.set('dues',`${f.id}_${m}`,{flatId:f.id,month:m,amount:+(f.monthlyCharge||rate),paid:false});await log('Created maintenance bills',`${miss.length} bills for ${monthLabel(m)}`);toast(`${miss.length} bills created for ${monthLabel(m)}`)}catch(e){toast(writeErr(e))}},
+  billOne:async d=>{const f=flatById(d.id),amt=+(f.monthlyCharge||S.settings.monthlyCharge||0);if(!amt){toast('Set the standard monthly charge in Settings first');return}
+    try{await store.set('dues',`${f.id}_${UI.month}`,{flatId:f.id,month:UI.month,amount:amt,paid:false});await log('Created maintenance bill',`Flat ${flatLabel(f)}, ${monthLabel(UI.month)}`);toast(`Bill created for ${flatLabel(f)}`)}catch(e){toast(writeErr(e))}},
+  pay:d=>{const x=by('dues',d.id),f=flatById(x.flatId);openForm({title:`Payment from ${flatLabel(f)}`,ok:'Record payment',
+    fields:[{k:'amount',label:'Amount received',type:'number',req:1},{k:'paidOn',label:'Received on',type:'date',req:1,def:today()},{k:'mode',label:'Mode',type:'select',options:PAY_MODES},{k:'ref',label:'Receipt / transaction ref'}],
+    values:{amount:x.amount},submit:async v=>{await store.set('dues',x.id,{...strip(x),...v,paid:true});await log('Recorded maintenance payment',`Flat ${flatLabel(f)}, ${monthLabel(x.month)}, ${moneyPlain(v.amount)} by ${v.mode}`);return`Payment recorded for ${flatLabel(f)}`}})},
+  unpay:async d=>{const x=by('dues',d.id);try{const c=strip(x);delete c.paidOn;delete c.mode;delete c.ref;await store.set('dues',x.id,{...c,paid:false});await log('Marked maintenance unpaid',`Flat ${flatLabel(flatById(x.flatId))}, ${monthLabel(x.month)}`);toast('Marked as unpaid')}catch(e){toast(writeErr(e))}},
+  editDue:d=>{const x=by('dues',d.id),f=flatById(x.flatId);openForm({title:`Bill for ${flatLabel(f)} · ${monthLabel(x.month)}`,fields:[{k:'amount',label:'Bill amount',type:'number',req:1},{k:'note',label:'Note',wide:1,hint:'e.g. includes sinking fund or late fee'}],values:x,
+    submit:async v=>{await store.set('dues',x.id,{...strip(x),...v});await log('Edited maintenance bill',`Flat ${flatLabel(f)}, ${monthLabel(x.month)}, ${moneyPlain(v.amount)}`);return'Bill updated'}})},
+  /* payments */
+  payNew:(d,pre,after)=>openForm({title:'Raise payment',ok:'Send for approval',values:pre||{},fields:[{k:'vendorId',label:'Vendor',type:'vendor',optional:1},{k:'payee',label:'Payee name',hint:'Fill in if the payee isn’t a listed vendor.'},{k:'purpose',label:'Purpose',req:1,wide:1},{k:'category',label:'Category',type:'select',options:PAY_CATS},{k:'amount',label:'Amount',type:'number',req:1},{k:'mode',label:'Pay by',type:'select',options:OUT_MODES},{k:'chequeNo',label:'Cheque / UTR no.'},{k:'date',label:'Date',type:'date',def:today()},...fileF('Invoice')],
+    submit:async v=>{if(!v.vendorId&&!v.payee)throw fail('Choose a vendor or type the payee name.');const rec=await withFile(v);if(!rec.payee)rec.payee=vendorName(rec.vendorId);Object.assign(rec,{status:'Pending approval',approvals:[],requestedBy:ME.id,requestedAt:new Date().toISOString()});await store.add('payments',rec);await log('Raised payment',`${moneyPlain(rec.amount)} to ${rec.payee} — ${rec.purpose}`);if(after)await after();return'Sent for approval'}}),
+  payApprove:async d=>{const p=by('payments',d.id),ap=p.approvals||[],sig=S.settings.signatories||[];
+    if(!ME.id&&mode==='db'){toast('Sign in to approve payments');return}
+    if(sig.length&&!sig.includes(ME.id)){toast('Only bank signatories can approve. Add yourself in Settings if you are one.');return}
+    if(ap.some(a=>a.uid===ME.id)){toast('You’ve already approved this. A second, different signatory must approve.');return}
+    try{await secureCheck(`Approving ${money(p.amount)} to ${p.payee}`)}catch(e){return}
+    const n=[...ap,{uid:ME.id,at:new Date().toISOString()}];
+    try{await store.set('payments',p.id,{...strip(p),approvals:n,status:n.length>=2?'Approved':'Pending approval'});await log(`Approved payment (${n.length}/2)`,`${moneyPlain(p.amount)} to ${p.payee}`);toast(n.length>=2?'Fully approved. It can now be paid.':'Approved. Waiting for the second signatory.')}catch(e){toast(writeErr(e))}},
+  payReject:d=>{const p=by('payments',d.id);openForm({title:'Reject payment',ok:'Reject',danger:true,fields:[{k:'reason',label:'Reason',req:1,wide:1}],submit:async v=>{await secureCheck('Rejecting a payment');await store.set('payments',p.id,{...strip(p),status:'Rejected',rejectReason:v.reason,rejectedBy:ME.id});await log('Rejected payment',`${moneyPlain(p.amount)} to ${p.payee}: ${v.reason}`);return'Payment rejected'}})},
+  payPaid:d=>{const p=by('payments',d.id);openForm({title:`Mark paid · ${money(p.amount)}`,ok:'Mark paid',fields:[{k:'paidOn',label:'Paid on',type:'date',req:1,def:today()},{k:'ref',label:'Cheque / UTR / reference',def:p.chequeNo||''}],submit:async v=>{await store.set('payments',p.id,{...strip(p),...v,status:'Paid',paidBy:ME.id});await log('Marked payment paid',`${moneyPlain(p.amount)} to ${p.payee}, ref ${v.ref||'—'}`);return'Marked as paid'}})},
+  fdRenew:d=>{const f=by('fds',d.id),cum=!f.payout||/^Cumulative/.test(f.payout);let months=12;if(f.start&&f.maturity){const a=f.start.split('-').map(Number),b=f.maturity.split('-').map(Number);months=Math.max(1,(b[0]-a[0])*12+(b[1]-a[1]))}
+    const start=f.maturity&&f.maturity>today()?f.maturity:today();
+    openForm({title:`Renew ${f.bank} FD`,ok:'Renew FD',fields:F.fds().filter(x=>!['status','file','link'].includes(x.k)),values:{...f,principal:cum?(+f.maturityAmount||+f.principal):+f.principal,start,maturity:addMonths(start,months),maturityAmount:''},
+      submit:async v=>{const rec=prep('fds',{...v,status:'Active',renewedFrom:f.id},null);const id=await store.add('fds',rec);await store.set('fds',f.id,{...strip(f),status:'Renewed',renewedInto:id,closedOn:today()});await log('Renewed FD',`${f.bank} ${moneyPlain(f.principal)} → ${moneyPlain(rec.principal)} until ${fmtDate(rec.maturity)}`);return`FD renewed until ${fmtDate(rec.maturity)}`}})},
+  fdClose:d=>{const f=by('fds',d.id);openForm({title:`Close ${f.bank} FD`,ok:'Close FD',danger:true,fields:[{k:'closedOn',label:'Closed on',type:'date',def:today(),req:1},{k:'closedAmount',label:'Amount credited',type:'number',req:1},{k:'closeNote',label:'Note',wide:1,hint:'e.g. credited to society savings account'}],values:{closedAmount:f.maturityAmount},
+    submit:async v=>{await secureCheck('Closing a fixed deposit');await store.set('fds',f.id,{...strip(f),...v,status:'Closed'});await log('Closed FD',`${f.bank} ${moneyPlain(v.closedAmount)} credited ${fmtDate(v.closedOn)}`);return'FD closed'}})},
+  billPay:d=>{const b=by('bills',d.id);ACT.payNew(null,{vendorId:b.vendorId||'',payee:b.payee||vendorName(b.vendorId)||'',purpose:`${b.name} — due ${fmtDate(b.nextDue)}`,category:PAY_CATS.includes(b.category)?b.category:'Other',amount:billAmount(b),date:today()},()=>advanceBill(b,'payment raised for approval'))},
+  billAuto:d=>{const b=by('bills',d.id);openForm({title:`Auto-debit · ${b.name}`,ok:'Record',values:{amount:billAmount(b),paidOn:b.nextDue<=today()?b.nextDue:today()},fields:[{k:'amount',label:'Amount debited',type:'number',req:1},{k:'paidOn',label:'Debited on',type:'date',req:1},{k:'ref',label:'Bank reference'}],
+    submit:async v=>{await store.add('payments',{vendorId:b.vendorId||'',payee:b.payee||vendorName(b.vendorId)||b.name,purpose:`${b.name} — due ${fmtDate(b.nextDue)}`,category:PAY_CATS.includes(b.category)?b.category:'Other',amount:v.amount,mode:'Auto-debit',date:v.paidOn,paidOn:v.paidOn,ref:v.ref,status:'Paid',autopay:true,approvals:[],requestedBy:ME.id,requestedAt:new Date().toISOString()});await advanceBill(b,'auto-debit recorded');return'Auto-debit recorded'}})},
+  billSkip:d=>{const b=by('bills',d.id);confirmBox('Mark as paid elsewhere?',`${esc(b.name)} due ${fmtDate(b.nextDue)} will be moved to its next due date. Nothing is added to the payments book, so the society fund won’t change.`,'Mark paid',async()=>{await advanceBill(b,'marked paid outside the register');return'Moved to next due date'})},
+  dueMsg:d=>{const f=flatById(d.id);openMsg(`Reminder for flat ${flatLabel(f)}`,duesMsg(f),[f.phone&&`Owner ${f.owner}: ${f.phone}`,f.tenantPhone&&`Tenant ${f.tenant}: ${f.tenantPhone}`].filter(Boolean).join(' · '))},
+  dueMsgAll:()=>{const fl=sortFlats(S.flats).filter(f=>S.dues.some(x=>x.flatId===f.id&&!x.paid));openMsg(`Reminders for ${fl.length} flats`,fl.map(f=>`${flatLabel(f)} · ${f.owner}${f.phone?' · '+f.phone:''}\n${duesMsg(f)}`).join('\n\n────────\n\n'),'Send each message to the number above it.')},
+  copyMsg:()=>{const ta=$('#msgText');const ok=()=>toast('Copied');try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.focus();ta.select();toast('Press Ctrl+C or long-press to copy')})}catch(e){ta.focus();ta.select();toast('Press Ctrl+C or long-press to copy')}},
+  sigAdd:async()=>{try{await store.set('settings','main',{...strip(S.settings),signatories:[...(S.settings.signatories||[]),ME.id]});await log('Added bank signatory',ME.name||'');toast('You’re now a bank signatory')}catch(e){toast(writeErr(e))}},
+  sigRemove:d=>confirmBox('Remove signatory?',`${esc(who(d.id))} will no longer be able to approve payments.`,'Remove',async()=>{await secureCheck('Changing bank signatories');await store.set('settings','main',{...strip(S.settings),signatories:(S.settings.signatories||[]).filter(u=>u!==d.id)});await log('Removed bank signatory',who(d.id));return'Signatory removed'}),
+  /* staff */
+  staffNew:d=>openForm({title:`Add ${d.role==='Security'?'guard':'sweeper'}`,fields:F.staff(),values:{role:d.role},submit:async v=>{await store.add('staff',v);await log('Added staff member',`${v.name} (${v.role})`);return'Staff member added'}}),
+  mark:async d=>{const day=UI.attDate,cur=attFor(day),marks={...cur};marks[d.id]=cur[d.id]===d.v?null:d.v;if(!marks[d.id])delete marks[d.id];
+    try{await store.set('attendance',day,{marks})}catch(e){toast(writeErr(e))}},
+  /* amc */
+  amcNew:()=>CRUD.add('amc'),
+  visitNew:d=>{const c=by('amc',d.id);openForm({title:`Visit · ${c.equipment}`,fields:visitF(),values:{status:'Scheduled'},submit:async v=>{const rec=await withFile(v);rec.contractId=c.id;await store.add('amcVisits',rec);await log('Added AMC visit',`${c.equipment}, ${rec.date}`);return'Visit saved'}})},
+  visitDone:d=>{const v0=by('amcVisits',d.id),c=by('amc',v0.contractId);openForm({title:`Record visit · ${c.equipment}`,ok:'Save visit',fields:visitF(),values:{...v0,status:'Completed'},submit:async v=>{const rec={...strip(v0),...await withFile(v,v0)};await store.set('amcVisits',v0.id,rec);let msg='Visit recorded';
+    if(rec.status==='Completed'&&+c.visitsPerYear&&!S.amcVisits.some(x=>x.contractId===c.id&&x.status==='Scheduled'&&x.id!==v0.id)){const nx=addMonths(rec.date,Math.max(1,Math.round(12/c.visitsPerYear)));if(!c.end||nx<=c.end){await store.add('amcVisits',{contractId:c.id,date:nx,time:rec.time||'10:00',status:'Scheduled',auto:true});msg=`Visit recorded. Next visit booked for ${fmtDate(nx)}`}else msg='Visit recorded. The contract ends before the next visit is due, so renew it to keep visits going.'}
+    await log('Recorded AMC visit',`${c.equipment}, ${rec.date}${rec.engineer?' by '+rec.engineer:''}`);return msg}})},
+  visitEdit:d=>{const v0=by('amcVisits',d.id),c=by('amc',v0.contractId);openForm({title:`Edit visit · ${c.equipment}`,fields:visitF(),values:v0,submit:async v=>{await store.set('amcVisits',v0.id,{...strip(v0),...await withFile(v,v0)});await log('Edited AMC visit',`${c.equipment}, ${v.date}`);return'Visit updated'}})},
+  remDone:async d=>{const r=by('reminders',d.id);try{await store.set('reminders',r.id,{...strip(r),done:!r.done});toast(r.done?'Reopened':'Marked done')}catch(e){toast(writeErr(e))}},
+  /* tenant docs */
+  tenantUpload:()=>openForm({title:'Upload tenant document',ok:'Upload',fields:[{k:'flatId',label:'Flat',type:'flat',req:1},{k:'tenantName',label:'Tenant name',req:1},{k:'type',label:'Document',type:'select',options:TENANT_TYPES},{k:'file',label:'Photo or PDF',type:'smallfile',req:1,wide:1,hint:'Photos are shrunk automatically. PDFs must be under 170 KB.'},{k:'note',label:'Note',wide:1}],
+    submit:async v=>{const file=v.file;delete v.file;const dataUrl=await smallDataUrl(file);const rec={...v,fileName:file.name,dataUrl,date:today()};
+      if(ME.committee||mode==='local'){rec.status='Verified';rec.uploadedBy=ME.id;await store.add('kyc',rec);await log('Added tenant document',`${v.type} for flat ${flatLabel(flatById(v.flatId))}`);return'Document saved'}
+      rec.status='Awaiting review';await store.add(`tenantdocs/${ME.id}/files`,rec);
+      await store.set('tenantdocs',ME.id,{flatId:v.flatId,tenantName:v.tenantName,updated:today(),count:S.myFiles.length+1});return'Uploaded. The committee will review it.'}}),
+  loadTenant:async d=>{try{const s=await db.collection(`tenantdocs/${d.uid}/files`).get();FILES[d.uid]=s.docs.map(x=>({id:x.id,...x.data()}));render()}catch(e){toast('Couldn’t load those files. Try again.')}},
+  verifyFile:async d=>{const f=(FILES[d.uid]||[]).find(x=>x.id===d.id);try{const rec={...strip(f),status:d.v,reviewedBy:ME.id,reviewedAt:new Date().toISOString()};await db.collection(`tenantdocs/${d.uid}/files`).doc(d.id).set(rec);Object.assign(f,rec);await log(`${d.v==='Verified'?'Verified':'Rejected'} tenant document`,`${f.type} for flat ${flatLabel(flatById(f.flatId))}`);render();toast(d.v==='Verified'?'Marked verified':'Marked for re-upload')}catch(e){toast(writeErr(e))}},
+  viewFile:d=>{const f=d.src==='mine'?S.myFiles.find(x=>x.id===d.id):d.src==='kyc'?by('kyc',d.id):(FILES[d.uid]||[]).find(x=>x.id===d.id);if(!f)return;
+    const isImg=/^data:image\//.test(f.dataUrl||'');VIEWING=f;
+    openForm({title:f.type,ok:'Close',submit:async()=>{},custom:`<div style="grid-column:1/-1;display:flex;flex-direction:column;gap:10px"><small class="muted">${esc(f.tenantName||'')} · flat ${esc(flatLabel(flatById(f.flatId)))} · ${fmtDate(f.date)}</small>${isImg?`<img src="${esc(f.dataUrl)}" alt="${esc(f.type)}" style="border:1px solid var(--line);border-radius:8px">`:'<p style="margin:0">This is a PDF. Download it to open.</p>'}<div><button type="button" class="btn" data-act="saveViewing">Download file</button></div></div>`})},
+  saveViewing:()=>{if(VIEWING)saveFile(VIEWING.fileName||'document',dataUrlToBlob(VIEWING.dataUrl))},
+  /* e-sign */
+  esignNew:()=>openForm({title:'New signing request',ok:'Create request',fields:[{k:'title',label:'Document title',req:1,wide:1,hint:'e.g. Leave & licence agreement 2026–27'},{k:'flatId',label:'Flat',type:'flat',req:1},{k:'ownerName',label:'Owner’s name',hint:'Defaults to the owner on record.'},{k:'tenantName',label:'Tenant’s name',hint:'Leave blank if only the owner signs.'},...fileF('Document to sign'),{k:'date',label:'Date',type:'date',def:today()}],
+    submit:async v=>{const f=flatById(v.flatId);const rec=await withFile(v);const parties=[{role:'Owner',name:rec.ownerName||f.owner}];const tn=rec.tenantName||(f.occupancy==='Tenant'?f.tenant:'');if(tn)parties.push({role:'Tenant',name:tn});delete rec.ownerName;delete rec.tenantName;rec.parties=parties;await store.add('esign',rec);await log('Created signing request',`${rec.title}, flat ${flatLabel(f)}`);return'Signing request created'}}),
+  esignSign:d=>openSign(d.id,d.role),
+  padClear:()=>{const c=$('#sgPad');if(c){c.getContext('2d').clearRect(0,0,c.width,c.height);PAD.drawn=false}},
+  esignCert:d=>certificate(d.id),
+  /* handover */
+  hoNew:()=>openForm({title:'Start committee handover',ok:'Create draft',fields:hoF(),values:{title:`Committee handover ${new Date().getFullYear()}`},submit:async v=>{const rec={...v,status:'Draft',checklist:{},approvals:[],log:[{at:new Date().toISOString(),uid:ME.id,action:'Draft created'}]};await store.add('handovers',rec);await log('Started committee handover',v.title);return'Handover draft created'}}),
+  hoEdit:d=>{const h=by('handovers',d.id);openForm({title:'Edit handover',fields:hoF(),values:h,submit:async v=>{await store.set('handovers',h.id,{...strip(h),...v,log:[...(h.log||[]),{at:new Date().toISOString(),uid:ME.id,action:'Details edited'}]});await log('Edited handover',h.title);return'Saved'}})},
+  hoSubmit:d=>{const h=by('handovers',d.id),done=CHECKLIST.filter(([k])=>(h.checklist||{})[k]).length;confirmBox('Submit for approval?',`The handover details and checklist (${done}/${CHECKLIST.length} done) will be locked and the current fund, FD and dues figures recorded. Then the outgoing and incoming representatives each approve.`,'Submit',async()=>{const fds=activeFDs();await store.set('handovers',h.id,{...strip(h),status:'Pending approval',snapshot:{fund:fundBalance(),fdCount:fds.length,fdTotal:sum(fds,'principal'),dues:sum(S.dues.filter(x=>!x.paid),'amount')},log:[...(h.log||[]),{at:new Date().toISOString(),uid:ME.id,action:`Submitted for approval (${done}/${CHECKLIST.length} checklist items)`}]});await log('Submitted handover for approval',h.title);return'Submitted for approval'})},
+  hoApprove:async d=>{const h=by('handovers',d.id),ap=h.approvals||[];
+    if(ap.some(a=>a.uid===ME.id)){toast('You’ve already approved this handover. The other side must be approved by a different person.');return}
+    try{await secureCheck(`Approving the handover as ${d.side.toLowerCase()} committee`)}catch(e){return}
+    const n=[...ap,{uid:ME.id,side:d.side,at:new Date().toISOString()}],full=n.length>=2;
+    try{await store.set('handovers',h.id,{...strip(h),approvals:n,status:full?'Approved':'Pending approval',log:[...(h.log||[]),{at:new Date().toISOString(),uid:ME.id,action:`Approved as ${d.side.toLowerCase()} committee`},...(full?[{at:new Date().toISOString(),uid:ME.id,action:'Handover complete and locked'}]:[])]});await log(`Approved handover (${d.side})`,h.title);toast(full?'Handover approved and locked':'Approved. Waiting for the other side.')}catch(e){toast(writeErr(e))}},
+  /* gate */
+  gateMethod:d=>{GATE.method=d.v;GATE.code=null;GATE.err='';GATE.rendered='';renderGate()},
+  gateSend:()=>{const v=($('#gDest')||{}).value||'';const ok=GATE.method==='email'?/^\S+@\S+\.\S+$/.test(v):v.replace(/\D/g,'').length>=10;
+    if(!ok){GATE.err=GATE.method==='email'?'Enter a valid email address.':'Enter a 10-digit mobile number.';GATE.rendered='';renderGate();return}
+    GATE.dest=v;GATE.code=String(Math.floor(100000+Math.random()*900000));GATE.err='';GATE.rendered='';renderGate()},
+  gateResend:()=>{GATE.code=String(Math.floor(100000+Math.random()*900000));GATE.err='';GATE.rendered='';renderGate()},
+  gateVerify:()=>{const v=($('#gCode')||{}).value||'';if(v.trim()===GATE.code){ssSet('sr_ok','1');$('#gate').hidden=true;toast('Verified');render()}else{GATE.err='That code doesn’t match. Check it and try again.';GATE.rendered='';renderGate()}},
+  secVerify:()=>{if(!SEC)return;const v=($('#secCode')||{}).value||'';if(v.trim()===SEC.code){const r=SEC.res;SEC=null;$('#secScrim').hidden=true;r()}else{$('#secErr').textContent='That code doesn’t match.';$('#secErr').hidden=false}},
+  secCancel:()=>{if(!SEC)return;const r=SEC.rej;SEC=null;$('#secScrim').hidden=true;const e=new Error('cancelled');e.cancelled=true;r(e)},
+  clearSample:()=>confirmBox('Remove sample records?','Every record tagged Sample will be deleted. Your own entries stay.','Remove samples',async()=>{for(const c of COLS)for(const x of (S[c]||[]).filter(x=>x.sample))await store.del(c,x.id);
+    for(const a of S.attendance.filter(a=>a.sample))await store.del('attendance',a.id);
+    if(S.settings.sample){const c=strip(S.settings);delete c.sample;['name','address','secretary'].forEach(k=>delete c[k]);await store.set('settings','main',c)}
+    await log('Removed sample records');return'Sample records removed'})
+};
+let VIEWING=null;
+async function advanceBill(b,note){const step=FREQ[b.frequency]??1,rec={...strip(b),lastPaid:b.nextDue,paidInstalments:(+b.paidInstalments||0)+1};
+  if(!step)rec.done=true;else rec.nextDue=addMonths(b.nextDue,step);
+  if(b.category==='Loan / EMI'&&+b.totalInstalments&&rec.paidInstalments>=+b.totalInstalments)rec.done=true;
+  await store.set('bills',b.id,rec);await log('Bill settled',`${b.name} due ${fmtDate(b.nextDue)} — ${note}`)}
+function duesMsg(f){const st=S.settings,un=S.dues.filter(x=>x.flatId===f.id&&!x.paid).sort((a,b)=>a.month.localeCompare(b.month)),dd=+st.dueDay||10;
+  return `Dear ${f.owner},\n\nThis is a gentle reminder from ${st.name||'the society'} that maintenance of ${money(sum(un,'amount'))} for flat ${flatLabel(f)} is pending (${un.map(x=>monthLabel(x.month)).join(', ')}). Maintenance is due by the ${ordinal(dd)} of each month.${st.payInfo?`\n\nHow to pay: ${st.payInfo}`:''}\n\nPlease ignore this message if you have already paid.\n\n${st.secretary?st.secretary+', Secretary':'Managing Committee'}\n${st.name||''}`.trim()}
+function openMsg(title,text,sub){openForm({title,ok:'Done',submit:async()=>{},custom:`<div class="field wide">${sub?`<small>${esc(sub)}</small>`:''}<textarea id="msgText" readonly style="min-height:240px;font-size:14px">${esc(text)}</textarea><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-act="copyMsg">Copy message</button></div><small>Paste into WhatsApp, SMS or email. The register doesn’t send messages itself.</small></div>`})}
+const visitF=()=>[{k:'date',label:'Visit date',type:'date',req:1,def:today()},{k:'time',label:'Time',type:'time',def:'10:00'},{k:'status',label:'Status',type:'select',options:['Scheduled','Completed','Missed']},{k:'engineer',label:'Engineer name'},{k:'engineerPhone',label:'Engineer phone',type:'tel'},{k:'work',label:'Work done / findings',type:'textarea',wide:1},...fileF('Service report')];
+const hoF=()=>[{k:'title',label:'Title',req:1,wide:1},{k:'date',label:'Handover date',type:'date',req:1,def:today()},{k:'outgoing',label:'Outgoing committee',wide:1,hint:'Names and posts, e.g. R. Shah (Chairman), M. Iyer (Treasurer)'},{k:'incoming',label:'Incoming committee',wide:1},{k:'cash',label:'Cash in hand handed over',type:'number'},{k:'bank',label:'Bank balance on the day',type:'number'},{k:'notes',label:'Notes',type:'textarea',wide:1}];
+
+/* =========== signature pad =========== */
+const PAD={drawn:false};
+function openSign(rid,role){
+  const r=by('esign',rid),p=(r.parties||[]).find(x=>x.role===role);
+  openForm({title:`Sign as ${role.toLowerCase()}`,ok:'Sign document',custom:`<div class="field wide"><small>Document: <b>${esc(r.title)}</b> · flat ${esc(flatLabel(flatById(r.flatId)))}</small>${fileHref(r)?`<div style="margin-top:6px">${fileBtn(r,'Read the document first')}</div>`:''}</div>
+    <div class="field wide"><label for="sgPad">Draw your signature</label><canvas id="sgPad" class="pad" aria-label="Signature pad"></canvas><div><button type="button" class="btn small" data-act="padClear">Clear</button></div></div>
+    <div class="field wide"><label for="sgName">Full name</label><input id="sgName" type="text" value="${esc(p?p.name:'')}"></div>
+    <label class="chk" style="grid-column:1/-1"><input type="checkbox" id="sgAgree"> I, the ${esc(role.toLowerCase())}, have read “${esc(r.title)}” and agree to sign it electronically.</label>
+    ${ME.committee?'<label class="chk" style="grid-column:1/-1"><input type="checkbox" id="sgPerson"> Signed in person on a committee member’s device</label>':''}`,
+    submit:async()=>{const name=$('#sgName').value.trim();if(!PAD.drawn)throw fail('Draw your signature in the box.');if(!name)throw fail('Type your full name.');if(!$('#sgAgree').checked)throw fail('Tick the box to confirm you agree.');
+      const c=$('#sgPad'),img=trimPad(c);
+      await store.set('signatures',`${rid}_${role}`,{requestId:rid,role,name,image:img,uid:ME.id,at:new Date().toISOString(),inPerson:!!($('#sgPerson')&&$('#sgPerson').checked),ua:navigator.userAgent.slice(0,120)});
+      if(ME.committee)await log('Signature captured',`${role} on ${r.title}`);return'Signed'}});
+  initPad($('#sgPad'));
+}
+function initPad(c){
+  PAD.drawn=false;const r=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=r.width*dpr;c.height=r.height*dpr;
+  const g=c.getContext('2d');g.scale(dpr,dpr);g.lineWidth=2.4;g.lineCap='round';g.lineJoin='round';g.strokeStyle='#16302B';let down=false,last=null;
+  const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+  c.onpointerdown=e=>{down=true;last=pt(e);c.setPointerCapture(e.pointerId)};
+  c.onpointermove=e=>{if(!down)return;const p=pt(e);g.beginPath();g.moveTo(...last);g.lineTo(...p);g.stroke();last=p;PAD.drawn=true};
+  c.onpointerup=c.onpointercancel=()=>{down=false};
+}
+function trimPad(c){const o=document.createElement('canvas');const w=600,h=Math.round(600*c.height/c.width);o.width=w;o.height=h;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(c,0,0,w,h);return o.toDataURL('image/png')}
+
+/* =========== reports =========== */
+async function saveFile(name,blob){
+  if(!DL){toast('Downloads aren’t available in this view');return}
+  try{await DL.save({filename:name,data:blob});toast('Download ready')}catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'A download is already waiting for you to confirm':'Couldn’t prepare the download')}
+}
+const fileStamp=()=>today();
+const slug=s=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function exportReport(kind){
+  if(!REPORT)return;const{title,cols,rows}=REPORT;const name=`${slug(S.settings.name||'society')}-${slug(title)}-${fileStamp()}`;
+  if(kind==='csv'){const q=v=>{const s=String(v??'');return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};saveFile(name+'.csv',new Blob(['﻿'+[cols,...rows].map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv'}));return}
+  if(!(window.jspdf&&window.jspdf.jsPDF)){toast('The PDF tool didn’t load. Use CSV, or reload the page.');return}
+  const doc=new window.jspdf.jsPDF({orientation:cols.length>6?'landscape':'portrait',unit:'pt',format:'a4'});
+  pdfHeader(doc,title);
+  doc.autoTable({head:[cols],body:rows.map(r=>r.map(c=>String(c??''))),startY:92,styles:{fontSize:8.5,cellPadding:4,textColor:[22,48,43]},headStyles:{fillColor:[30,107,88],textColor:255},alternateRowStyles:{fillColor:[245,248,246]},margin:{left:36,right:36}});
+  pdfFooter(doc);saveFile(name+'.pdf',doc.output('blob'));
+}
+function pdfHeader(doc,title){const st=S.settings;doc.setFont('times','normal');doc.setFontSize(17);doc.setTextColor(22,48,43);doc.text(st.name||'Society Register',36,44);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(90,108,102);doc.text([st.address||'',st.regNo?'Reg. '+st.regNo:''].filter(Boolean).join('  ·  '),36,58);doc.setFontSize(12);doc.setTextColor(169,122,36);doc.text(title,36,78)}
+function pdfFooter(doc){const n=doc.getNumberOfPages(),w=doc.internal.pageSize.getWidth(),h=doc.internal.pageSize.getHeight();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(8);doc.setTextColor(120);doc.text(`Generated ${fmtStamp(new Date().toISOString())} · Page ${i} of ${n}`,36,h-20);doc.text('Society Register',w-36,h-20,{align:'right'})}}
+function certificate(rid){
+  if(!(window.jspdf&&window.jspdf.jsPDF)){toast('The PDF tool didn’t load. Reload the page and try again.');return}
+  const r=by('esign',rid),doc=new window.jspdf.jsPDF({unit:'pt',format:'a4'});pdfHeader(doc,'Electronic signature record');
+  let y=104;doc.setFontSize(10.5);doc.setTextColor(22,48,43);
+  [['Document',r.title],['Flat',flatLabel(flatById(r.flatId))],['Request date',fmtDate(r.date)],['Document file',r.fileName||r.link||'—']].forEach(([k,v])=>{doc.setFont('helvetica','bold');doc.text(k,36,y);doc.setFont('helvetica','normal');doc.text(doc.splitTextToSize(String(v),380),150,y);y+=18});
+  y+=10;(r.parties||[]).forEach(p=>{const s=sigFor(rid,p.role);doc.setDrawColor(211,221,216);doc.roundedRect(36,y,523,130,6,6);doc.setFont('helvetica','bold');doc.text(`${p.role}: ${s?s.name:p.name}`,50,y+22);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(90,108,102);
+    if(s){doc.text([`Signed: ${fmtStamp(s.at)}`,`Signed-in account: ${who(s.uid)}${s.inPerson?' (in person)':''}`,`Device: ${s.ua||'—'}`],50,y+40);try{doc.addImage(s.image,'PNG',360,y+14,180,180*0.3)}catch(e){}}
+    doc.setFontSize(10.5);doc.setTextColor(22,48,43);y+=146});
+  doc.setFontSize(8.5);doc.setTextColor(120);doc.text(doc.splitTextToSize('Simple electronic signatures captured in the society register. Not a certified digital signature under the IT Act; use a certified e-sign service where the law requires one.',523),36,y+6);
+  pdfFooter(doc);saveFile(`${slug(r.title)}-signed-${fileStamp()}.pdf`,doc.output('blob'));
+}
+
+/* =========== events =========== */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=ACT[b.dataset.act];if(f){e.preventDefault();f(b.dataset)}});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.inp;if(k){UI[k]=e.target.value;render()}});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;if(e.target.id==='gDest'){e.preventDefault();ACT.gateSend()}else if(e.target.id==='gCode'){e.preventDefault();ACT.gateVerify()}else if(e.target.id==='secCode'){e.preventDefault();ACT.secVerify()}});
+document.addEventListener('change',async e=>{const t=e.target,k=t.dataset&&t.dataset.chg;if(!k)return;
+  if(k==='month'){if(t.value){UI.month=t.value;render()}}
+  else if(k==='horizon'){UI.horizon=+t.value;render()}
+  else if(k==='attDate'){if(t.value){UI.attDate=t.value;render()}}
+  else if(k==='cmpSet'){const x=by('complaints',t.dataset.id);try{await store.set('complaints',x.id,{...strip(x),status:t.value,...(t.value==='Resolved'?{resolvedOn:today()}:{})});await log('Updated complaint',`${x.title}: ${t.value}`);toast(`Marked ${t.value.toLowerCase()}`)}catch(err){toast(writeErr(err))}}
+  else if(k==='hoCheck'){const h=by('handovers',t.dataset.id),l=CHECKLIST.find(c=>c[0]===t.dataset.k)[1];try{await store.set('handovers',h.id,{...strip(h),checklist:{...(h.checklist||{}),[t.dataset.k]:t.checked},log:[...(h.log||[]),{at:new Date().toISOString(),uid:ME.id,action:`${t.checked?'Ticked':'Unticked'}: ${l}`}]})}catch(err){toast(writeErr(err))}}});
+document.addEventListener('submit',async e=>{if(e.target.id!=='setForm')return;e.preventDefault();
+  const v=readFields(e.target,SET_FIELDS);if(!v.name){toast('Society name is required');return}
+  try{const c={...strip(S.settings),...v};delete c.sample;await store.set('settings','main',c);await log('Updated society settings');toast('Settings saved')}catch(err){toast(writeErr(err))}});
+
+/* =========== boot =========== */
+render();
+(async()=>{
+  if(!(window.claude&&window.claude.use)){mode='local';ME.committee=true;S.settingsLoaded=true;render();return}
+  const[d,u,a,dl]=await Promise.all([claude.use('db'),claude.use('user'),claude.use('assets'),claude.use('downloads')]);
+  db=d;USER=u;assets=a;DL=dl;
+  if(u){try{const me=await u.me();ME.id=me.id;ME.name=me.name;ME.avatar=me.avatarUrl;ME.committee=!!me.canEdit;ME.owner=!!me.isOwner}catch(e){}}
+  if(!db){mode='local';ME.committee=true;S.settingsLoaded=true;render();return}
+  mode='db';
+  db.doc('settings/main').onSnapshot(s=>{S.settings=s.exists?{...s.data()}:{};S.settingsLoaded=true;render();scheduleNames()},()=>{S.settingsLoaded=true;render()});
+  for(const c of COLS)db.collection(c).onSnapshot(s=>{S[c]=s.docs.map(x=>({id:x.id,...x.data()}));render();scheduleNames()},()=>{});
+  db.collection('audit').orderBy('at','desc').limit(300).onSnapshot(s=>{S.audit=s.docs.map(x=>({id:x.id,...x.data()}));if(UI.tab==='audit')render();scheduleNames()},()=>{});
+  if(ME.id&&!ME.committee)db.collection(`tenantdocs/${ME.id}/files`).onSnapshot(s=>{S.myFiles=s.docs.map(x=>({id:x.id,...x.data()}));render()},()=>{});
+  render();
+})();
+</script>
