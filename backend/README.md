@@ -41,6 +41,8 @@ docker compose run --rm api python -m app.cli create-society \
 
 Open http://localhost:8000/docs. With `SR_SMS_PROVIDER=console`, login codes are printed in the API's log.
 
+**Deploying for free (Render + Neon):** see the repo's top-level README. On hosts with no shell, create the first society with `POST /setup/society` instead of the CLI. That endpoint needs the `X-Setup-Token` header to match `SR_SETUP_TOKEN`, and it is switched off when that variable is empty. `SR_DATABASE_URL` accepts the plain `postgresql://…?sslmode=require` string that Neon and Render give you.
+
 Without Docker, use Python 3.11+ and a Postgres you can reach:
 
 ```bash

@@ -1,0 +1,35 @@
+# Runs the backend tests against PostgreSQL 16 on every push and pull request.
+name: Backend tests
+
+on:
+  push:
+    paths: ["backend/**", ".github/workflows/tests.yml"]
+  pull_request:
+    paths: ["backend/**", ".github/workflows/tests.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 20
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/sr_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "fastapi>=0.115" "sqlalchemy[asyncio]>=2.0.30" "asyncpg>=0.29" "psycopg[binary]>=3.2" "alembic>=1.13" "pydantic[email]>=2.7" "pydantic-settings>=2.3" "pyjwt>=2.8" "httpx>=0.27" "pytest>=8" "pytest-asyncio>=0.23"
+      - run: pytest -q

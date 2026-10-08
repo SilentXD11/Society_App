@@ -6,7 +6,7 @@ from app.config import get_settings
 
 
 def sync_url() -> str:
-    return get_settings().database_url.replace("+asyncpg", "+psycopg")
+    return get_settings().sync_database_url
 
 
 def run_migrations_online() -> None:

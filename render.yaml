@@ -1,0 +1,30 @@
+# Render Blueprint: deploys the API from backend/ on Render's free plan.
+# In Render: New → Blueprint → pick this repo. You'll be asked for SR_DATABASE_URL
+# (paste the connection string from Neon). Secrets are generated for you.
+services:
+  - type: web
+    name: society-register-api
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: SR_ENV
+        value: prod
+      - key: SR_DATABASE_URL
+        sync: false          # paste your Neon connection string when prompted
+      - key: SR_JWT_SECRET
+        generateValue: true
+      - key: SR_OTP_SECRET
+        generateValue: true
+      - key: SR_SETUP_TOKEN
+        generateValue: true  # used once by POST /setup/society; delete it afterwards
+      - key: SR_CORS_ORIGINS
+        value: '["https://silentxd11.github.io"]'
+      - key: SR_SMS_PROVIDER
+        value: console       # login codes appear in Render's Logs tab until you add MSG91
+      - key: SR_EMAIL_PROVIDER
+        value: console
