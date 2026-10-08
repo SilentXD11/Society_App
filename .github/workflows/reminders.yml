@@ -1,0 +1,51 @@
+# Sends the day's reminders (committee digest + residents' maintenance SMS).
+# Free alternative to a paid cron job. Does nothing until both are set
+# (repo Settings → Secrets and variables → Actions):
+#   - secret SR_DATABASE_URL (the Neon connection string), and
+#   - variable SR_SMS_PROVIDER=msg91 (plus its secrets) or SR_EMAIL_PROVIDER=ses.
+# It won't run with the "console" provider, because reminders would be marked
+# as sent without reaching anyone.
+# Note: GitHub pauses scheduled workflows in a public repo after 60 days with no commits.
+name: Daily reminders
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # 03:17 UTC = 08:47 India time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      SR_DATABASE_URL: ${{ secrets.SR_DATABASE_URL }}
+      READY: ${{ secrets.SR_DATABASE_URL != '' && (vars.SR_SMS_PROVIDER == 'msg91' || vars.SR_EMAIL_PROVIDER == 'ses') }}
+      SR_SMS_PROVIDER: ${{ vars.SR_SMS_PROVIDER || 'console' }}
+      SR_EMAIL_PROVIDER: ${{ vars.SR_EMAIL_PROVIDER || 'console' }}
+      SR_MSG91_AUTH_KEY: ${{ secrets.SR_MSG91_AUTH_KEY }}
+      SR_MSG91_SENDER_ID: ${{ vars.SR_MSG91_SENDER_ID }}
+      SR_MSG91_FLOW_ID: ${{ vars.SR_MSG91_FLOW_ID }}
+      SR_SES_FROM_ADDRESS: ${{ vars.SR_SES_FROM_ADDRESS }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      SR_AWS_REGION: ${{ vars.SR_AWS_REGION || 'ap-south-1' }}
+    steps:
+      - name: Skip until the database and a real message provider are set
+        if: env.READY != 'true'
+        working-directory: .   # runs before checkout, so backend/ doesn't exist yet
+        run: echo "Set the SR_DATABASE_URL secret and an SMS or email provider to turn reminders on."
+      - uses: actions/checkout@v4
+        if: env.READY == 'true'
+      - uses: actions/setup-python@v5
+        if: env.READY == 'true'
+        with:
+          python-version: "3.12"
+      - if: env.READY == 'true'
+        run: pip install "sqlalchemy[asyncio]>=2.0.30" "asyncpg>=0.29" "pydantic[email]>=2.7" "pydantic-settings>=2.3" "pyjwt>=2.8" "httpx>=0.27" "fastapi>=0.115" "boto3>=1.34"
+      - if: env.READY == 'true'
+        run: python -m app.jobs.daily_reminders > /dev/null   # keep message text out of public logs

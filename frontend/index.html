@@ -298,20 +298,29 @@ function upcoming(days){
 }
 const CHECKLIST=[['cash','Cash in hand counted and handed over'],['bank','Bank statements and passbooks handed over'],['signatory','Bank signatories changed to new committee'],['fds','FD certificates verified'],['docs','Registration, bye-laws and minutes books'],['amc','AMC contracts and vendor list'],['dues','Defaulters list and pending dues'],['keys','Office, terrace and meter room keys'],['stamp','Society stamp and letterhead']];
 
+/* =========== local (standalone) persistence =========== */
+const LOCAL_KEY='society_register_v1';let saveT=null,quotaWarned=false;
+function localSnapshot(){const o={v:1,savedAt:new Date().toISOString(),settings:S.settings,audit:S.audit.slice(0,300)};COLS.forEach(c=>o[c]=S[c]);return o}
+function saveLocal(){if(mode!=='local')return;clearTimeout(saveT);saveT=setTimeout(()=>{
+  try{localStorage.setItem(LOCAL_KEY,JSON.stringify(localSnapshot()));quotaWarned=false}
+  catch(e){if(!quotaWarned){quotaWarned=true;toast('This browser’s storage is full. Download a backup from Settings and remove large tenant photos.')}}},150)}
+function applySnapshot(o){if(!o||typeof o!=='object')throw new Error('bad');S.settings=o.settings&&typeof o.settings==='object'?o.settings:{};S.audit=Array.isArray(o.audit)?o.audit:[];COLS.forEach(c=>S[c]=Array.isArray(o[c])?o[c]:[])}
+function loadLocal(){try{const raw=localStorage.getItem(LOCAL_KEY);if(raw)applySnapshot(JSON.parse(raw))}catch(e){}}
+
 /* =========== store =========== */
 const store={
   id(){return db?db.collection('x').doc().id:'m'+Math.random().toString(36).slice(2,12)},
   async set(col,id,data){
     if(db){await db.collection(col).doc(id).set(data);return}
-    if(col==='settings'){S.settings=data;render();return}
-    S[col]=S[col]||[];const i=S[col].findIndex(x=>x.id===id),r={id,...data};i>=0?S[col][i]=r:S[col].push(r);render();
+    if(col==='settings'){S.settings=data;saveLocal();render();return}
+    S[col]=S[col]||[];const i=S[col].findIndex(x=>x.id===id),r={id,...data};i>=0?S[col][i]=r:S[col].push(r);saveLocal();render();
   },
   async add(col,data){const id=store.id();await store.set(col,id,data);return id},
-  async del(col,id){if(db){await db.collection(col).doc(id).delete();return}S[col]=(S[col]||[]).filter(x=>x.id!==id);render()}
+  async del(col,id){if(db){await db.collection(col).doc(id).delete();return}S[col]=(S[col]||[]).filter(x=>x.id!==id);saveLocal();render()}
 };
 async function log(action,detail=''){
   const e={at:new Date().toISOString(),uid:ME.id,action,detail};
-  if(!db){S.audit.unshift({id:store.id(),...e});return}
+  if(!db){S.audit.unshift({id:store.id(),...e});saveLocal();return}
   try{await db.collection('audit').add(e)}catch(err){}
 }
 function writeErr(e){
@@ -394,7 +403,7 @@ function navHTML(){
 
 /* =========== page chrome =========== */
 function banner(){
-  if(mode==='local')return`<div class="banner">This copy isn’t connected to saved storage, so anything you add disappears when you close it. Open the register from claude.ai while signed in to keep records.</div>`;
+  if(mode==='local')return`<div class="banner">Records are saved in this browser on this device only, so other committee members won’t see them. Download a backup regularly from <button class="btn link" data-act="tab" data-k="settings" style="padding:0">Settings</button>.</div>`;
   if(!ME.committee)return`<div class="banner">You’re signed in as a resident. You can read the register, raise complaints, upload your tenant documents and sign documents sent to you. Committee members manage everything else.</div>`;
   return'';
 }
@@ -749,6 +758,8 @@ function vSettings(){
     <p style="margin:0"><b>Who can get in:</b> only people signed in to claude.ai whom you’ve shared this register with. Use the Share menu: give committee members <b>Editor</b> access and residents <b>Viewer</b> access. The database enforces this on the server: only Editors can change records, and residents can only raise complaints, upload their own tenant papers and sign.</p>
     <p style="margin:0"><b>OTP screen</b> <span class="demo">Demo</span> The email/SMS code screen shows how a one-time-code login would look. No message is sent and it doesn’t add protection; the claude.ai sign-in above is what protects the data.</p>
     <p style="margin:0"><b>Passkey-protected actions:</b> approving payments and handovers, and deleting records, ask for your device passkey (fingerprint, face or PIN) where your browser allows it here, and fall back to a demo one-time code otherwise.</p></div></section>
+  ${mode==='local'?`<section class="sec"><h2>Backup</h2><p class="empty" style="max-width:66ch">Everything is stored in this browser. Download a backup to keep a copy, or restore one to move the register to another device or browser. Restoring replaces what’s here now.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn primary" data-act="backupSave">Download backup</button><label class="btn" for="restoreFile" style="cursor:pointer">Restore from backup</label><input type="file" id="restoreFile" accept=".json,application/json" data-chg="restore" hidden></div></section>`:''}
   ${hasSample&&ME.committee?`<section class="sec"><h2>Sample records</h2><p class="empty" style="max-width:62ch">Records tagged <span class="sample">Sample</span> were added so you could see how each register works. Remove them when you’re ready to enter your society’s real data.</p><button class="btn danger" data-act="clearSample">Remove all sample records</button></section>`:''}`;
 }
 
@@ -997,6 +1008,7 @@ const ACT={
   gateVerify:()=>{const v=($('#gCode')||{}).value||'';if(v.trim()===GATE.code){ssSet('sr_ok','1');$('#gate').hidden=true;toast('Verified');render()}else{GATE.err='That code doesn’t match. Check it and try again.';GATE.rendered='';renderGate()}},
   secVerify:()=>{if(!SEC)return;const v=($('#secCode')||{}).value||'';if(v.trim()===SEC.code){const r=SEC.res;SEC=null;$('#secScrim').hidden=true;r()}else{$('#secErr').textContent='That code doesn’t match.';$('#secErr').hidden=false}},
   secCancel:()=>{if(!SEC)return;const r=SEC.rej;SEC=null;$('#secScrim').hidden=true;const e=new Error('cancelled');e.cancelled=true;r(e)},
+  backupSave:()=>{saveFile(`${slug(S.settings.name||'society-register')}-backup-${today()}.json`,new Blob([JSON.stringify(localSnapshot(),null,1)],{type:'application/json'}))},
   clearSample:()=>confirmBox('Remove sample records?','Every record tagged Sample will be deleted. Your own entries stay.','Remove samples',async()=>{for(const c of COLS)for(const x of (S[c]||[]).filter(x=>x.sample))await store.del(c,x.id);
     for(const a of S.attendance.filter(a=>a.sample))await store.del('attendance',a.id);
     if(S.settings.sample){const c=strip(S.settings);delete c.sample;['name','address','secretary'].forEach(k=>delete c[k]);await store.set('settings','main',c)}
@@ -1040,7 +1052,10 @@ function trimPad(c){const o=document.createElement('canvas');const w=600,h=Math.
 
 /* =========== reports =========== */
 async function saveFile(name,blob){
-  if(!DL){toast('Downloads aren’t available in this view');return}
+  if(!DL){
+    if(mode!=='local'){toast('Downloads aren’t available in this view');return}
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Download started');return}
   try{await DL.save({filename:name,data:blob});toast('Download ready')}catch(e){if(e&&e.code==='declined')return;toast(e&&e.code==='rate_limited'?'A download is already waiting for you to confirm':'Couldn’t prepare the download')}
 }
 const fileStamp=()=>today();
@@ -1075,6 +1090,10 @@ document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;if(e.target.id
 document.addEventListener('change',async e=>{const t=e.target,k=t.dataset&&t.dataset.chg;if(!k)return;
   if(k==='month'){if(t.value){UI.month=t.value;render()}}
   else if(k==='horizon'){UI.horizon=+t.value;render()}
+  else if(k==='restore'){const f=t.files&&t.files[0];t.value='';if(!f)return;
+    try{const o=JSON.parse(await f.text());if(!o||o.v!==1)throw new Error('bad');
+      confirmBox('Restore this backup?',`The register will be replaced with the backup from ${esc(fmtStamp(o.savedAt))} (${(o.flats||[]).length} flats, ${(o.payments||[]).length} payments). What’s in this browser now will be lost.`,'Restore',async()=>{applySnapshot(o);saveLocal();render();return'Backup restored'})}
+    catch(err){toast('That file isn’t a Society Register backup.')}}
   else if(k==='attDate'){if(t.value){UI.attDate=t.value;render()}}
   else if(k==='cmpSet'){const x=by('complaints',t.dataset.id);try{await store.set('complaints',x.id,{...strip(x),status:t.value,...(t.value==='Resolved'?{resolvedOn:today()}:{})});await log('Updated complaint',`${x.title}: ${t.value}`);toast(`Marked ${t.value.toLowerCase()}`)}catch(err){toast(writeErr(err))}}
   else if(k==='hoCheck'){const h=by('handovers',t.dataset.id),l=CHECKLIST.find(c=>c[0]===t.dataset.k)[1];try{await store.set('handovers',h.id,{...strip(h),checklist:{...(h.checklist||{}),[t.dataset.k]:t.checked},log:[...(h.log||[]),{at:new Date().toISOString(),uid:ME.id,action:`${t.checked?'Ticked':'Unticked'}: ${l}`}]})}catch(err){toast(writeErr(err))}}});
@@ -1085,11 +1104,11 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='setForm')return;e
 /* =========== boot =========== */
 render();
 (async()=>{
-  if(!(window.claude&&window.claude.use)){mode='local';ME.committee=true;S.settingsLoaded=true;render();return}
+  if(!(window.claude&&window.claude.use)){mode='local';ME.committee=true;loadLocal();S.settingsLoaded=true;render();return}
   const[d,u,a,dl]=await Promise.all([claude.use('db'),claude.use('user'),claude.use('assets'),claude.use('downloads')]);
   db=d;USER=u;assets=a;DL=dl;
   if(u){try{const me=await u.me();ME.id=me.id;ME.name=me.name;ME.avatar=me.avatarUrl;ME.committee=!!me.canEdit;ME.owner=!!me.isOwner}catch(e){}}
-  if(!db){mode='local';ME.committee=true;S.settingsLoaded=true;render();return}
+  if(!db){mode='local';ME.committee=true;loadLocal();S.settingsLoaded=true;render();return}
   mode='db';
   db.doc('settings/main').onSnapshot(s=>{S.settings=s.exists?{...s.data()}:{};S.settingsLoaded=true;render();scheduleNames()},()=>{S.settingsLoaded=true;render()});
   for(const c of COLS)db.collection(c).onSnapshot(s=>{S[c]=s.docs.map(x=>({id:x.id,...x.data()}));render();scheduleNames()},()=>{});

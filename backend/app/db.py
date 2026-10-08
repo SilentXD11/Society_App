@@ -11,7 +11,15 @@ _sessionmaker: async_sessionmaker[AsyncSession] | None = None
 def get_engine():
     global _engine, _sessionmaker
     if _engine is None:
-        _engine = create_async_engine(get_settings().database_url, pool_pre_ping=True)
+        url = get_settings().database_url
+        connect_args = {}
+        if "-pooler." in url:
+            # Neon's pooled endpoint runs PgBouncer in transaction mode, which
+            # breaks asyncpg's prepared-statement cache.
+            connect_args["statement_cache_size"] = 0
+        # Small pool + recycle: free-tier databases suspend idle connections after ~5 minutes.
+        _engine = create_async_engine(url, pool_pre_ping=True, pool_size=5, max_overflow=5,
+                                      pool_recycle=240, connect_args=connect_args)
         _sessionmaker = async_sessionmaker(_engine, expire_on_commit=False)
     return _engine
 
