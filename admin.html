@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Society Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+<style>
+:root{--brand:#0f766e;--brand-50:#ecfdf8;--on-brand:#fff;--bg:#f4f6f5;--surface:#fff;--surface-2:#f8faf9;--text:#0f1f1c;--muted:#5f6f6b;--line:#e3e9e7;--danger:#dc2626;--danger-50:#fee2e2;--green:#16a34a;--green-50:#dcfce7;--amber:#b45309;--amber-50:#fef3c7;--shadow:0 1px 2px rgba(15,31,28,.06),0 8px 24px rgba(15,31,28,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--brand:#2dd4bf;--brand-50:#0f2a27;--on-brand:#062421;--bg:#0b1211;--surface:#121b1a;--surface-2:#172221;--text:#e8f0ee;--muted:#93a5a1;--line:#22302e;--amber:#fcd34d;--amber-50:#3a2a0a;--danger-50:#3b1212;--green-50:#0f2e1a}}
+:root[data-theme="dark"]{--brand:#2dd4bf;--brand-50:#0f2a27;--on-brand:#062421;--bg:#0b1211;--surface:#121b1a;--surface-2:#172221;--text:#e8f0ee;--muted:#93a5a1;--line:#22302e;--amber:#fcd34d;--amber-50:#3a2a0a;--danger-50:#3b1212;--green-50:#0f2e1a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:14.5px;line-height:1.45}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 40px}
+header{display:flex;align-items:center;gap:12px;padding:18px 0;flex-wrap:wrap}
+header h1{font-size:20px;font-weight:800;flex:1}
+.who{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);font-weight:600}
+.who img,.who .ini{width:30px;height:30px;border-radius:50%;object-fit:cover;background:var(--brand-50);color:var(--brand);display:grid;place-items:center;font-weight:800}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.live.on i{background:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.btn{height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:13px;white-space:nowrap}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.btn.danger{color:var(--danger)}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.btn.sm{height:32px;padding:0 10px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:default}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--surface);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat small{color:var(--muted);font-size:12px;font-weight:600}
+.stat b{display:block;font-size:24px;font-weight:800;margin-top:2px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
+.tabs button{padding:8px 14px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:700;white-space:nowrap}
+.tabs button.on{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.tabs span{margin-left:4px;opacity:.75}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--danger);margin-left:6px;vertical-align:middle}
+.orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.oc{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:10px;border:2px solid transparent}
+.oc.new{border-color:var(--brand);animation:flash 1.2s ease 3}
+@keyframes flash{50%{background:var(--brand-50)}}
+.oc-top{display:flex;justify-content:space-between;gap:8px}
+.oc-top small{display:block;color:var(--muted);font-size:12px}
+.flat{font-size:16px;font-weight:800}
+.pill{font-size:11px;font-weight:800;padding:4px 9px;border-radius:99px;white-space:nowrap;display:inline-block}
+.p-placed,.p-not_registered,.p-unverified{background:var(--amber-50);color:var(--amber)}
+.p-packed,.p-out{background:var(--brand-50);color:var(--brand)}
+.p-delivered,.p-ok{background:var(--green-50);color:var(--green)}
+.p-cancelled,.p-blocked{background:var(--danger-50);color:var(--danger)}
+.items{font-size:13px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:8px 0;max-height:180px;overflow:auto}
+.items div{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+.items small{color:var(--muted)}
+.pay{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;background:var(--surface-2);border-radius:10px;padding:8px 10px}
+.pay code{font-weight:800}
+.warn{color:var(--amber);font-weight:700}.good{color:var(--green);font-weight:700}.bad{color:var(--danger);font-weight:700}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.acts .btn{flex:1;min-width:90px}
+.empty{text-align:center;color:var(--muted);padding:50px 20px;grid-column:1/-1}
+.gate{max-width:420px;margin:12vh auto;background:var(--surface);border-radius:22px;box-shadow:var(--shadow);padding:30px;text-align:center}
+.gate .logo{width:56px;height:56px;border-radius:16px;background:var(--brand-50);color:var(--brand);display:grid;place-items:center;margin:0 auto 14px;font-size:26px}
+.gate h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.gate p{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+.gate .btn{width:100%;height:48px;font-size:15px;margin-top:6px}
+.field{width:100%;height:40px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--surface-2);outline:0;font-size:14px}
+.field:focus{border-color:var(--brand)}
+.card{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.card h3{font-size:14px;font-weight:800;margin-bottom:10px}
+.res-form{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;gap:8px}
+.req{display:grid;grid-template-columns:1.6fr 1fr 1fr auto auto;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.req:first-of-type{border-top:0}
+.req b{display:block;font-size:13.5px}.req small{color:var(--muted);font-size:12px}
+.tbl{width:100%;border-collapse:collapse;background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.tbl th,.tbl td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+.tbl th{font-size:12px;color:var(--muted);font-weight:700;background:var(--surface-2)}
+.tbl td small{display:block;color:var(--muted);font-size:11.5px}
+.tbl tr.fresh td{animation:flash 1.2s ease 2}
+.scroll{overflow-x:auto;border-radius:14px}
+.chips{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.chips button{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:700}
+.chips button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.banner{display:none;background:var(--amber-50);color:var(--amber);font-weight:700;font-size:13px;padding:10px 14px;border-radius:12px;margin-bottom:12px;align-items:center;justify-content:space-between;gap:10px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.res-form,.req{grid-template-columns:1fr}.who span{display:none}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate"><div class="logo">🔐</div><h2>Loading…</h2></div>
+
+<div id="appView" class="wrap" style="display:none">
+  <header>
+    <h1>Society admin</h1>
+    <span class="live" id="live"><i></i><span id="liveTxt">Connecting…</span></span>
+    <span class="who" id="who"></span>
+    <button class="btn" onclick="logout()">Log out</button>
+  </header>
+
+  <div class="banner" id="notifBanner"><span>Turn on alerts to hear a sound and get a pop-up when a new order arrives.</span>
+    <button class="btn primary" onclick="enableAlerts()">Turn on alerts</button></div>
+
+  <div class="stats">
+    <div class="stat"><small>New orders</small><b id="sNew">0</b></div>
+    <div class="stat"><small>Payments to verify</small><b id="sPay">0</b></div>
+    <div class="stat"><small>Today's sales</small><b id="sRev">₹0</b></div>
+    <div class="stat"><small>People signed in today</small><b id="sLog">0</b></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="on" data-t="new">New<span id="cNew"></span></button>
+    <button data-t="active">In progress<span id="cAct"></span></button>
+    <button data-t="done">Completed</button>
+    <button data-t="logins">Logins</button>
+    <button data-t="residents">Residents<span id="reqDot"></span></button>
+  </div>
+
+  <div id="ordersView" class="orders"></div>
+
+  <div id="loginsView" style="display:none">
+    <div class="chips" id="logChips">
+      <button class="on" data-f="all">Everyone</button>
+      <button data-f="ok">Residents</button>
+      <button data-f="denied">Not let in</button>
+    </div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>When</th><th>Who</th><th>Flat</th><th>Result</th><th>Device</th><th>IP address</th></tr></thead><tbody id="logBody"></tbody></table></div>
+  </div>
+
+  <div id="residentsView" style="display:none">
+    <div class="card" id="reqCard" style="display:none">
+      <h3>Waiting for access <span class="pill p-placed" id="reqCount"></span></h3>
+      <div id="reqList"></div>
+    </div>
+    <div class="card">
+      <h3>Add a resident</h3>
+      <div class="res-form">
+        <input class="field" id="rEmail" type="email" maxlength="120" placeholder="Email they log in with">
+        <input class="field" id="rName" maxlength="60" placeholder="Name">
+        <input class="field" id="rFlat" maxlength="40" placeholder="Flat, e.g. B-1204">
+        <input class="field" id="rPhone" inputmode="numeric" maxlength="10" placeholder="Mobile (optional)">
+        <button class="btn primary" onclick="addResident()">Add</button>
+      </div>
+    </div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Flat</th><th>Name</th><th>Email / phone</th><th>Last active</th><th>Status</th><th></th></tr></thead><tbody id="resBody"></tbody></table></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* Server address. Opened via the start script → your laptop's server. When you go live, put your https address in the second part. */
+const API_BASE = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://127.0.0.1:8000' : 'https://YOUR-SERVER-ADDRESS';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr = n => '₹' + Math.round(n||0).toLocaleString('en-IN');
+const cleanMsg = m => String(m||'').replace(/^(not_registered|unverified|blocked):\s*/, '');
+let a0 = null, me = null, orders = [], logins = [], requests = [], tab = 'new', logFilter = 'all', es = null;
+const freshIds = new Set(), freshLogins = new Set();
+
+/* ---------------- sign-in (Auth0) ---------------- */
+function gate(kind, msg){
+  $('#appView').style.display='none'; $('#gate').style.display='';
+  const v = {
+    file:    ['📁','Open this through the start script','The dashboard needs the server. Double-click <b>start-windows.bat</b> or <b>start-mac.command</b> in the society-app folder — it opens this page at http://localhost:5500/admin.html.',''],
+    server:  ['🔌','Server not running','Start it with <b>start-windows.bat</b> / <b>start-mac.command</b>, then reload this page.','<button class="btn primary" onclick="location.reload()">Reload</button>'],
+    sdk:     ['🌐','Login library didn\'t load','Check your internet connection and reload.','<button class="btn primary" onclick="location.reload()">Reload</button>'],
+    login:   ['🔐','Admin sign-in','Sign in with the account listed as an admin on your server.','<button class="btn primary" onclick="login()">Log in</button>'],
+    denied:  ['⏳','Can\'t open the dashboard', esc(cleanMsg(msg)),'<button class="btn" onclick="logout()">Log out</button>'],
+    notadmin:['🚫','Not an admin account',`You're signed in as <b>${esc(me?.email)}</b>, which isn't in ADMIN_EMAILS on the server.`,'<button class="btn" onclick="logout()">Log in with a different account</button>'],
+    error:   ['⚠️','Sign-in problem', esc(msg),'<button class="btn primary" onclick="login()">Try again</button>']
+  }[kind];
+  $('#gate').innerHTML = `<div class="logo">${v[0]}</div><h2>${v[1]}</h2><p>${v[2]}</p>${v[3]}`;
+}
+async function boot(){
+  if (location.protocol === 'file:') return gate('file');
+  let cfg;
+  try { cfg = await (await fetch(API_BASE + '/config')).json(); } catch(e){ return gate('server'); }
+  const create = window.auth0 && window.auth0.createAuth0Client;
+  if (!create) return gate('sdk');
+  a0 = await create({ domain: cfg.domain, clientId: cfg.client_id, cacheLocation: 'localstorage', useRefreshTokens: true,
+    authorizationParams: { audience: cfg.audience, redirect_uri: location.origin + location.pathname } });
+  const q = new URLSearchParams(location.search); let fresh = false;
+  if (q.has('error')) { history.replaceState({}, '', location.pathname); return gate('error', q.get('error_description') || q.get('error')); }
+  if (q.has('code') && q.has('state')) {
+    try { await a0.handleRedirectCallback(); fresh = true; } catch(e){ history.replaceState({}, '', location.pathname); return gate('error', e.message); }
+    history.replaceState({}, '', location.pathname);
+  }
+  if (!(await a0.isAuthenticated())) return gate('login');
+  try { me = await api(fresh ? '/auth/session' : '/me', fresh ? {method:'POST'} : {}); }
+  catch(e){ return gate('denied', e.message); }
+  if (me.role !== 'admin') return gate('notadmin');
+  start();
+}
+function login(){ a0.loginWithRedirect(); }
+function logout(){
+  if (es) es.close();
+  if (a0) a0.logout({ logoutParams: { returnTo: location.origin + location.pathname } }); else location.reload();
+}
+async function api(path, opts = {}){
+  let token;
+  try { token = await a0.getTokenSilently(); } catch(e){ gate('login'); throw new Error('Please log in again'); }
+  const r = await fetch(API_BASE + path, {...opts, headers:{'Content-Type':'application/json', Authorization:'Bearer ' + token}});
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { gate('login'); throw new Error('Session expired'); }
+  if (!r.ok) throw new Error(typeof d.detail === 'string' ? d.detail : 'Please check the details and try again');
+  return d;
+}
+let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2800); }
+
+/* ---------------- live feed: new orders + logins arrive instantly ---------------- */
+async function connect(){
+  if (es) es.close();
+  setLive(false, 'Connecting…');
+  try {
+    const { ticket } = await api('/admin/stream-ticket', {method:'POST'});
+    es = new EventSource(`${API_BASE}/admin/stream?ticket=${encodeURIComponent(ticket)}`);
+    es.onopen = () => setLive(true, 'Live');
+    es.addEventListener('order_new', e => { const o = JSON.parse(e.data); orders = [o, ...orders.filter(x=>x.id!==o.id)]; freshIds.add(o.id); render(); alertNewOrder(o); });
+    es.addEventListener('order_update', e => { const o = JSON.parse(e.data); orders = orders.map(x=>x.id===o.id?o:x); render(); });
+    es.addEventListener('login', e => {
+      const l = JSON.parse(e.data); l._k = l.ts + l.email; freshLogins.add(l._k); logins = [l, ...logins];
+      if (l.outcome === 'not_registered') { toast(`${l.name || l.email} is asking for access`); loadRequests(); }
+      else if (l.email !== me.email) toast(`${l.name || l.email} signed in`);
+      render();
+    });
+    es.onerror = () => { setLive(false, 'Reconnecting…'); es.close(); setTimeout(() => { connect(); loadAll(); }, 4000); };
+  } catch(e){ setLive(false, 'Offline'); setTimeout(connect, 6000); }
+}
+function setLive(on, txt){ $('#live').classList.toggle('on', on); $('#liveTxt').textContent = txt; }
+
+let audioCtx;
+function beep(){
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    [0,.18,.36].forEach((t,i) => { const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.frequency.value=[880,1100,1320][i]; o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(.25,audioCtx.currentTime+t); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+t+.16);
+      o.start(audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+.17); });
+  } catch(e){}
+}
+function alertNewOrder(o){
+  beep(); toast(`New order from ${o.flat}`);
+  document.title = `(${orders.filter(x=>x.status==='placed').length}) New order · Society Admin`;
+  try { if ('Notification' in window && Notification.permission==='granted')
+    new Notification(`New order · ${o.flat}`, {body:`${o.items.length} items · ${inr(o.total)} · ${o.pay_method==='upi'?'UPI':'Cash'}`, tag:o.id}); } catch(e){}
+}
+async function enableAlerts(){
+  beep(); try { if ('Notification' in window) await Notification.requestPermission(); } catch(e){}
+  $('#notifBanner').style.display='none'; try { localStorage.setItem('admin_alerts','1'); } catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) document.title = 'Society Admin'; });
+
+/* ---------------- orders ---------------- */
+const NEXT = { placed:['packed','Mark packed'], packed:['out','Out for delivery'], out:['delivered','Mark delivered'] };
+const LABEL = { placed:'New', packed:'Packed', out:'Out for delivery', delivered:'Delivered', cancelled:'Cancelled' };
+const SLOT = { asap:'Express ~30 min', eve:'Today 6–8 pm', tmrw:'Tomorrow 7–9 am' };
+function payLine(o){
+  if (o.pay_method === 'cod') return `<span>💵 Cash on delivery</span><b>${inr(o.total)}</b>`;
+  const st = { verifying:'<span class="warn">Check bank app</span>', awaiting:'<span class="warn">Not paid yet</span>', paid:'<span class="good">Paid ✓</span>', failed:'<span class="bad">Payment not found</span>' }[o.pay_status] || '';
+  return `<span>📱 UPI ${o.utr ? `· UTR <code>${esc(o.utr)}</code>` : ''}<br>${st}</span><b>${inr(o.total)}</b>`;
+}
+function card(o){
+  const nx = NEXT[o.status], open = !['delivered','cancelled'].includes(o.status);
+  const needsPay = o.pay_method==='upi' && o.pay_status==='verifying';
+  const locked = o.pay_method==='upi' && o.pay_status!=='paid';
+  const contact = o.phone ? `<a href="tel:${esc(o.phone)}" style="color:var(--brand)">${esc(o.phone)}</a>` : esc(o.email);
+  return `<div class="oc ${freshIds.has(o.id)?'new':''}">
+    <div class="oc-top">
+      <div><div class="flat">${esc(o.flat)}</div><small>${esc(o.name)} · ${contact}</small>
+        <small>${esc(o.id)} · ${new Date(o.created*1000).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${SLOT[o.slot]||''}</small></div>
+      <span class="pill p-${o.status}" style="align-self:flex-start">${LABEL[o.status]}</span>
+    </div>
+    <div class="items">${o.items.map(i=>`<div><span>${i.qty} × ${esc(i.name)} <small>(${esc(i.unit)}) · ${esc(i.vendor)}</small></span><span>${inr(i.total)}</span></div>`).join('')}</div>
+    <div class="pay">${payLine(o)}</div>
+    ${open ? `<div class="acts">
+      ${needsPay ? `<button class="btn ok" onclick="patchOrder('${o.id}',{pay_status:'paid'})">Payment received</button><button class="btn danger" onclick="patchOrder('${o.id}',{pay_status:'failed'})">Not received</button>` : ''}
+      ${nx ? `<button class="btn primary" onclick="patchOrder('${o.id}',{status:'${nx[0]}'})" ${locked?'disabled title="Confirm the payment first"':''}>${nx[1]}</button>` : ''}
+      <button class="btn danger" onclick="if(confirm('Cancel order ${o.id}?')) patchOrder('${o.id}',{status:'cancelled'})">Cancel</button>
+    </div>` : ''}
+  </div>`;
+}
+async function patchOrder(id, body){
+  try { const o = await api(`/admin/orders/${id}`, {method:'PATCH', body:JSON.stringify(body)}); freshIds.delete(id); orders = orders.map(x=>x.id===id?o:x); render(); }
+  catch(e){ toast(e.message); }
+}
+
+/* ---------------- logins ---------------- */
+const OUTCOME = { ok:'Signed in', not_registered:'Waiting for approval', unverified:'Email not verified', blocked:'Blocked' };
+function ago(ts){
+  const s = Date.now()/1000 - ts;
+  if (s < 60) return 'just now'; if (s < 3600) return `${Math.floor(s/60)} min ago`; if (s < 86400) return `${Math.floor(s/3600)} h ago`;
+  return `${Math.floor(s/86400)} d ago`;
+}
+function renderLogins(){
+  const list = logins.filter(l => logFilter==='all' || (logFilter==='ok' ? l.outcome==='ok' : l.outcome!=='ok'));
+  $('#logBody').innerHTML = list.length ? list.map(l => `<tr class="${freshLogins.has(l._k)?'fresh':''}">
+      <td><b>${ago(l.ts)}</b><small>${new Date(l.ts*1000).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</small></td>
+      <td><b>${esc(l.name || '—')}</b><small>${esc(l.email)}</small></td>
+      <td>${esc(l.flat || '—')}</td>
+      <td><span class="pill p-${l.outcome}">${OUTCOME[l.outcome] || esc(l.outcome)}</span></td>
+      <td>${esc(l.device)}</td><td><small style="font-size:12.5px">${esc(l.ip)}</small></td></tr>`).join('')
+    : `<tr><td colspan="6" class="empty" style="padding:30px">No sign-ins yet.</td></tr>`;
+}
+document.querySelectorAll('#logChips button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#logChips button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); logFilter=b.dataset.f; renderLogins();
+});
+
+/* ---------------- residents + access requests ---------------- */
+async function loadRequests(){
+  try { requests = await api('/admin/access-requests'); } catch(e){ return; }
+  $('#reqDot').innerHTML = requests.length ? '<i class="dot"></i>' : '';
+  $('#reqCard').style.display = requests.length ? '' : 'none';
+  $('#reqCount').textContent = requests.length;
+  $('#reqList').innerHTML = requests.map((r,i) => `<div class="req">
+      <div><b>${esc(r.auth_name || r.email)}</b><small>${esc(r.email)} · ${r.email_verified?'email verified':'<span class="warn">email not verified yet</span>'} · ${ago(r.last_seen)}</small></div>
+      <input class="field" id="qf${i}" maxlength="40" placeholder="Flat, e.g. B-1204">
+      <input class="field" id="qp${i}" inputmode="numeric" maxlength="10" placeholder="Mobile (optional)">
+      <button class="btn ok sm" onclick="approve(${i})">Approve</button>
+      <button class="btn danger sm" onclick="deny(${i})">Deny</button></div>`).join('');
+}
+async function approve(i){
+  const r = requests[i], flat = $('#qf'+i).value.trim();
+  if (!flat) { $('#qf'+i).focus(); return toast('Enter their flat number first'); }
+  await saveResident({email:r.email, name:r.auth_name || r.email.split('@')[0], flat, phone:$('#qp'+i).value.trim() || null}, `${r.auth_name || r.email} approved`);
+}
+async function deny(i){
+  const r = requests[i]; if (!confirm(`Deny access for ${r.email}? They won't be able to use the app.`)) return;
+  try { await api('/admin/residents', {method:'POST', body:JSON.stringify({email:r.email, name:r.auth_name || r.email.split('@')[0], flat:'—'})});
+        await api(`/admin/residents/${encodeURIComponent(r.email)}`, {method:'PATCH', body:JSON.stringify({active:false})});
+        toast('Access denied'); loadRequests(); loadResidents(); } catch(e){ toast(e.message); }
+}
+async function addResident(){
+  await saveResident({email:$('#rEmail').value.trim(), name:$('#rName').value.trim(), flat:$('#rFlat').value.trim(), phone:$('#rPhone').value.trim() || null}, 'Resident added');
+  ['#rEmail','#rName','#rFlat','#rPhone'].forEach(s=>$(s).value='');
+}
+async function saveResident(body, msg){
+  try { await api('/admin/residents', {method:'POST', body:JSON.stringify(body)}); toast(msg); loadRequests(); loadResidents(); }
+  catch(e){ toast(e.message); }
+}
+async function loadResidents(){
+  try {
+    const rs = await api('/admin/residents');
+    $('#resBody').innerHTML = rs.map(r => `<tr>
+      <td><b>${esc(r.flat)}</b></td><td>${esc(r.name)}</td>
+      <td>${esc(r.email)}<small>${esc(r.phone || '')}</small></td>
+      <td>${r.last_seen ? ago(r.last_seen) : '<small>never</small>'}</td>
+      <td>${r.active ? '<span class="pill p-ok">Active</span>' : '<span class="pill p-blocked">Blocked</span>'}</td>
+      <td><button class="btn sm ${r.active?'danger':''}" onclick="toggleRes('${esc(r.email)}',${!r.active})">${r.active?'Block':'Allow'}</button></td></tr>`).join('');
+  } catch(e){ toast(e.message); }
+}
+async function toggleRes(email, active){
+  try { await api(`/admin/residents/${encodeURIComponent(email)}`, {method:'PATCH', body:JSON.stringify({active})}); loadResidents(); }
+  catch(e){ toast(e.message); }
+}
+
+/* ---------------- layout ---------------- */
+function render(){
+  const isNew = o => o.status==='placed', isAct = o => ['packed','out'].includes(o.status);
+  const today = new Date(); today.setHours(0,0,0,0); const t0 = today/1000;
+  $('#sNew').textContent = orders.filter(isNew).length;
+  $('#sPay').textContent = orders.filter(o=>o.pay_status==='verifying').length;
+  $('#sRev').textContent = inr(orders.filter(o=>o.status!=='cancelled' && o.created>=t0).reduce((a,o)=>a+o.total,0));
+  $('#sLog').textContent = new Set(logins.filter(l=>l.ts>=t0 && l.outcome==='ok').map(l=>l.email)).size;
+  $('#cNew').textContent = orders.filter(isNew).length ? ` ${orders.filter(isNew).length}` : '';
+  $('#cAct').textContent = orders.filter(isAct).length ? ` ${orders.filter(isAct).length}` : '';
+  if (tab === 'logins') return renderLogins();
+  if (tab === 'residents') return;
+  const list = orders.filter(tab==='new' ? isNew : tab==='active' ? isAct : o=>['delivered','cancelled'].includes(o.status));
+  $('#ordersView').innerHTML = list.length ? list.map(card).join('') : `<div class="empty">${tab==='new'?'No new orders right now. New ones pop up here with a sound.':'Nothing here yet.'}</div>`;
+}
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); tab=b.dataset.t;
+  $('#ordersView').style.display = ['new','active','done'].includes(tab) ? '' : 'none';
+  $('#loginsView').style.display = tab==='logins' ? '' : 'none';
+  $('#residentsView').style.display = tab==='residents' ? '' : 'none';
+  if (tab==='residents') { loadRequests(); loadResidents(); }
+  render();
+});
+async function loadAll(){
+  try {
+    const [o, l] = await Promise.all([api('/admin/orders'), api('/admin/logins')]);
+    orders = o; logins = l.map(x => ({...x, _k: x.ts + x.email})); render();
+  } catch(e){ toast(e.message); }
+  loadRequests();
+}
+function start(){
+  $('#gate').style.display='none'; $('#appView').style.display='';
+  $('#who').innerHTML = (me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((me.name||me.email)[0].toUpperCase())}</span>`) + `<span>${esc(me.email)}</span>`;
+  let alertsOn = false; try { alertsOn = localStorage.getItem('admin_alerts')==='1'; } catch(e){}
+  $('#notifBanner').style.display = alertsOn && (!('Notification' in window) || Notification.permission==='granted') ? 'none' : 'flex';
+  loadAll(); connect();
+  setInterval(() => { if (tab==='logins') renderLogins(); }, 60000);   // keep "x min ago" fresh
+}
+boot();
+</script>
+</body>
+</html>

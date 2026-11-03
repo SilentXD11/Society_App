@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Society Grocery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#0f766e; --brand-50:#ecfdf8; --brand-100:#ccf3e8; --on-brand:#fff;
+  --accent:#f59e0b; --green:#16a34a;
+  --bg:#f4f6f5; --surface:#fff; --surface-2:#f8faf9;
+  --text:#0f1f1c; --muted:#5f6f6b; --line:#e3e9e7;
+  --danger:#dc2626; --info:#2563eb;
+  --shadow:0 1px 2px rgba(15,31,28,.06),0 8px 24px rgba(15,31,28,.06);
+  --radius:18px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --brand:#2dd4bf; --brand-50:#0f2a27; --brand-100:#134e48; --on-brand:#062421;
+    --bg:#0b1211; --surface:#121b1a; --surface-2:#172221;
+    --text:#e8f0ee; --muted:#93a5a1; --line:#22302e;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --brand:#2dd4bf; --brand-50:#0f2a27; --brand-100:#134e48; --on-brand:#062421;
+  --bg:#0b1211; --surface:#121b1a; --surface-2:#172221;
+  --text:#e8f0ee; --muted:#93a5a1; --line:#22302e;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:15px;line-height:1.45}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;line-height:1}
+
+.app{max-width:440px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:150px}
+.page{display:none;animation:fade .25s ease}
+.page.active{display:block}
+.pad{padding:0 16px}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Home ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;padding:20px 16px 14px}
+.hello small{display:block;color:var(--muted);font-size:13px;font-weight:500}
+.hello h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.flat{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;font-weight:600;color:var(--brand);background:var(--brand-50);padding:4px 10px;border-radius:99px}
+.icon-btn{width:44px;height:44px;border-radius:14px;background:var(--surface);display:grid;place-items:center;box-shadow:var(--shadow);position:relative}
+
+.hero{margin:0 16px 22px;background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;border-radius:22px;padding:20px;position:relative;overflow:hidden;display:flex;gap:12px;align-items:center}
+.hero .h-txt{flex:1;position:relative;z-index:1}
+.hero small{font-size:11px;font-weight:700;letter-spacing:.12em;opacity:.8}
+.hero h2{font-size:19px;font-weight:800;line-height:1.25;margin:4px 0 6px}
+.hero p{font-size:13px;opacity:.85;margin-bottom:14px}
+.hero .cta{background:#fff;color:#0f766e;font-weight:700;padding:10px 16px;border-radius:12px;display:inline-flex;align-items:center;gap:6px}
+.hero .art{font-size:64px;position:relative;z-index:1}
+.hero::after{content:"";position:absolute;right:-50px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
+
+.section-h{display:flex;align-items:baseline;justify-content:space-between;margin:4px 16px 12px}
+.section-h h3{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.section-h button{font-size:13px;font-weight:600;color:var(--brand)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px;margin-bottom:24px}
+.cat{background:var(--surface);border-radius:var(--radius);padding:14px 10px 12px;text-align:left;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;position:relative;transition:transform .15s}
+.cat:active{transform:scale(.97)}
+.cat .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.cat b{font-size:13px;font-weight:700;line-height:1.25;min-height:32px}
+.cat.soon{opacity:.55;box-shadow:none;border:1px dashed var(--line);background:transparent}
+.cat .tag{position:absolute;top:10px;right:10px;font-size:9.5px;font-weight:800;letter-spacing:.04em;padding:3px 7px;border-radius:99px;background:var(--line);color:var(--muted);text-transform:uppercase}
+.cat .tag.live{background:var(--green);color:#fff}
+
+/* ---------- Grocery ---------- */
+.g-head{position:sticky;top:0;z-index:15;background:var(--bg);padding:14px 16px 10px}
+.loc{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin-bottom:12px}
+.loc .pin{width:38px;height:38px;border-radius:12px;background:var(--brand-50);color:var(--brand);display:grid;place-items:center}
+.loc .lt{flex:1;min-width:0}
+.loc .lt b{display:flex;align-items:center;gap:4px;font-size:15px;font-weight:800}
+.loc .lt small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eta{font-size:11px;font-weight:800;background:var(--surface);border:1px solid var(--line);padding:6px 10px;border-radius:10px;text-align:center;line-height:1.2}
+.eta span{display:block;font-size:15px;color:var(--brand)}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:48px}
+.search input{flex:1;border:0;outline:0;background:none;height:100%}
+.search svg{color:var(--muted)}
+
+.gcats{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 14px;scrollbar-width:none}
+.gcats::-webkit-scrollbar,.shops::-webkit-scrollbar{display:none}
+.gc{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:72px;font-size:11.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.2}
+.gc .e{width:60px;height:60px;border-radius:18px;background:var(--surface);display:grid;place-items:center;font-size:28px;border:2px solid transparent;box-shadow:var(--shadow);transition:border-color .15s}
+.gc.on{color:var(--text)}
+.gc.on .e{border-color:var(--brand);background:var(--brand-50)}
+
+.ctiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px;margin-bottom:24px}
+.ctile{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;text-align:center;line-height:1.2;color:var(--text)}
+.ctile .e{width:100%;aspect-ratio:1;border-radius:16px;display:grid;place-items:center;font-size:30px}
+.shops{display:flex;gap:10px;overflow-x:auto;padding:0 16px 18px;scrollbar-width:none}
+.shop{min-width:200px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px;text-align:left;display:flex;gap:10px;align-items:center}
+.shop.on{border-color:var(--brand);background:var(--brand-50)}
+.shop .av{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--surface-2)}
+.shop b{display:block;font-size:13.5px;font-weight:700;white-space:nowrap}
+.shop small{display:block;font-size:11.5px;color:var(--muted)}
+.shop small .open{color:var(--green);font-weight:700}
+
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px;margin-bottom:22px}
+.pc{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:8px 8px 10px;display:flex;flex-direction:column}
+.pimg{height:108px;border-radius:12px;display:grid;place-items:center;font-size:54px;margin-bottom:8px;position:relative;width:100%}
+.pimg .save{position:absolute;top:6px;left:6px;background:var(--green);color:#fff;font-size:10px;font-weight:800;padding:3px 6px;border-radius:6px;font-family:"Plus Jakarta Sans",sans-serif}
+.pname{font-size:13.5px;font-weight:700;line-height:1.25;padding:0 2px;min-height:34px}
+.punit{font-size:12px;color:var(--muted);padding:0 2px;margin:2px 0 8px}
+.pfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;margin-top:auto;padding:0 2px}
+.price b{font-size:15px;font-weight:800}
+.price s{font-size:11.5px;color:var(--muted);margin-left:3px}
+.price small{display:block;font-size:10.5px;color:var(--brand);font-weight:700}
+.add{height:34px;min-width:72px;border-radius:10px;border:1.5px solid var(--brand);color:var(--brand);background:var(--brand-50);font-weight:800;font-size:13px}
+.step{display:flex;align-items:center;height:34px;min-width:84px;border-radius:10px;background:var(--brand);color:var(--on-brand);font-weight:800}
+.step button{width:28px;height:100%;color:var(--on-brand);font-size:18px;font-weight:700}
+.step span{flex:1;text-align:center;font-size:14px}
+
+.cartbar{position:fixed;left:50%;transform:translate(-50%,140%);bottom:84px;width:calc(100% - 24px);max-width:416px;background:var(--brand);color:var(--on-brand);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;z-index:19;box-shadow:0 10px 30px rgba(15,118,110,.35);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.cartbar.on{transform:translate(-50%,0)}
+.cartbar .ct{flex:1}
+.cartbar .ct b{display:block;font-size:15px}
+.cartbar .ct small{font-size:12px;opacity:.85}
+.cartbar .go{font-weight:800;display:flex;align-items:center;gap:4px}
+
+/* ---------- Generic ---------- */
+.list{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}
+.row{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center}
+.row .txt{flex:1;min-width:0}
+.row .txt b{display:block;font-weight:600;font-size:14.5px}
+.row .txt small{color:var(--muted);font-size:12px}
+.row .chev{color:var(--muted)}
+.page-title{font-size:24px;font-weight:800;letter-spacing:-.02em;padding:22px 16px 14px}
+.empty{text-align:center;padding:40px 24px;color:var(--muted)}
+.empty .big{font-size:52px;margin-bottom:10px}
+.empty b{color:var(--text);display:block;font-size:16px}
+.pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;white-space:nowrap}
+
+/* Orders */
+.ord{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin:0 16px 12px}
+.ord-top{display:flex;justify-content:space-between;gap:10px}
+.ord-top b{font-weight:800}
+.ord-top small{display:block;color:var(--muted);font-size:12px}
+.steps{display:flex;gap:6px;margin:14px 0 6px}
+.steps i{flex:1;height:5px;border-radius:9px;background:var(--line);transition:background .4s}
+.steps i.on{background:var(--brand)}
+.steps-l{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);font-weight:600}
+.ord-items{font-size:13px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;gap:10px}
+.ord-items b{color:var(--text)}
+
+/* Nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:20}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0;position:relative}
+.nav button.on{color:var(--brand)}
+.badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(--danger);color:#fff;font-size:10px;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(5,15,13,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:30}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);width:100%;max-width:440px;max-height:90vh;background:var(--surface);border-radius:26px 26px 0 0;z-index:31;transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.sheet.on{transform:translate(-50%,0)}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:10px auto 0;flex-shrink:0}
+.sheet-h{padding:12px 20px 12px;display:flex;align-items:flex-start;gap:12px;flex-shrink:0}
+.sheet-h .t{flex:1}
+.sheet-h .t small{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--brand);text-transform:uppercase}
+.sheet-h .t h3{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.x{width:38px;height:38px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;flex-shrink:0}
+.sheet-b{overflow-y:auto;padding:0 20px 20px}
+.sheet-f{padding:12px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid var(--line);flex-shrink:0}
+
+.info{display:flex;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.info svg{width:18px;height:18px;color:var(--brand);margin-top:1px}
+.label{font-size:13px;font-weight:800;margin:18px 0 10px}
+
+/* Product sheet */
+.pd-hero{height:170px;border-radius:18px;display:grid;place-items:center;font-size:96px;margin-bottom:14px}
+.vrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:8px;width:100%;text-align:left}
+.vrow.on{border-color:var(--brand);background:var(--brand-50)}
+.vrow .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;position:relative}
+.vrow.on .radio{border-color:var(--brand)}
+.vrow.on .radio::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--brand)}
+.vrow .vt{flex:1}
+.vrow .vt b{font-size:14px;font-weight:700}
+.vrow .vt small{display:block;font-size:12px;color:var(--muted)}
+.vrow .vp{font-weight:800;text-align:right}
+.vrow .vp small{display:block;font-size:10px;font-weight:800;color:var(--green)}
+
+/* Cart */
+.ci{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ci .ce{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:26px}
+.ci .ct{flex:1;min-width:0}
+.ci .ct b{display:block;font-size:14px;font-weight:700}
+.ci .ct small{font-size:12px;color:var(--muted)}
+.ci .lp{font-weight:800;min-width:54px;text-align:right}
+.bill{background:var(--surface-2);border-radius:14px;padding:14px;font-size:13.5px}
+.bill div{display:flex;justify-content:space-between;padding:4px 0}
+.bill .tot{border-top:1px dashed var(--line);margin-top:6px;padding-top:10px;font-weight:800;font-size:15px}
+.free{color:var(--green);font-weight:700}
+.nudge{background:#fef3c7;color:#92400e;font-size:12.5px;font-weight:600;padding:10px 12px;border-radius:12px;margin-top:10px}
+:root[data-theme="dark"] .nudge{background:#3a2a0a;color:#fcd34d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .nudge{background:#3a2a0a;color:#fcd34d}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:9px 13px;border:1.5px solid var(--line);border-radius:12px;font-size:13px;font-weight:600;background:var(--surface);text-align:left}
+.chip small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.chip.on{background:var(--brand-50);border-color:var(--brand);color:var(--brand)}
+.addr{display:flex;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.addr b{font-size:14px}
+.addr small{display:block;font-size:12px;color:var(--muted)}
+.pm{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:8px}
+.pm.on{border-color:var(--brand);background:var(--brand-50)}
+.pm .pmi{width:38px;height:38px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;font-size:20px}
+.pm .vt{flex:1}
+.pm .vt b{font-size:14px}
+.pm .vt small{display:block;font-size:12px;color:var(--muted)}
+.pm .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);position:relative}
+.pm.on .radio{border-color:var(--brand)}
+.pm.on .radio::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--brand)}
+
+.primary{width:100%;height:52px;border-radius:14px;background:var(--brand);color:var(--on-brand);font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:8px}
+.primary.center{justify-content:center}
+.primary:disabled{opacity:.45}
+.ghost{width:100%;height:48px;border-radius:14px;border:1px solid var(--line);font-weight:700;margin-top:10px}
+
+/* Payment */
+.pay-amt{text-align:center;margin:4px 0 16px}
+.pay-amt small{color:var(--muted);font-size:13px}
+.pay-amt b{display:block;font-size:34px;font-weight:800;letter-spacing:-.02em}
+.qr{width:220px;height:220px;margin:0 auto;border-radius:20px;border:2px dashed var(--line);display:grid;place-items:center;background:var(--surface-2);text-align:center;padding:16px;color:var(--muted);font-size:12.5px;overflow:hidden}
+.qr img{width:100%;height:100%;object-fit:contain;background:#fff;border-radius:10px}
+.qr svg{width:64px;height:64px;margin-bottom:8px;color:var(--brand)}
+.upi-id{text-align:center;margin:12px 0 4px;font-size:13px;color:var(--muted)}
+.upi-id b{color:var(--text);font-family:ui-monospace,monospace}
+.apps{display:flex;justify-content:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap}
+.apps span{font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+
+.success{text-align:center;padding:20px 0 4px}
+.success .ok{width:80px;height:80px;border-radius:50%;background:#dcfce7;color:var(--green);display:grid;place-items:center;margin:0 auto 14px;animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.success .ok svg{width:38px;height:38px;stroke-width:2.6}
+@keyframes pop{from{transform:scale(.4)}to{transform:scale(1)}}
+.success h3{font-size:21px;font-weight:800}
+.success p{color:var(--muted);font-size:14px;margin:6px 0 14px}
+.ref{display:inline-block;font-family:ui-monospace,monospace;font-weight:700;background:var(--surface-2);border:1px dashed var(--line);padding:8px 14px;border-radius:10px}
+
+.pcard{background:var(--surface);border-radius:22px;box-shadow:var(--shadow);padding:20px;display:flex;align-items:center;gap:14px;margin:20px 16px 16px}
+.avatar{width:58px;height:58px;border-radius:18px;background:var(--brand-50);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:20px}
+
+.toast{position:fixed;left:50%;bottom:160px;transform:translate(-50%,20px);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .25s;z-index:50;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.field{width:100%;height:50px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;background:var(--surface-2);outline:0;font-size:16px;margin-bottom:6px}
+.field:focus{border-color:var(--brand)}
+.err{color:var(--danger);font-size:12.5px;font-weight:600;min-height:18px;margin-bottom:8px}
+.disclaimer{font-size:11.5px;color:var(--muted);text-align:center;padding:0 24px 20px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= HOME ================= -->
+  <section class="page active" id="p-home">
+    <div class="top">
+      <div class="hello">
+        <small id="greet">Hello</small>
+        <h1 id="hiName">Hi, Resident 👋</h1>
+        <span class="flat"><svg class="i" style="width:14px;height:14px" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg><span class="addrShort">Tower B · Flat 1204</span></span>
+      </div>
+      <button class="icon-btn" aria-label="Profile" onclick="go('profile')"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
+    </div>
+
+    <div class="hero">
+      <div class="h-txt">
+        <small>NOW LIVE</small>
+        <h2>Fresh groceries from shops near you</h2>
+        <p>Compare local prices and get it delivered to your door.</p>
+        <button class="cta" onclick="go('grocery')">Shop now <svg class="i" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="art emoji">🧺</div>
+    </div>
+
+    <div class="section-h"><h3>Shop by category</h3><button onclick="go('grocery')">See all</button></div>
+    <div class="gcats" id="homeCats"></div>
+
+    <div class="section-h" style="margin-top:8px"><h3>All services</h3></div>
+    <div class="grid" id="catGrid"></div>
+  </section>
+
+  <!-- ================= GROCERY ================= -->
+  <section class="page" id="p-grocery">
+    <div class="g-head">
+      <button class="loc" onclick="openLocation()">
+        <span class="pin"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <span class="lt"><b><span id="locTitle">Home</span> <svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></b><small id="locSub">Tower B, Flat 1204</small></span>
+        <span class="eta">Delivery<span>~30 min</span></span>
+      </button>
+      <div class="search">
+        <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="q" placeholder="Search tomato, atta, soap…" oninput="state.q=this.value;renderProducts()" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="gcats" id="gcats"></div>
+
+    <div class="section-h"><h3>Shops near you</h3><small style="color:var(--muted);font-size:12px" id="shopCount"></small></div>
+    <div class="shops" id="shops"></div>
+
+    <div id="products"></div>
+    <p class="disclaimer">Prices are indicative estimates based on recent local market rates and are confirmed by each shop at the time of order.</p>
+  </section>
+
+  <!-- ================= ORDERS ================= -->
+  <section class="page" id="p-orders">
+    <h2 class="page-title">My orders</h2>
+    <div id="orderList"></div>
+  </section>
+
+  <!-- ================= PROFILE ================= -->
+  <section class="page" id="p-profile">
+    <div class="pcard">
+      <div class="avatar uinit">R</div>
+      <div><b style="font-size:17px" class="uname">Resident</b><div style="color:var(--muted);font-size:13px" class="addrShort">Tower B · Flat 1204</div></div>
+    </div>
+    <div class="pad"><div class="list">
+      <button class="row" onclick="toggleTheme()"><span class="ico" style="background:var(--brand-50);color:var(--brand)"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></svg></span><span class="txt"><b>Appearance</b><small id="themeLbl">System</small></span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="row" onclick="go('orders')"><span class="ico" style="background:var(--brand-50);color:var(--brand)"><svg class="i" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></span><span class="txt"><b>Order history</b><small>Your grocery orders</small></span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="row" onclick="openLocation()"><span class="ico" style="background:var(--brand-50);color:var(--brand)"><svg class="i" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="txt"><b>Delivery address</b><small class="addrShort">Tower B · Flat 1204</small></span><svg class="i chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+      <button class="row" id="logoutRow" style="display:none" onclick="logout()"><span class="ico" style="background:#fee2e2;color:var(--danger)"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span><span class="txt"><b style="color:var(--danger)">Log out</b><small>Sign out of this phone</small></span></button>
+    </div></div>
+  </section>
+
+  <!-- Cart bar -->
+  <button class="cartbar" id="cartbar" onclick="openCart()">
+    <span class="emoji" style="font-size:24px">🛒</span>
+    <span class="ct"><b id="cbItems">0 items</b><small id="cbTotal">₹0</small></span>
+    <span class="go">View cart <svg class="i" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></span>
+  </button>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <button class="on" data-p="home" onclick="go('home')"><svg class="i" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>Home</button>
+    <button data-p="grocery" onclick="go('grocery')"><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L22 7H5.1"/></svg>Grocery</button>
+    <button data-p="orders" onclick="go('orders')"><svg class="i" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Orders<span class="badge" id="ordBadge" style="display:none"></span></button>
+    <button data-p="profile" onclick="go('profile')"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button>
+  </nav>
+</div>
+
+<div class="scrim" id="scrim" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetContent" style="display:flex;flex-direction:column;min-height:0;flex:1"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   CONFIG — fill these in when your payment setup is ready
+===================================================================== */
+/* Your server address, e.g. 'https://api.yoursociety.in'.
+   Leave empty ('') to run in demo mode with no login and no real orders. */
+const API_BASE = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://127.0.0.1:8000' : '';
+/* ↑ Opened through the start script → uses your server (login + real orders).
+     Opened by double-clicking the file → demo mode. When you go live, put your https server address here. */
+const UPI_QR_IMAGE = '';             // e.g. 'images/upi-qr.png'  (leave empty to show placeholder)
+const UPI_ID       = 'yoursociety@upi'; // shown under the QR
+const FREE_DELIVERY_ABOVE = 299;
+const DELIVERY_FEE = 25;
+
+/* =====================================================================
+   DATA — demo data. Replace with API calls:
+   GET /vendors?lat=&lng=   GET /products?vendor=   (prices per vendor)
+===================================================================== */
+const GROCERY_CATS = [
+  {id:'veg',   name:'Vegetables',     e:'🥦', bg:'#ecfdf3'},
+  {id:'fruit', name:'Fruits',         e:'🍎', bg:'#fff1f2'},
+  {id:'dairy', name:'Dairy & Bread',  e:'🥛', bg:'#eff6ff'},
+  {id:'staple',name:'Atta, Rice & Dal',e:'🌾', bg:'#fefce8'},
+  {id:'house', name:'Household',      e:'🧽', bg:'#f5f3ff'},
+  {id:'toilet',name:'Toiletries',     e:'🧴', bg:'#ecfeff'},
+  {id:'pooja', name:'Pooja Essentials',e:'🪔', bg:'#fff7ed'},
+  {id:'masala',name:'Masala & Spices',e:'🌶️', bg:'#fef2f2'},
+  {id:'oil',   name:'Oil & Ghee',     e:'🫙', bg:'#fefce8'},
+  {id:'dryfruit',name:'Dry Fruits & Nuts',e:'🥜', bg:'#fdf4e7'},
+  {id:'snacks',name:'Snacks & Biscuits',e:'🍪', bg:'#fff7ed'},
+  {id:'bev',   name:'Tea, Coffee & Drinks',e:'🧃', bg:'#f0fdf4'},
+  {id:'instant',name:'Breakfast & Instant',e:'🥣', bg:'#eff6ff'},
+  {id:'sweets',name:'Sweets & Chocolates',e:'🍫', bg:'#fdf2f8'},
+  {id:'frozen',name:'Frozen & Ice Cream',e:'🍦', bg:'#ecfeff'},
+  {id:'meat',  name:'Chicken, Fish & Eggs',e:'🍗', bg:'#fff1f2'},
+  {id:'baby',  name:'Baby Care',      e:'🍼', bg:'#f5f3ff'},
+  {id:'pet',   name:'Pet Care',       e:'🐾', bg:'#f0f9ff'},
+  {id:'station',name:'Stationery',    e:'✏️', bg:'#f8fafc'}
+];
+
+/* base = indicative market price (₹) used to derive each shop's price */
+const PRODUCTS = [
+  // Vegetables
+  ['tomato','veg','Tomato','1 kg','🍅',45],
+  ['onion','veg','Onion','1 kg','🧅',55],
+  ['potato','veg','Potato','1 kg','🥔',35],
+  ['chilli','veg','Green Chilli','100 g','🌶️',10],
+  ['coriander','veg','Coriander','1 bunch','🌿',15],
+  ['carrot','veg','Carrot','500 g','🥕',30],
+  ['cucumber','veg','Cucumber','500 g','🥒',25],
+  ['brinjal','veg','Brinjal','500 g','🍆',30],
+  ['capsicum','veg','Capsicum','500 g','🫑',45],
+  ['garlic','veg','Garlic','250 g','🧄',65],
+  ['ginger','veg','Ginger','250 g','🫚',45],
+  ['spinach','veg','Spinach (Palak)','1 bunch','🥬',20],
+  ['lemon','veg','Lemon','4 pcs','🍋',25],
+  ['peas','veg','Green Peas','500 g','🫛',60],
+  ['corn','veg','Sweet Corn','1 pc','🌽',25],
+  // Fruits
+  ['banana','fruit','Banana','1 dozen','🍌',60],
+  ['apple','fruit','Apple (Shimla)','1 kg','🍎',160],
+  ['orange','fruit','Orange','1 kg','🍊',90],
+  ['grapes','fruit','Green Grapes','500 g','🍇',70],
+  ['papaya','fruit','Papaya','1 pc (~1 kg)','🍈',55],
+  ['watermelon','fruit','Watermelon','1 pc','🍉',70],
+  ['pineapple','fruit','Pineapple','1 pc','🍍',80],
+  ['pear','fruit','Pear','500 g','🍐',90],
+  ['kiwi','fruit','Kiwi','3 pcs','🥝',90],
+  ['coconut','fruit','Tender Coconut','1 pc','🥥',50],
+  // Dairy
+  ['milk','dairy','Toned Milk','500 ml','🥛',28],
+  ['curd','dairy','Curd','400 g','🥣',35],
+  ['paneer','dairy','Paneer','200 g','🧀',90],
+  ['eggs','dairy','Eggs','6 pcs','🥚',48],
+  ['butter','dairy','Butter','100 g','🧈',58],
+  ['bread','dairy','Brown Bread','400 g','🍞',45],
+  // Staples
+  ['atta','staple','Whole Wheat Atta','5 kg','🌾',260],
+  ['rice','staple','Sona Masoori Rice','5 kg','🍚',380],
+  ['toordal','staple','Toor Dal','1 kg','🫘',160],
+  ['sugar','staple','Sugar','1 kg','🍬',48],
+  ['salt','staple','Iodised Salt','1 kg','🧂',28],
+  ['tea','staple','Tea Powder','250 g','🍵',140],
+  // Household
+  ['dishwash','house','Dishwash Liquid','500 ml','🧴',110],
+  ['detergent','house','Detergent Powder','1 kg','🧺',130],
+  ['floor','house','Floor Cleaner','1 L','🫧',190],
+  ['toiletclean','house','Toilet Cleaner','500 ml','🚽',95],
+  ['garbage','house','Garbage Bags (M)','30 pcs','🗑️',99],
+  ['scrub','house','Scrub Pads','3 pcs','🧽',45],
+  ['foil','house','Aluminium Foil','9 m','🥡',99],
+  // Toiletries
+  ['soap','toilet','Bath Soap','4 × 100 g','🧼',160],
+  ['shampoo','toilet','Shampoo','340 ml','🧴',220],
+  ['paste','toilet','Toothpaste','150 g','🪥',99],
+  ['brush','toilet','Toothbrush','2 pcs','🪥',60],
+  ['handwash','toilet','Hand Wash Refill','750 ml','🫧',99],
+  ['tissue','toilet','Toilet Roll','4 rolls','🧻',160],
+  ['hairoil','toilet','Coconut Hair Oil','200 ml','🥥',110],
+  // Pooja
+  ['agarbatti','pooja','Agarbatti','100 g','🪔',60],
+  ['camphor','pooja','Camphor','50 g','🤍',70],
+  ['diya','pooja','Clay Diya','12 pcs','🪔',60],
+  ['kumkum','pooja','Kumkum','50 g','🔴',30],
+  ['flowers','pooja','Marigold Garland','1 pc','🌼',40],
+  ['wicks','pooja','Cotton Wicks','100 pcs','🕯️',30],
+  ['bhimseni','pooja','Gangajal','250 ml','💧',40],
+  ['haldikum','pooja','Haldi Kumkum Set','1 set','🟡',50],
+  ['tulsi','pooja','Tulsi Mala','1 pc','📿',80],
+  ['sambrani','pooja','Sambrani Cups','12 pcs','🪔',60],
+
+  // More vegetables
+  ['cauli','veg','Cauliflower','1 pc','🥦',40],
+  ['cabbage','veg','Cabbage','1 pc','🥬',35],
+  ['bhindi','veg','Ladyfinger (Bhindi)','500 g','🌿',35],
+  ['beans','veg','French Beans','500 g','🫛',50],
+  ['bottlegourd','veg','Bottle Gourd (Lauki)','1 pc','🥒',35],
+  ['bittergourd','veg','Bitter Gourd (Karela)','500 g','🥒',40],
+  ['beetroot','veg','Beetroot','500 g','🟣',30],
+  ['radish','veg','Radish (Mooli)','500 g','🥕',25],
+  ['mushroom','veg','Button Mushroom','200 g','🍄',50],
+  ['sweetpotato','veg','Sweet Potato','500 g','🍠',35],
+  ['mint','veg','Mint (Pudina)','1 bunch','🌿',10],
+  ['curryleaf','veg','Curry Leaves','1 bunch','🌿',10],
+  ['methi','veg','Methi Leaves','1 bunch','🥬',20],
+  ['drumstick','veg','Drumstick','250 g','🥢',30],
+  ['pumpkin','veg','Red Pumpkin','500 g','🎃',25],
+  // More fruits
+  ['pomegranate','fruit','Pomegranate','1 kg','🔴',180],
+  ['mosambi','fruit','Sweet Lime (Mosambi)','1 kg','🍊',80],
+  ['guava','fruit','Guava','500 g','🍐',50],
+  ['chikoo','fruit','Chikoo','500 g','🟤',60],
+  ['custard','fruit','Custard Apple','500 g','🍏',90],
+  ['strawberry','fruit','Strawberry','200 g','🍓',90],
+  ['dragon','fruit','Dragon Fruit','1 pc','🌺',80],
+  ['avocado','fruit','Avocado','1 pc','🥑',120],
+  ['muskmelon','fruit','Muskmelon','1 pc','🍈',60],
+  ['greenapple','fruit','Green Apple','4 pcs','🍏',180],
+  // More dairy
+  ['fullmilk','dairy','Full Cream Milk','1 L','🥛',68],
+  ['buttermilk','dairy','Buttermilk','500 ml','🥛',20],
+  ['cheese','dairy','Cheese Slices','10 pcs','🧀',140],
+  ['cream','dairy','Fresh Cream','200 ml','🥛',65],
+  ['lassi','dairy','Sweet Lassi','200 ml','🥤',25],
+  ['pav','dairy','Pav','6 pcs','🍞',30],
+  ['whitebread','dairy','White Bread','400 g','🍞',40],
+  ['bun','dairy','Burger Buns','4 pcs','🍔',40],
+  // More staples
+  ['basmati','staple','Basmati Rice','1 kg','🍚',150],
+  ['poha','staple','Poha','500 g','🍚',40],
+  ['rava','staple','Rava / Sooji','500 g','🌾',35],
+  ['besan','staple','Besan','500 g','🌾',60],
+  ['maida','staple','Maida','1 kg','🌾',50],
+  ['moongdal','staple','Moong Dal','1 kg','🫘',140],
+  ['chanadal','staple','Chana Dal','1 kg','🫘',100],
+  ['masoor','staple','Masoor Dal','1 kg','🫘',110],
+  ['urad','staple','Urad Dal','1 kg','🫘',150],
+  ['rajma','staple','Rajma','500 g','🫘',90],
+  ['kabuli','staple','Kabuli Chana','500 g','🫘',80],
+  ['jaggery','staple','Jaggery','1 kg','🟫',70],
+  ['rocksalt','staple','Rock Salt','500 g','🧂',45],
+  // Masala & spices
+  ['haldi','masala','Turmeric Powder','200 g','🟡',55],
+  ['chillipow','masala','Red Chilli Powder','200 g','🌶️',70],
+  ['dhaniya','masala','Coriander Powder','200 g','🌿',50],
+  ['jeera','masala','Cumin Seeds (Jeera)','100 g','🫙',60],
+  ['rai','masala','Mustard Seeds (Rai)','100 g','🫙',25],
+  ['garam','masala','Garam Masala','100 g','🫙',80],
+  ['pavbhaji','masala','Pav Bhaji Masala','100 g','🫙',65],
+  ['chole','masala','Chole Masala','100 g','🫙',65],
+  ['hing','masala','Hing (Asafoetida)','50 g','🫙',90],
+  ['pepper','masala','Black Pepper','100 g','⚫',120],
+  ['elaichi','masala','Cardamom (Elaichi)','50 g','🟢',180],
+  ['tamarind','masala','Tamarind','250 g','🟤',60],
+  // Oil & ghee
+  ['oil','oil','Sunflower Oil','1 L','🫙',155],
+  ['groundnut','oil','Groundnut Oil','1 L','🥜',190],
+  ['mustardoil','oil','Mustard Oil','1 L','🫙',170],
+  ['coconutoil','oil','Coconut Oil','500 ml','🥥',140],
+  ['ricebran','oil','Rice Bran Oil','1 L','🫙',150],
+  ['ghee','oil','Cow Ghee','500 ml','🧈',330],
+  ['vanaspati','oil','Vanaspati','1 L','🫙',150],
+  // Dry fruits
+  ['almond','dryfruit','Almonds','250 g','🌰',230],
+  ['cashew','dryfruit','Cashews','250 g','🥜',260],
+  ['raisin','dryfruit','Raisins','250 g','🍇',100],
+  ['walnut','dryfruit','Walnuts','250 g','🌰',280],
+  ['pista','dryfruit','Pistachios','200 g','🥜',260],
+  ['dates','dryfruit','Dates','500 g','🟤',180],
+  ['peanut','dryfruit','Raw Peanuts','500 g','🥜',80],
+  ['makhana','dryfruit','Makhana','100 g','⚪',120],
+  ['fig','dryfruit','Dried Figs (Anjeer)','200 g','🟤',280],
+  // Snacks
+  ['biscuitglu','snacks','Glucose Biscuits','800 g','🍪',100],
+  ['cookies','snacks','Butter Cookies','200 g','🍪',60],
+  ['cream_bis','snacks','Cream Biscuits','300 g','🍪',50],
+  ['chips','snacks','Potato Chips','90 g','🥔',30],
+  ['namkeen','snacks','Bhujia Namkeen','400 g','🥨',110],
+  ['khakhra','snacks','Khakhra','200 g','🫓',70],
+  ['popcorn','snacks','Microwave Popcorn','90 g','🍿',45],
+  ['rusk','snacks','Rusk','300 g','🍞',55],
+  ['chakli','snacks','Chakli','200 g','🌀',70],
+  ['nachos','snacks','Nachos','150 g','🌮',60],
+  // Beverages
+  ['coffee','bev','Instant Coffee','100 g','☕',260],
+  ['filtercoffee','bev','Filter Coffee Powder','200 g','☕',180],
+  ['greentea','bev','Green Tea Bags','25 pcs','🍵',160],
+  ['juice','bev','Mixed Fruit Juice','1 L','🧃',120],
+  ['cola','bev','Cold Drink','750 ml','🥤',40],
+  ['soda','bev','Soda Water','750 ml','🫧',25],
+  ['water','bev','Mineral Water','1 L','💧',20],
+  ['coconutwater','bev','Packaged Coconut Water','200 ml','🥥',50],
+  ['health','bev','Malt Health Drink','500 g','🥛',260],
+  ['energy','bev','Energy Drink','250 ml','⚡',125],
+  // Breakfast & instant
+  ['noodles','instant','Instant Noodles','4 pack','🍜',60],
+  ['oats','instant','Rolled Oats','1 kg','🥣',190],
+  ['cornflakes','instant','Corn Flakes','475 g','🥣',190],
+  ['muesli','instant','Fruit Muesli','500 g','🥣',300],
+  ['pasta','instant','Pasta','500 g','🍝',90],
+  ['ketchup','instant','Tomato Ketchup','1 kg','🍅',140],
+  ['jam','instant','Mixed Fruit Jam','500 g','🍓',150],
+  ['honey','instant','Honey','250 g','🍯',130],
+  ['peanutbutter','instant','Peanut Butter','340 g','🥜',180],
+  ['readyidli','instant','Idli / Dosa Batter','1 kg','🫓',80],
+  ['pickle','instant','Mango Pickle','400 g','🥭',120],
+  ['papad','instant','Papad','200 g','🫓',60],
+  // Sweets & chocolates
+  ['chocobar','sweets','Milk Chocolate Bar','50 g','🍫',50],
+  ['darkchoc','sweets','Dark Chocolate','100 g','🍫',150],
+  ['gulabjamun','sweets','Gulab Jamun Tin','1 kg','🍮',200],
+  ['rasgulla','sweets','Rasgulla Tin','1 kg','⚪',200],
+  ['kajukatli','sweets','Kaju Katli','250 g','🔷',300],
+  ['toffee','sweets','Assorted Toffees','100 pcs','🍬',120],
+  ['soanpapdi','sweets','Soan Papdi','500 g','🟨',150],
+  // Frozen
+  ['icecream','frozen','Vanilla Ice Cream','1 L','🍦',200],
+  ['kulfi','frozen','Malai Kulfi','4 pcs','🍡',120],
+  ['peasfrozen','frozen','Frozen Green Peas','500 g','🫛',110],
+  ['fries','frozen','French Fries','420 g','🍟',130],
+  ['paratha','frozen','Frozen Parathas','5 pcs','🫓',110],
+  ['nuggets','frozen','Veg Nuggets','400 g','🧆',170],
+  ['corn_frozen','frozen','Frozen Sweet Corn','500 g','🌽',120],
+  // Chicken, fish & eggs
+  ['chicken','meat','Chicken Curry Cut','500 g','🍗',150],
+  ['boneless','meat','Chicken Boneless','500 g','🍗',220],
+  ['mutton','meat','Mutton Curry Cut','500 g','🍖',420],
+  ['rohu','meat','Rohu Fish','500 g','🐟',180],
+  ['prawns','meat','Prawns (cleaned)','250 g','🦐',220],
+  ['eggs12','meat','Farm Eggs','12 pcs','🥚',90],
+  ['browneggs','meat','Brown Eggs','6 pcs','🥚',70],
+  // More household
+  ['bleach','house','Bleach','500 ml','🧴',60],
+  ['glass','house','Glass Cleaner','500 ml','🪟',110],
+  ['mosquito','house','Mosquito Repellent Refill','1 pc','🦟',85],
+  ['naphthalene','house','Naphthalene Balls','200 g','⚪',60],
+  ['airfresh','house','Air Freshener','220 ml','🌸',180],
+  ['broom','house','Soft Broom','1 pc','🧹',120],
+  ['mop','house','Floor Mop','1 pc','🧹',250],
+  ['bulb','house','LED Bulb 9W','1 pc','💡',99],
+  ['battery','house','AA Batteries','4 pcs','🔋',80],
+  ['candle','house','Candles','6 pcs','🕯️',60],
+  ['napkin','house','Paper Napkins','100 pcs','🧻',60],
+  ['clingfilm','house','Cling Film','30 m','🎞️',120],
+  ['liquiddet','house','Liquid Detergent','1 L','🧺',230],
+  ['fabric','house','Fabric Conditioner','860 ml','🌸',220],
+  ['dishbar','house','Dishwash Bar','3 × 200 g','🧼',60],
+  // More toiletries
+  ['facewash','toilet','Face Wash','100 g','🧴',150],
+  ['bodylotion','toilet','Body Lotion','400 ml','🧴',300],
+  ['deo','toilet','Deodorant','150 ml','💨',200],
+  ['razor','toilet','Disposable Razors','3 pcs','🪒',120],
+  ['shavingfoam','toilet','Shaving Foam','200 g','🫧',180],
+  ['conditioner','toilet','Conditioner','180 ml','🧴',190],
+  ['sanitary','toilet','Sanitary Pads','20 pcs','🌸',180],
+  ['cottonbuds','toilet','Cotton Buds','100 pcs','⚪',50],
+  ['sanitizer','toilet','Hand Sanitizer','200 ml','🧴',99],
+  ['mouthwash','toilet','Mouthwash','250 ml','🫧',150],
+  ['talc','toilet','Talcum Powder','300 g','⚪',150],
+  ['vaseline','toilet','Petroleum Jelly','100 ml','🫙',90],
+  // Baby care
+  ['diapers','baby','Baby Diapers (M)','30 pcs','👶',550],
+  ['wipes','baby','Baby Wipes','72 pcs','🧻',180],
+  ['babysoap','baby','Baby Soap','75 g','🧼',70],
+  ['babyoil','baby','Baby Massage Oil','200 ml','🫙',220],
+  ['babypowder','baby','Baby Powder','200 g','⚪',170],
+  ['babyfood','baby','Baby Cereal','300 g','🥣',300],
+  ['babylotion','baby','Baby Lotion','200 ml','🧴',230],
+  // Pet care
+  ['dogfood','pet','Dog Food (Adult)','1.2 kg','🐶',360],
+  ['catfood','pet','Cat Food','1.2 kg','🐱',420],
+  ['dogtreat','pet','Dog Treats','100 g','🦴',150],
+  ['catlitter','pet','Cat Litter','5 kg','🪣',450],
+  ['petshampoo','pet','Pet Shampoo','200 ml','🧴',250],
+  // Stationery
+  ['notebook','station','Long Notebook','1 pc','📓',60],
+  ['pens','station','Ball Pens','5 pcs','🖊️',50],
+  ['pencils','station','Pencils','10 pcs','✏️',60],
+  ['eraser','station','Eraser & Sharpener','1 set','🧽',20],
+  ['glue','station','Glue Stick','1 pc','🧴',30],
+  ['tape','station','Cello Tape','1 pc','🎞️',25],
+  ['a4','station','A4 Paper','100 sheets','📄',110],
+  ['colours','station','Crayons','12 pcs','🖍️',70]
+].map(([id,cat,name,unit,e,base])=>({id,cat,name,unit,e,base}));
+
+/* Nearby vendors (demo). factor = how their prices compare to market */
+const VENDORS = [
+  {id:'v1',name:'Sai Fresh Vegetables',e:'🥬',dist:0.4,until:'9 pm', cats:['veg','fruit'],         factor:{veg:.92,fruit:.95}},
+  {id:'v2',name:'Krishna Kirana Store',e:'🏪',dist:0.8,until:'10 pm',cats:['veg','dairy','staple','house','toilet','pooja','masala','oil','dryfruit','snacks','bev','instant','sweets','baby','station'],factor:{default:1.0,veg:1.04}},
+  {id:'v3',name:'Green Basket Mart',   e:'🛒',dist:1.6,until:'11 pm',cats:['veg','fruit','dairy','staple','house','toilet','pooja','masala','oil','dryfruit','snacks','bev','instant','sweets','frozen','meat','baby','pet','station'],factor:{default:1.03,fruit:.98,frozen:.97,meat:1.06}},
+  {id:'v4',name:'Shree Pooja Bhandar', e:'🪔',dist:1.1,until:'8 pm', cats:['pooja'],               factor:{pooja:.9}},
+  {id:'v5',name:'Gokul Dairy & Sweets',e:'🥛',dist:0.3,until:'10 pm',cats:['dairy','sweets','frozen'],factor:{dairy:.97,sweets:.94,frozen:1.02}},
+  {id:'v6',name:'Annapurna Masala & Dry Fruits',e:'🥜',dist:1.3,until:'9 pm',cats:['masala','dryfruit','staple'],factor:{masala:.9,dryfruit:.92,staple:.98}},
+  {id:'v7',name:'Fresh Catch Meat & Fish',e:'🐟',dist:0.9,until:'9 pm',cats:['meat'],factor:{meat:1.0}},
+  {id:'v8',name:'Paws & Tails Pet Shop',e:'🐾',dist:2.0,until:'8 pm',cats:['pet'],factor:{pet:.95}}
+];
+
+/* SERVICES on home — only groceries live */
+const SERVICES = [
+  ['Groceries','retail',true],['Education','education'],['Home Maintenance','home'],['Healthcare','health'],
+  ['Insurance','insurance'],['Travel & Tourism','travel'],['Banking & Finance','bank'],['IT & Digital','it'],
+  ['Real Estate','realestate'],['Transport','transport'],['Food & Catering','food'],['Beauty & Wellness','beauty']
+];
+const ICONS = {
+  retail:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L22 7H5.1"/>',
+  education:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  home:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+  health:'<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+  insurance:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  travel:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+  bank:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  it:'<rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 20h20"/>',
+  realestate:'<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/>',
+  transport:'<path d="M1 4h14v12H1z"/><path d="M15 8h4l3 3v5h-7"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/>',
+  food:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3v7"/>',
+  beauty:'<path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>'
+};
+
+/* =====================================================================
+   STATE
+===================================================================== */
+const state = { cat:'all', shop:null, q:'', choice:{}, slot:'asap', pay:'upi',
+  address:{title:'Home', sub:'Tower B, Flat 1204', short:'Tower B · Flat 1204'} };
+let cart = {};    // key "productId|vendorId" -> qty
+let orders = [];
+let auth = null;      // the signed-in resident's profile from the server (name, flat, email)
+let a0 = null;        // Auth0 client
+let HOME = {title:'Home', sub:'Tower B, Flat 1204', short:'Tower B · Flat 1204'};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path, opts={}){
+  let token;
+  try { token = await a0.getTokenSilently(); } catch(e){ auth=null; openLogin('login'); throw new Error('Please log in again'); }
+  const r = await fetch(API_BASE+path, {...opts, headers:{'Content-Type':'application/json', Authorization:'Bearer '+token}});
+  const d = await r.json().catch(()=>({}));
+  const msg = typeof d.detail==='string' ? d.detail : 'Please check your details and try again';
+  if(r.status===401){ auth=null; openLogin('login'); throw new Error(msg); }
+  if(r.status===403 && /^(not_registered|unverified|blocked):/.test(msg)){ auth=null; orders=[]; renderOrders(); openLogin('pending', msg); throw new Error(msg); }
+  if(!r.ok) throw new Error(msg);
+  return d;
+}
+try { cart = JSON.parse(localStorage.getItem('g_cart')||'{}'); if(!API_BASE) orders = JSON.parse(localStorage.getItem('g_orders')||'[]'); } catch(e){}
+const persist = () => { try { localStorage.setItem('g_cart',JSON.stringify(cart)); if(!API_BASE) localStorage.setItem('g_orders',JSON.stringify(orders)); } catch(e){} };
+
+const $ = s => document.querySelector(s);
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const P = id => PRODUCTS.find(p=>p.id===id);
+const V = id => VENDORS.find(v=>v.id===id);
+const catBg = cid => GROCERY_CATS.find(c=>c.id===cid).bg;
+
+/* deterministic small variation so each shop's price looks realistic */
+function hash(s){ let h=0; for(const c of s) h=(h*31+c.charCodeAt(0))|0; return Math.abs(h); }
+function priceAt(p, v){
+  if(!v.cats.includes(p.cat)) return null;
+  const f = v.factor[p.cat] ?? v.factor.default ?? 1;
+  const noise = ((hash(p.id+v.id)%9)-4)/100;          // ±4%
+  return Math.max(5, Math.round(p.base * f * (1+noise)));
+}
+function offers(p){
+  return VENDORS.map(v=>({v, price:priceAt(p,v)})).filter(o=>o.price!=null).sort((a,b)=>a.price-b.price);
+}
+function chosenVendor(p){
+  if(state.shop) return priceAt(p,V(state.shop))!=null ? state.shop : null;
+  return state.choice[p.id] || offers(p)[0]?.v.id;
+}
+const qtyOf = p => { const v=chosenVendor(p); return v ? (cart[p.id+'|'+v]||0) : 0; };
+
+/* =====================================================================
+   RENDER — HOME
+===================================================================== */
+function renderHome(){
+  const h=new Date().getHours();
+  $('#greet').textContent = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  $('#homeCats').innerHTML = GROCERY_CATS.map(c=>`
+    <button class="gc" onclick="state.cat='${c.id}';go('grocery')"><span class="e emoji" style="background:${c.bg}">${c.e}</span>${c.name}</button>`).join('');
+  $('#catGrid').innerHTML = SERVICES.map(([name,ic,live])=>`
+    <button class="cat ${live?'':'soon'}" onclick="${live?"go('grocery')":`toast('${name} is coming soon')`}">
+      <span class="tag ${live?'live':''}">${live?'Live':'Soon'}</span>
+      <span class="ico" style="background:var(--brand-50);color:var(--brand)"><svg class="i" viewBox="0 0 24 24">${ICONS[ic]}</svg></span>
+      <b>${name}</b>
+    </button>`).join('');
+}
+
+/* =====================================================================
+   RENDER — GROCERY
+===================================================================== */
+function renderCats(){
+  $('#gcats').innerHTML = [{id:'all',name:'All',e:'🧺',bg:'var(--surface)'},...GROCERY_CATS].map(c=>`
+    <button class="gc ${state.cat===c.id?'on':''}" onclick="state.cat='${c.id}';renderCats();renderShops();renderProducts()">
+      <span class="e emoji">${c.e}</span>${c.name}</button>`).join('');
+}
+function renderShops(){
+  const list = VENDORS.filter(v=>state.cat==='all'||v.cats.includes(state.cat)).sort((a,b)=>a.dist-b.dist);
+  $('#shopCount').textContent = `${list.length} open now`;
+  $('#shops').innerHTML = `
+    <button class="shop ${!state.shop?'on':''}" style="min-width:150px" onclick="state.shop=null;renderShops();renderProducts()">
+      <span class="av emoji">✨</span><span><b>Best price</b><small>Across all shops</small></span></button>` +
+    list.map(v=>`
+    <button class="shop ${state.shop===v.id?'on':''}" onclick="state.shop='${v.id}';renderShops();renderProducts()">
+      <span class="av emoji">${v.e}</span>
+      <span><b>${v.name}</b><small>${v.dist} km · <span class="open">Open</span> till ${v.until}</small></span>
+    </button>`).join('');
+}
+function productCard(p){
+  const off = offers(p);
+  const vid = chosenVendor(p);
+  if(!vid) return '';
+  const price = priceAt(p,V(vid));
+  const max = off[off.length-1].price;
+  const q = qtyOf(p);
+  const saving = !state.shop && off.length>1 && max-price>=3 ? max-price : 0;
+  return `<div class="pc">
+    <button class="pimg emoji" style="background:${catBg(p.cat)}" onclick="openProduct('${p.id}')">${p.e}${saving?`<span class="save">Save ${inr(saving)}</span>`:''}</button>
+    <div class="pname">${p.name}</div>
+    <div class="punit">${p.unit}</div>
+    <div class="pfoot">
+      <div class="price"><b>${inr(price)}</b>${saving?`<s>${inr(max)}</s>`:''}
+        <small>${state.shop?V(vid).name.split(' ')[0]:(off.length>1?`${off.length} shops`:V(vid).name.split(' ')[0])}</small></div>
+      ${q ? `<div class="step"><button onclick="chg('${p.id}','${vid}',-1)" aria-label="Remove">−</button><span>${q}</span><button onclick="chg('${p.id}','${vid}',1)" aria-label="Add">+</button></div>`
+          : `<button class="add" onclick="chg('${p.id}','${vid}',1)">ADD</button>`}
+    </div>
+  </div>`;
+}
+function pickCat(id){ state.cat=id; renderCats(); renderShops(); renderProducts(); window.scrollTo({top:0}); }
+function renderProducts(){
+  const q = state.q.trim().toLowerCase();
+  let list = PRODUCTS.filter(p=>(state.cat==='all'||p.cat===state.cat) && (!q || p.name.toLowerCase().includes(q)) && chosenVendor(p));
+  if(!list.length){
+    $('#products').innerHTML = `<div class="empty"><div class="big emoji">🔍</div><b>Nothing found</b><p style="font-size:13px;margin-top:4px">${state.shop?'This shop doesn\'t stock that. Try "Best price" to see all shops.':'Try a different search.'}</p></div>`;
+    return;
+  }
+  if(state.cat==='all' && !q){
+    const tiles = state.shop ? '' : `<div class="section-h"><h3>Browse all categories</h3></div>
+      <div class="ctiles">${GROCERY_CATS.map(c=>`<button class="ctile" onclick="pickCat('${c.id}')"><span class="e emoji" style="background:${c.bg}">${c.e}</span>${c.name}</button>`).join('')}</div>`;
+    $('#products').innerHTML = tiles + GROCERY_CATS.map(c=>{
+      const items=list.filter(p=>p.cat===c.id); if(!items.length) return '';
+      return `<div class="section-h"><h3>${c.name}</h3><button onclick="state.cat='${c.id}';renderCats();renderShops();renderProducts();window.scrollTo({top:0})">See all</button></div>
+              <div class="pgrid">${items.slice(0,4).map(productCard).join('')}</div>`;
+    }).join('');
+  } else {
+    $('#products').innerHTML = `<div class="pgrid">${list.map(productCard).join('')}</div>`;
+  }
+}
+
+/* =====================================================================
+   CART
+===================================================================== */
+function chg(pid, vid, d){
+  const k=pid+'|'+vid;
+  cart[k]=(cart[k]||0)+d;
+  if(cart[k]<=0) delete cart[k];
+  persist(); renderProducts(); renderCartBar();
+  if($('#sheet').classList.contains('on')){
+    if(sheetMode==='cart') openCart(); else if(sheetMode==='product') openProduct(pid);
+  }
+}
+function cartLines(){
+  return Object.entries(cart).map(([k,q])=>{ const [pid,vid]=k.split('|'); const p=P(pid), v=V(vid);
+    return {p,v,q,price:priceAt(p,v),total:priceAt(p,v)*q}; }).filter(l=>l.p&&l.v);
+}
+function totals(){
+  const lines=cartLines(); const items=lines.reduce((a,l)=>a+l.q,0); const sub=lines.reduce((a,l)=>a+l.total,0);
+  const fee = sub>=FREE_DELIVERY_ABOVE||sub===0 ? 0 : DELIVERY_FEE;
+  return {lines,items,sub,fee,total:sub+fee};
+}
+function renderCartBar(){
+  const t=totals();
+  $('#cartbar').classList.toggle('on', t.items>0 && ['grocery','home'].includes(currentPage));
+  $('#cbItems').textContent = `${t.items} item${t.items!==1?'s':''}`;
+  $('#cbTotal').textContent = inr(t.sub) + (t.fee?'':' · Free delivery');
+}
+
+/* =====================================================================
+   SHEETS
+===================================================================== */
+let sheetMode='';
+function openSheet(html,mode){ sheetMode=mode; $('#sheetContent').innerHTML=html; $('#scrim').classList.add('on'); $('#sheet').classList.add('on'); document.body.style.overflow='hidden'; }
+function closeSheet(){ if(sheetMode==='login' && API_BASE && !auth) return; $('#scrim').classList.remove('on'); $('#sheet').classList.remove('on'); document.body.style.overflow=''; sheetMode=''; }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSheet(); });
+const head = (eyebrow,title,back) => `<div class="sheet-h">
+  ${back?`<button class="x" onclick="${back}" aria-label="Back"><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>`:''}
+  <div class="t"><small>${eyebrow}</small><h3>${title}</h3></div>
+  <button class="x" onclick="closeSheet()" aria-label="Close"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
+
+/* Product detail: compare prices across nearby shops */
+function openProduct(pid){
+  const p=P(pid), off=offers(p);
+  const vid = state.choice[pid] || (state.shop && priceAt(p,V(state.shop))!=null ? state.shop : off[0].v.id);
+  state.choice[pid]=vid;
+  const q=cart[pid+'|'+vid]||0;
+  openSheet(head(GROCERY_CATS.find(c=>c.id===p.cat).name, p.name) + `
+    <div class="sheet-b">
+      <div class="pd-hero emoji" style="background:${catBg(p.cat)}">${p.e}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="color:var(--muted);font-weight:600">${p.unit}</span>
+        <span style="font-size:12px;color:var(--muted)">Market rate ≈ ${inr(p.base)}</span>
+      </div>
+      <div class="label">Compare prices nearby</div>
+      ${off.map((o,i)=>`
+        <button class="vrow ${o.v.id===vid?'on':''}" onclick="state.choice['${pid}']='${o.v.id}';openProduct('${pid}');renderProducts()">
+          <span class="radio"></span>
+          <span class="vt"><b>${o.v.name}</b><small>${o.v.dist} km away · open till ${o.v.until}</small></span>
+          <span class="vp">${inr(o.price)}${i===0&&off.length>1?'<small>LOWEST</small>':''}</span>
+        </button>`).join('')}
+    </div>
+    <div class="sheet-f">
+      ${q ? `<div style="display:flex;gap:10px;align-items:center">
+               <div class="step" style="height:52px;min-width:130px;border-radius:14px"><button style="width:42px" onclick="chg('${pid}','${vid}',-1)">−</button><span>${q}</span><button style="width:42px" onclick="chg('${pid}','${vid}',1)">+</button></div>
+               <button class="primary" onclick="openCart()"><span>View cart</span><span>${inr(totals().sub)}</span></button></div>`
+          : `<button class="primary" onclick="chg('${pid}','${vid}',1)"><span>Add to cart</span><span>${inr(priceAt(p,V(vid)))}</span></button>`}
+    </div>`,'product');
+}
+
+/* Cart */
+function openCart(){
+  const t=totals();
+  if(!t.items){ openSheet(head('Cart','Your cart') + `<div class="sheet-b"><div class="empty"><div class="big emoji">🛒</div><b>Your cart is empty</b><p style="font-size:13px;margin-top:4px">Add some fresh vegetables to get started.</p></div>
+      <button class="primary center" onclick="closeSheet();go('grocery')">Browse groceries</button></div>`,'cart'); return; }
+  const shops=[...new Set(t.lines.map(l=>l.v.id))];
+  const slots=[['asap','Express','~30 min'],['eve','Today evening','6–8 pm'],['tmrw','Tomorrow','7–9 am']];
+  openSheet(head(`${t.items} item${t.items>1?'s':''} · ${shops.length} shop${shops.length>1?'s':''}`,'Your cart') + `
+    <div class="sheet-b">
+      ${shops.length>1?`<div class="info"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Items from ${shops.length} shops are collected and delivered together by the society delivery team.</span></div>`:''}
+      ${t.lines.map(l=>`
+        <div class="ci">
+          <span class="ce emoji" style="background:${catBg(l.p.cat)}">${l.p.e}</span>
+          <span class="ct"><b>${l.p.name}</b><small>${l.p.unit} · ${l.v.name}</small></span>
+          <div class="step" style="min-width:84px"><button onclick="chg('${l.p.id}','${l.v.id}',-1)">−</button><span>${l.q}</span><button onclick="chg('${l.p.id}','${l.v.id}',1)">+</button></div>
+          <span class="lp">${inr(l.total)}</span>
+        </div>`).join('')}
+
+      <div class="label">Delivery slot</div>
+      <div class="chips">${slots.map(([k,a,b])=>`<button class="chip ${state.slot===k?'on':''}" onclick="state.slot='${k}';openCart()">${a}<small>${b}</small></button>`).join('')}</div>
+
+      <div class="label">Deliver to</div>
+      <div class="addr"><span class="emoji" style="font-size:22px">🏠</span><div style="flex:1"><b>${esc(state.address.title)}</b><small>${esc(state.address.sub)}</small></div>
+        <button style="color:var(--brand);font-weight:700;font-size:13px" onclick="openLocation()">Change</button></div>
+
+      <div class="label">Bill details</div>
+      <div class="bill">
+        <div><span>Item total</span><span>${inr(t.sub)}</span></div>
+        <div><span>Delivery fee</span><span>${t.fee?inr(t.fee):'<span class="free">FREE</span>'}</span></div>
+        <div class="tot"><span>To pay</span><span>${inr(t.total)}</span></div>
+      </div>
+      ${t.fee?`<div class="nudge">Add ${inr(FREE_DELIVERY_ABOVE-t.sub)} more for free delivery</div>`:''}
+
+      <div class="label">Pay with</div>
+      <button class="pm ${state.pay==='upi'?'on':''}" onclick="state.pay='upi';openCart()"><span class="pmi emoji">📱</span><span class="vt"><b>UPI (scan QR)</b><small>GPay, PhonePe, Paytm, any UPI app</small></span><span class="radio"></span></button>
+      <button class="pm ${state.pay==='cod'?'on':''}" onclick="state.pay='cod';openCart()"><span class="pmi emoji">💵</span><span class="vt"><b>Cash on delivery</b><small>Pay when your order arrives</small></span><span class="radio"></span></button>
+    </div>
+    <div class="sheet-f">
+      <button class="primary" onclick="${state.pay==='upi'?'openPayment()':'placeOrder(\'cod\')'}">
+        <span>${state.pay==='upi'?'Proceed to pay':'Place order'}</span><span>${inr(t.total)} →</span></button>
+    </div>`,'cart');
+}
+
+/* Payment — UPI QR (placeholder until you add yours) */
+function openPayment(){
+  const t=totals();
+  openSheet(head('Payment','Scan & pay','openCart()') + `
+    <div class="sheet-b">
+      <div class="pay-amt"><small>Amount to pay</small><b>${inr(t.total)}</b></div>
+      <div class="qr">${UPI_QR_IMAGE ? `<img src="${UPI_QR_IMAGE}" alt="UPI QR code">` :
+        `<div><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+         <b style="display:block;color:var(--text);font-size:14px">QR coming soon</b>Your society's UPI QR will appear here</div>`}</div>
+      <div class="upi-id">or pay to UPI ID <b>${esc(UPI_ID)}</b></div>
+      <div class="apps"><span>GPay</span><span>PhonePe</span><span>Paytm</span><span>BHIM</span></div>
+      <label class="label" for="utr" style="display:block">UPI transaction ID (UTR)</label>
+      <input id="utr" class="field" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="12-digit number from your UPI app" oninput="this.value=this.value.replace(/\\D/g,'');$('#utrErr').textContent=''">
+      <div class="err" id="utrErr"></div>
+      <div class="info" style="margin-top:10px"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>After paying, open the payment in your UPI app and copy the 12-digit UTR / UPI Ref No. Your order is confirmed once the society team sees the money arrive.</span></div>
+    </div>
+    <div class="sheet-f">
+      <button class="primary center" id="paidBtn" onclick="placeOrder('upi')">Submit payment & place order</button>
+      <button class="ghost" onclick="state.pay='cod';openCart()">Pay on delivery instead</button>
+    </div>`,'pay');
+}
+
+const PAY_LABEL={cod:'Pay on delivery',verifying:'Verifying payment',awaiting:'Payment pending',paid:'Paid',failed:'Payment not received'};
+const SERVER_STEPS=['placed','packed','out','delivered'];
+function fromServer(s){
+  return { id:s.id, created:s.created*1000, total:s.total,
+    items:s.items.map(i=>({e:(P(i.product_id)||{}).e||'🛍️', name:i.name, qty:i.qty})),
+    count:s.items.reduce((a,i)=>a+i.qty,0),
+    status: s.status==='cancelled' ? -1 : SERVER_STEPS.indexOf(s.status),
+    payStatus: PAY_LABEL[s.pay_status]||s.pay_status };
+}
+
+async function placeOrder(method){
+  let utr=null;
+  if(method==='upi'){
+    utr=($('#utr')?.value||'').replace(/\D/g,'');
+    if(!/^\d{12}$/.test(utr)){ $('#utrErr').textContent='Enter the 12-digit UTR / transaction ID shown in your UPI app after paying.'; $('#utr').focus(); return; }
+  }
+  const btn=document.querySelector('.sheet-f .primary'); const label=btn?btn.innerHTML:'';
+  if(btn){ btn.disabled=true; btn.textContent='Placing order…'; }
+  const t=totals(); let o;
+  try{
+    if(API_BASE){
+      const s=await api('/orders',{method:'POST',body:JSON.stringify({
+        items:t.lines.map(l=>({product_id:l.p.id,vendor_id:l.v.id,qty:l.q})), slot:state.slot, pay_method:method, utr })});
+      o=fromServer(s);
+    } else {
+      await new Promise(r=>setTimeout(r,600));
+      o={ id:'ORD'+Math.floor(100000+Math.random()*899999), created:Date.now(), items:t.lines.map(l=>({e:l.p.e,name:l.p.name,qty:l.q})),
+          count:t.items, total:t.total, payStatus:method==='upi'?'Verifying payment':'Pay on delivery', status:0 };
+    }
+  }catch(e){
+    if(btn){ btn.disabled=false; btn.innerHTML=label; }
+    if($('#utrErr') && /transaction/i.test(e.message)) $('#utrErr').textContent=e.message; else toast(e.message);
+    return;
+  }
+  orders.unshift(o); cart={}; persist();
+  renderProducts(); renderCartBar(); renderOrders(); if(!API_BASE) simulateProgress(o.id);
+  openSheet(`<div class="sheet-b" style="padding-top:20px">
+    <div class="success"><div class="ok"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <h3>Order placed!</h3>
+      <p>${method==='upi'?'We\'re verifying your payment. ':''}The society team has been notified and your order will be ${state.slot==='asap'?'with you in about 30 minutes':'delivered in your chosen slot'}.</p>
+      <span class="ref">${esc(o.id)}</span></div>
+    <button class="primary center" style="margin-top:20px" onclick="closeSheet();go('orders')">Track order</button>
+    <button class="ghost" onclick="closeSheet()">Continue shopping</button></div>`,'done');
+}
+
+/* Demo mode only (no API_BASE): moves the order along so you can see the tracker. */
+function simulateProgress(id){
+  [1,2].forEach((s,i)=>setTimeout(()=>{ const o=orders.find(x=>x.id===id); if(!o) return;
+    o.status=s; if(s===1&&o.payStatus==='Verifying payment') o.payStatus='Paid'; persist(); renderOrders(); }, (i+1)*8000));
+}
+
+/* Location */
+function openLocation(){
+  openSheet(head('Delivery location','Where should we deliver?') + `
+    <div class="sheet-b">
+      <button class="pm" onclick="useGPS()"><span class="pmi" style="color:var(--brand)"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg></span>
+        <span class="vt"><b style="color:var(--brand)">Use my current location</b><small>Find shops closest to you</small></span></button>
+      <div class="label">Saved addresses</div>
+      <button class="pm on" onclick="state.address={...HOME};applyAddress();closeSheet()"><span class="pmi emoji">🏠</span><span class="vt"><b>Home</b><small>${esc(HOME.sub)}</small></span><span class="radio"></span></button>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Shops are shown within 2 km of your society.</p>
+    </div>`,'loc');
+}
+function useGPS(){
+  if(!navigator.geolocation){ toast('Location not available on this device'); return; }
+  toast('Finding your location…');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:la, longitude:lo}=pos.coords;
+    state.address={title:'Current location', sub:`${la.toFixed(4)}, ${lo.toFixed(4)}`, short:'Current location'};
+    applyAddress(); closeSheet(); toast('Showing shops near you');
+    // TODO: fetch(`/api/vendors?lat=${la}&lng=${lo}`) and re-render
+  }, ()=>toast('Location permission denied'), {timeout:8000});
+}
+function applyAddress(){ $('#locTitle').textContent=state.address.title; $('#locSub').textContent=state.address.sub;
+  document.querySelectorAll('.addrShort').forEach(e=>e.textContent=state.address.short); }
+
+/* =====================================================================
+   ORDERS
+===================================================================== */
+const OSTEPS=['Placed','Packed','On the way','Delivered'];
+async function refreshOrders(){
+  if(!API_BASE || !auth) return;
+  try{ orders=(await api('/orders/mine')).map(fromServer); renderOrders(); }catch(e){}
+}
+function renderOrders(){
+  const active=orders.filter(o=>o.status>=0&&o.status<3).length;
+  const b=$('#ordBadge'); b.style.display=active?'grid':'none'; b.textContent=active;
+  $('#orderList').innerHTML = orders.length ? orders.map(o=>{
+    const cancelled=o.status<0;
+    return `<div class="ord">
+      <div class="ord-top">
+        <div><b>${esc(o.id)}</b><small>${new Date(o.created).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${o.count} item${o.count>1?'s':''}</small></div>
+        <span class="pill" style="${cancelled?'background:#fee2e2;color:var(--danger)':'background:var(--brand-50);color:var(--brand)'}">${cancelled?'Cancelled':OSTEPS[o.status]}</span>
+      </div>
+      ${cancelled?'':`<div class="steps">${OSTEPS.map((_,i)=>`<i class="${i<=o.status?'on':''}"></i>`).join('')}</div>
+      <div class="steps-l">${OSTEPS.map(s=>`<span>${s}</span>`).join('')}</div>`}
+      <div class="ord-items"><span class="emoji" style="font-size:18px;letter-spacing:2px">${o.items.slice(0,6).map(i=>i.e).join('')}${o.items.length>6?'…':''}</span>
+        <span style="text-align:right"><b>${inr(o.total)}</b><br><span style="font-size:11.5px;color:${o.payStatus==='Paid'?'var(--green)':o.payStatus==='Payment not received'?'var(--danger)':'var(--muted)'};font-weight:700">${esc(o.payStatus)}</span></span></div>
+    </div>`;}).join('') :
+    `<div class="empty"><div class="big emoji">📦</div><b>No orders yet</b><p style="font-size:13px;margin:4px 0 16px">Your grocery orders will show up here.</p>
+     <button class="primary center" style="max-width:220px;margin:0 auto" onclick="go('grocery')">Start shopping</button></div>`;
+}
+/* Residents see status changes within ~20 s while the Orders tab is open */
+setInterval(()=>{ if(currentPage==='orders' && !document.hidden) refreshOrders(); },20000);
+
+/* =====================================================================
+   LOGIN WITH AUTH0 (only when API_BASE is set)
+===================================================================== */
+function openLogin(kind='login', msg=''){
+  if(!API_BASE) return;
+  sheetMode='login';
+  const clean = String(msg).replace(/^(not_registered|unverified|blocked):\s*/,'');
+  const v = {
+    login:  ['Welcome','Log in to your society','Sign in or create an account. New accounts are checked by the society office before you can order.',
+             `<button class="primary center" onclick="a0.loginWithRedirect()">Log in</button>
+              <button class="ghost" onclick="a0.loginWithRedirect({authorizationParams:{screen_hint:'signup'}})">Create an account</button>`],
+    pending:['Almost there', /^unverified/.test(msg)?'Verify your email':/^blocked/.test(msg)?'Access removed':'Waiting for approval', esc(clean),
+             `<button class="primary center" onclick="loadMe(true)">Check again</button><button class="ghost" onclick="logout()">Log out</button>`],
+    server: ['Can\'t connect','Server not running','Ask the society team, or if you\'re testing, start the server with the start script and reload.',
+             `<button class="primary center" onclick="location.reload()">Reload</button>`],
+    error:  ['Sign-in problem','Something went wrong', esc(clean),
+             `<button class="primary center" onclick="a0?a0.loginWithRedirect():location.reload()">Try again</button>`]
+  }[kind];
+  $('#sheetContent').innerHTML=`<div class="sheet-h"><div class="t"><small>${v[0]}</small><h3>${v[1]}</h3></div></div>
+    <div class="sheet-b"><div style="font-size:52px;text-align:center;margin:6px 0 10px" class="emoji">${kind==='pending'?'⏳':kind==='login'?'🔐':'⚠️'}</div>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:18px;text-align:center">${v[2]}</p>${v[3]}</div>`;
+  $('#scrim').classList.add('on'); $('#sheet').classList.add('on'); document.body.style.overflow='hidden';
+}
+async function bootAuth(){
+  if(!API_BASE) return;
+  let cfg;
+  try{ cfg = await (await fetch(API_BASE+'/config')).json(); }catch(e){ return openLogin('server'); }
+  const create = window.auth0 && window.auth0.createAuth0Client;
+  if(!create) return openLogin('error','The login service didn\'t load. Check your internet connection and reload.');
+  a0 = await create({ domain:cfg.domain, clientId:cfg.client_id, cacheLocation:'localstorage', useRefreshTokens:true,
+    authorizationParams:{ audience:cfg.audience, redirect_uri: location.origin+location.pathname } });
+  const q = new URLSearchParams(location.search); let fresh=false;
+  if(q.has('error')){ history.replaceState({},'',location.pathname); return openLogin('error', q.get('error_description')||q.get('error')); }
+  if(q.has('code') && q.has('state')){
+    try{ await a0.handleRedirectCallback(); fresh=true; }catch(e){ history.replaceState({},'',location.pathname); return openLogin('error', e.message); }
+    history.replaceState({},'',location.pathname);
+  }
+  if(!(await a0.isAuthenticated())) return openLogin('login');
+  await loadMe(fresh);
+}
+/* fresh=true right after signing in → the server records it in the admin's Logins list */
+async function loadMe(fresh){
+  try{
+    auth = await api(fresh?'/auth/session':'/me', fresh?{method:'POST'}:{});
+    applyUser(); sheetMode=''; closeSheet(); if(fresh) toast(`Welcome, ${auth.name}`); refreshOrders();
+  }catch(e){ /* api() already shows the right screen */ }
+}
+function logout(){
+  auth=null; orders=[];
+  if(a0) a0.logout({ logoutParams:{ returnTo: location.origin+location.pathname } });
+}
+function applyUser(){
+  const name=auth?.name||'Resident', flat=auth?.flat||'Tower B, Flat 1204';
+  HOME={title:'Home', sub:flat, short:flat};
+  if(state.address.title==='Home') state.address={...HOME};
+  document.querySelectorAll('.uname').forEach(e=>e.textContent=name);
+  document.querySelectorAll('.uinit').forEach(e=>e.textContent=name.trim()[0]?.toUpperCase()||'R');
+  $('#hiName').textContent=`Hi, ${name.split(' ')[0]} 👋`;
+  $('#logoutRow').style.display=API_BASE&&auth?'':'none';
+  applyAddress();
+}
+
+/* =====================================================================
+   NAV + MISC
+===================================================================== */
+let currentPage='home';
+function go(p){
+  currentPage=p;
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  $('#p-'+p).classList.add('active');
+  document.querySelectorAll('.nav button[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  if(p==='grocery'){ renderCats(); renderShops(); renderProducts(); }
+  if(p==='orders'){ renderOrders(); refreshOrders(); }
+  renderCartBar(); window.scrollTo({top:0});
+}
+let tt; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('on'),2000); }
+const themes=['system','light','dark']; let theme='system';
+try{ theme=localStorage.getItem('g_theme')||'system'; }catch(e){}
+function applyTheme(){ if(theme==='system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',theme); $('#themeLbl').textContent=theme[0].toUpperCase()+theme.slice(1); }
+function toggleTheme(){ theme=themes[(themes.indexOf(theme)+1)%3]; try{localStorage.setItem('g_theme',theme);}catch(e){} applyTheme(); }
+
+applyUser();
+renderHome(); renderCats(); renderShops(); renderProducts(); renderOrders(); renderCartBar(); applyTheme(); applyAddress();
+bootAuth();
+</script>
+</body>
+</html>

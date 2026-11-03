@@ -1,78 +1,106 @@
-# Society App
+# Society Grocery App — setup guide
 
-A housing society management system. It covers maintenance billing, recurring bills and loan EMIs, payments that need two signatories, fixed deposits, staff, vendors, AMC contracts, documents and reminders.
+```
+society-app/
+├── start-windows.bat    ← double-click to run everything (Windows)
+├── start-mac.command    ← double-click to run everything (Mac)
+├── society-app.html     ← resident app (what members use)
+├── admin.html           ← your dashboard: orders, who logged in, residents
+└── backend/
+    ├── main.py          ← the secure server
+    ├── setup_env.py     ← first-time setup (the start script runs it)
+    ├── catalog.json     ← products + every shop's price (server's copy)
+    ├── requirements.txt
+    └── .env.example     ← settings template
+```
 
-| Folder | What it is |
+## How login works (Auth0)
+
+```
+Person taps "Log in"  ──►  Auth0 login page (email + password, Google, …)
+                                   │  Auth0 proves who they are
+                                   ▼
+                     Your server checks: signed by YOUR Auth0? email verified? on the society register?
+                         │                                     │
+                    yes  ▼                                no   ▼
+               Shop, order, track            "Waiting for approval" screen + shows up in your
+                                              dashboard → Residents → "Waiting for access"
+```
+
+Every sign-in — allowed or not — is recorded. **Dashboard → Logins** shows who, when, which flat, result, device and IP address, updating live.
+Auth0's own dashboard also keeps a full log under **Monitoring → Logs**.
+
+## 1. Set up Auth0 (free, ~10 minutes, one time)
+
+1. Sign up at **auth0.com**.
+2. **Applications → Applications → Create Application**. Name it `Society App`, choose **Single Page Web Applications**, click **Create**.
+3. Open its **Settings** tab. Copy **Domain** and **Client ID** (the start script will ask for them). Scroll down and fill in:
+   - **Allowed Callback URLs**: `http://localhost:5500/society-app.html, http://localhost:5500/admin.html`
+   - **Allowed Logout URLs**: `http://localhost:5500/society-app.html, http://localhost:5500/admin.html`
+   - **Allowed Web Origins**: `http://localhost:5500`
+
+   Click **Save Changes** at the bottom.
+4. **Applications → APIs → Create API**. Name `Society API`, Identifier `https://society-api` (this is the "API Identifier" the start script asks for). Leave signing as **RS256**. Click **Create**.
+   Then in that API's **Settings**, turn on **Allow Offline Access** and save (keeps people logged in).
+5. Choose how people can sign in under **Authentication**: *Database* (email + password, on by default) and/or *Social → Google*.
+   Auth0 sends a verification email to new email/password sign-ups; the app only lets people in once their email is verified.
+
+Always open the pages as **http://localhost:5500/…** (not 127.0.0.1) — Auth0 only returns to the exact addresses listed above.
+
+## 2. Run it on your computer
+
+Install Python from python.org (on Windows tick *"Add python.exe to PATH"*), then double-click
+**start-windows.bat** (Windows) or **start-mac.command** (Mac).
+
+The first time, it asks for your **Auth0 Domain, Client ID, API Identifier** and **your email** — that email becomes the admin.
+It then starts the server and opens the dashboard. Click **Log in** and sign in to Auth0 with that email.
+Keep the windows it opens running while you use the app.
+
+To make someone a resident: they open **http://localhost:5500/society-app.html** and sign up → they appear under
+**Residents → Waiting for access** → type their flat (and mobile, so you can call them about orders) → **Approve**.
+Or add them in advance with **Add a resident** using the email they'll sign in with.
+
+Don't open admin.html by double-clicking it — it needs the server. (Double-clicking society-app.html still works, as a demo with no login.)
+
+**Manual way:** `cd backend`, create a venv, `pip install -r requirements.txt`, copy `.env.example` to `.env` and fill it in,
+`uvicorn main:app --port 8000`; in a second terminal from the `society-app` folder run `python -m http.server 5500`.
+
+## 3. Get order alerts on your phone (Telegram, free)
+
+1. In Telegram, open **@BotFather** → `/newbot` → pick a name → copy the **token** into `TELEGRAM_BOT_TOKEN` in `backend/.env`.
+2. Alerts to **you only**: send any message to your new bot.
+   Alerts to **your whole team**: create a group, add the bot and your team, send a message in the group.
+3. Open `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates` in a browser and copy the `"chat":{"id": ...}` number
+   (group IDs start with `-`) into `TELEGRAM_CHAT_ID`.
+4. Restart. You'll get a message for every new order, every UPI payment to check, and every new person asking for access.
+
+## 4. Before real residents use it — checklist
+
+- [ ] Host the server with HTTPS (Render, Railway, AWS Lightsail, or a VPS with Nginx + Let's Encrypt). Never plain `http://` for real users
+- [ ] Add your real https page addresses to the three Auth0 URL fields (step 1.3), set `ALLOWED_ORIGINS` in `.env`, and put the server address in `API_BASE` in both HTML files
+- [ ] `DEV_MODE=false` (hides the `/docs` test page)
+- [ ] In Auth0, set up your own Google keys if you use Google login (Auth0's built-in dev keys are for testing only), and consider turning on **Security → Attack Protection** (brute-force and breached-password protection)
+- [ ] Keep `.env` and `*.db` out of GitHub (already in `.gitignore`); back up `backend/society-auth0.db` daily
+- [ ] If you run more than one server copy, move the rate limiter to Redis
+- [ ] When you move from manual UPI checks to a payment gateway (Razorpay/Cashfree), mark orders paid **only** from the gateway's signed webhook on the server
+
+## What's protecting the app
+
+| Threat | Protection |
 |---|---|
-| [`frontend/`](frontend/) | `index.html`, the Society Register web app. It covers the dashboard, upcoming payments, maintenance, payments, FDs, security, sweepers, vendors, AMC, documents, tenant documents, e-signatures, complaints, notices, reminders, committee handover and the audit log, with PDF/CSV export. |
-| [`backend/`](backend/) | FastAPI + PostgreSQL API with phone/email OTP login, roles, dual-approval payments, recurring bills, FDs, a payment calendar and a daily reminder job. See [backend/README.md](backend/README.md). |
+| Strangers using the app | Auth0 sign-in **plus** your approval — only verified emails on the society register can shop |
+| Fake or stolen-looking logins | Server checks every token is signed by *your* Auth0 tenant, for *this* API, and not expired (tested: attacker-signed, wrong audience, wrong issuer, expired and unsigned tokens are all rejected) |
+| Passwords | Never touch your server — Auth0 stores and checks them |
+| Changing prices in the app | Server ignores app prices and recalculates from `catalog.json` |
+| Fake "I paid" | Resident must give the 12-digit UTR; each UTR can be used once; a UPI order can't be packed until you confirm the money arrived |
+| Resident opening admin screens | Admin rights come from `ADMIN_EMAILS` on the server, checked on every request |
+| Ex-resident with an old login | **Block** in the Residents tab locks them out on their very next action |
+| Other websites calling your server | CORS allows only your own app's address |
+| Bad / oversized input | Every field validated (quantities 1–20, max 60 items, 64 KB request limit) |
+| Who did what | Every sign-in (Logins tab), order and status change is recorded |
+| Live feed token leaking in URLs | The dashboard uses a 60-second single-purpose ticket, not your login token |
 
-## Publish online for free
+## Updating products or prices
 
-| Part | Free host | Address |
-|---|---|---|
-| Website | GitHub Pages | https://silentxd11.github.io/Society_App/ |
-| API | Render (free web service) | `https://society-register-api.onrender.com` (or similar) |
-| Database | Neon (free Postgres) | — |
-| Daily reminders | GitHub Actions (scheduled) | — |
-
-Render's own free database is deleted 30 days after it's created, so the database is on Neon instead. Neon's free plan has 1 GB of storage and pauses after 5 minutes of no use. It wakes on the next request.
-
-### 1. Website on GitHub Pages (2 minutes)
-1. Go to the repo's **Settings → Pages**.
-2. Under **Build and deployment → Source**, choose **GitHub Actions**.
-3. Go to **Actions → Deploy website → Run workflow**, or push any change to `frontend/`.
-4. Open https://silentxd11.github.io/Society_App/.
-
-On GitHub Pages the website saves records **in the browser of the device you use**. Other committee members won't see them. Use **Settings → Download backup** regularly. Shared data and logins need the API below, plus connecting the website to it (the next development step).
-
-### 2. Database on Neon (3 minutes)
-1. Sign up at https://neon.com. Signing in with GitHub works.
-2. Create a project. Pick the region **AWS Asia Pacific (Singapore)**, which is closest to India.
-3. Click **Connect**, turn **Connection pooling off**, and copy the connection string. It looks like `postgresql://…@ep-….neon.tech/neondb?sslmode=require…`.
-
-### 3. API on Render (5 minutes)
-1. Sign up at https://render.com with GitHub.
-2. Choose **New → Blueprint** and pick this repo. Render reads [`render.yaml`](render.yaml).
-3. When asked for `SR_DATABASE_URL`, paste the Neon connection string. The secrets are generated for you.
-4. Deploy. The first build takes a few minutes. Database tables are created automatically on start-up.
-5. Open `https://<your-service>.onrender.com/docs`.
-
-The free service sleeps after 15 minutes without requests. The first request after that takes about a minute to wake it.
-
-### 4. Create your society and first login
-1. In Render, open the service's **Environment** tab and copy the value of `SR_SETUP_TOKEN`.
-2. In `/docs`, open **POST /setup/society**, click **Try it out**, put the token in `X-Setup-Token`, and send:
-   ```json
-   {"society_name": "Your CHS", "admin_name": "Your Name", "admin_phone": "98XXXXXXXX", "monthly_charge": "2500"}
-   ```
-3. Log in with **POST /auth/otp/request** using that phone number. Until an SMS provider is set up, the 6-digit code appears in Render's **Logs** tab.
-4. Delete `SR_SETUP_TOKEN` from Render's environment. That switches the setup endpoint off.
-
-### 5. Daily reminders (optional, when you have an SMS or email provider)
-In **Settings → Secrets and variables → Actions**:
-1. Add the secret `SR_DATABASE_URL` (the Neon string).
-2. Add the variable `SR_SMS_PROVIDER` = `msg91`.
-3. Add the secret `SR_MSG91_AUTH_KEY`, and the variables `SR_MSG91_SENDER_ID` and `SR_MSG91_FLOW_ID`.
-
-[`.github/workflows/reminders.yml`](.github/workflows/reminders.yml) then runs every morning at about 08:47 India time. It stays off until a real provider is set, so no reminder is marked as sent without reaching anyone.
-
-## Run locally
-
-```bash
-cd backend
-cp .env.example .env          # set SR_JWT_SECRET and SR_OTP_SECRET
-docker compose up --build     # Postgres + migrations + API on http://localhost:8000/docs
-```
-
-Open `frontend/index.html` in a browser for the website.
-
-## Tests
-
-[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs the backend tests against Postgres 16 on every push. To run them locally:
-
-```bash
-cd backend
-pip install -e ".[dev]"
-TEST_DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/sr_test pytest
-```
+Prices currently live in two places: the app's `PRODUCTS`/`VENDORS` list (for display) and `backend/catalog.json` (what's actually charged).
+The next step is to have the app load `GET /catalog` from the server so you only edit prices in one place.

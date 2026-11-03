@@ -1,0 +1,1782 @@
+{
+ "products": {
+  "tomato": {
+   "name": "Tomato",
+   "unit": "1 kg",
+   "cat": "veg"
+  },
+  "onion": {
+   "name": "Onion",
+   "unit": "1 kg",
+   "cat": "veg"
+  },
+  "potato": {
+   "name": "Potato",
+   "unit": "1 kg",
+   "cat": "veg"
+  },
+  "chilli": {
+   "name": "Green Chilli",
+   "unit": "100 g",
+   "cat": "veg"
+  },
+  "coriander": {
+   "name": "Coriander",
+   "unit": "1 bunch",
+   "cat": "veg"
+  },
+  "carrot": {
+   "name": "Carrot",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "cucumber": {
+   "name": "Cucumber",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "brinjal": {
+   "name": "Brinjal",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "capsicum": {
+   "name": "Capsicum",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "garlic": {
+   "name": "Garlic",
+   "unit": "250 g",
+   "cat": "veg"
+  },
+  "ginger": {
+   "name": "Ginger",
+   "unit": "250 g",
+   "cat": "veg"
+  },
+  "spinach": {
+   "name": "Spinach (Palak)",
+   "unit": "1 bunch",
+   "cat": "veg"
+  },
+  "lemon": {
+   "name": "Lemon",
+   "unit": "4 pcs",
+   "cat": "veg"
+  },
+  "peas": {
+   "name": "Green Peas",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "corn": {
+   "name": "Sweet Corn",
+   "unit": "1 pc",
+   "cat": "veg"
+  },
+  "banana": {
+   "name": "Banana",
+   "unit": "1 dozen",
+   "cat": "fruit"
+  },
+  "apple": {
+   "name": "Apple (Shimla)",
+   "unit": "1 kg",
+   "cat": "fruit"
+  },
+  "orange": {
+   "name": "Orange",
+   "unit": "1 kg",
+   "cat": "fruit"
+  },
+  "grapes": {
+   "name": "Green Grapes",
+   "unit": "500 g",
+   "cat": "fruit"
+  },
+  "papaya": {
+   "name": "Papaya",
+   "unit": "1 pc (~1 kg)",
+   "cat": "fruit"
+  },
+  "watermelon": {
+   "name": "Watermelon",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "pineapple": {
+   "name": "Pineapple",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "pear": {
+   "name": "Pear",
+   "unit": "500 g",
+   "cat": "fruit"
+  },
+  "kiwi": {
+   "name": "Kiwi",
+   "unit": "3 pcs",
+   "cat": "fruit"
+  },
+  "coconut": {
+   "name": "Tender Coconut",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "milk": {
+   "name": "Toned Milk",
+   "unit": "500 ml",
+   "cat": "dairy"
+  },
+  "curd": {
+   "name": "Curd",
+   "unit": "400 g",
+   "cat": "dairy"
+  },
+  "paneer": {
+   "name": "Paneer",
+   "unit": "200 g",
+   "cat": "dairy"
+  },
+  "eggs": {
+   "name": "Eggs",
+   "unit": "6 pcs",
+   "cat": "dairy"
+  },
+  "butter": {
+   "name": "Butter",
+   "unit": "100 g",
+   "cat": "dairy"
+  },
+  "bread": {
+   "name": "Brown Bread",
+   "unit": "400 g",
+   "cat": "dairy"
+  },
+  "atta": {
+   "name": "Whole Wheat Atta",
+   "unit": "5 kg",
+   "cat": "staple"
+  },
+  "rice": {
+   "name": "Sona Masoori Rice",
+   "unit": "5 kg",
+   "cat": "staple"
+  },
+  "toordal": {
+   "name": "Toor Dal",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "sugar": {
+   "name": "Sugar",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "salt": {
+   "name": "Iodised Salt",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "tea": {
+   "name": "Tea Powder",
+   "unit": "250 g",
+   "cat": "staple"
+  },
+  "dishwash": {
+   "name": "Dishwash Liquid",
+   "unit": "500 ml",
+   "cat": "house"
+  },
+  "detergent": {
+   "name": "Detergent Powder",
+   "unit": "1 kg",
+   "cat": "house"
+  },
+  "floor": {
+   "name": "Floor Cleaner",
+   "unit": "1 L",
+   "cat": "house"
+  },
+  "toiletclean": {
+   "name": "Toilet Cleaner",
+   "unit": "500 ml",
+   "cat": "house"
+  },
+  "garbage": {
+   "name": "Garbage Bags (M)",
+   "unit": "30 pcs",
+   "cat": "house"
+  },
+  "scrub": {
+   "name": "Scrub Pads",
+   "unit": "3 pcs",
+   "cat": "house"
+  },
+  "foil": {
+   "name": "Aluminium Foil",
+   "unit": "9 m",
+   "cat": "house"
+  },
+  "soap": {
+   "name": "Bath Soap",
+   "unit": "4 × 100 g",
+   "cat": "toilet"
+  },
+  "shampoo": {
+   "name": "Shampoo",
+   "unit": "340 ml",
+   "cat": "toilet"
+  },
+  "paste": {
+   "name": "Toothpaste",
+   "unit": "150 g",
+   "cat": "toilet"
+  },
+  "brush": {
+   "name": "Toothbrush",
+   "unit": "2 pcs",
+   "cat": "toilet"
+  },
+  "handwash": {
+   "name": "Hand Wash Refill",
+   "unit": "750 ml",
+   "cat": "toilet"
+  },
+  "tissue": {
+   "name": "Toilet Roll",
+   "unit": "4 rolls",
+   "cat": "toilet"
+  },
+  "hairoil": {
+   "name": "Coconut Hair Oil",
+   "unit": "200 ml",
+   "cat": "toilet"
+  },
+  "agarbatti": {
+   "name": "Agarbatti",
+   "unit": "100 g",
+   "cat": "pooja"
+  },
+  "camphor": {
+   "name": "Camphor",
+   "unit": "50 g",
+   "cat": "pooja"
+  },
+  "diya": {
+   "name": "Clay Diya",
+   "unit": "12 pcs",
+   "cat": "pooja"
+  },
+  "kumkum": {
+   "name": "Kumkum",
+   "unit": "50 g",
+   "cat": "pooja"
+  },
+  "flowers": {
+   "name": "Marigold Garland",
+   "unit": "1 pc",
+   "cat": "pooja"
+  },
+  "wicks": {
+   "name": "Cotton Wicks",
+   "unit": "100 pcs",
+   "cat": "pooja"
+  },
+  "bhimseni": {
+   "name": "Gangajal",
+   "unit": "250 ml",
+   "cat": "pooja"
+  },
+  "haldikum": {
+   "name": "Haldi Kumkum Set",
+   "unit": "1 set",
+   "cat": "pooja"
+  },
+  "tulsi": {
+   "name": "Tulsi Mala",
+   "unit": "1 pc",
+   "cat": "pooja"
+  },
+  "sambrani": {
+   "name": "Sambrani Cups",
+   "unit": "12 pcs",
+   "cat": "pooja"
+  },
+  "cauli": {
+   "name": "Cauliflower",
+   "unit": "1 pc",
+   "cat": "veg"
+  },
+  "cabbage": {
+   "name": "Cabbage",
+   "unit": "1 pc",
+   "cat": "veg"
+  },
+  "bhindi": {
+   "name": "Ladyfinger (Bhindi)",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "beans": {
+   "name": "French Beans",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "bottlegourd": {
+   "name": "Bottle Gourd (Lauki)",
+   "unit": "1 pc",
+   "cat": "veg"
+  },
+  "bittergourd": {
+   "name": "Bitter Gourd (Karela)",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "beetroot": {
+   "name": "Beetroot",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "radish": {
+   "name": "Radish (Mooli)",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "mushroom": {
+   "name": "Button Mushroom",
+   "unit": "200 g",
+   "cat": "veg"
+  },
+  "sweetpotato": {
+   "name": "Sweet Potato",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "mint": {
+   "name": "Mint (Pudina)",
+   "unit": "1 bunch",
+   "cat": "veg"
+  },
+  "curryleaf": {
+   "name": "Curry Leaves",
+   "unit": "1 bunch",
+   "cat": "veg"
+  },
+  "methi": {
+   "name": "Methi Leaves",
+   "unit": "1 bunch",
+   "cat": "veg"
+  },
+  "drumstick": {
+   "name": "Drumstick",
+   "unit": "250 g",
+   "cat": "veg"
+  },
+  "pumpkin": {
+   "name": "Red Pumpkin",
+   "unit": "500 g",
+   "cat": "veg"
+  },
+  "pomegranate": {
+   "name": "Pomegranate",
+   "unit": "1 kg",
+   "cat": "fruit"
+  },
+  "mosambi": {
+   "name": "Sweet Lime (Mosambi)",
+   "unit": "1 kg",
+   "cat": "fruit"
+  },
+  "guava": {
+   "name": "Guava",
+   "unit": "500 g",
+   "cat": "fruit"
+  },
+  "chikoo": {
+   "name": "Chikoo",
+   "unit": "500 g",
+   "cat": "fruit"
+  },
+  "custard": {
+   "name": "Custard Apple",
+   "unit": "500 g",
+   "cat": "fruit"
+  },
+  "strawberry": {
+   "name": "Strawberry",
+   "unit": "200 g",
+   "cat": "fruit"
+  },
+  "dragon": {
+   "name": "Dragon Fruit",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "avocado": {
+   "name": "Avocado",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "muskmelon": {
+   "name": "Muskmelon",
+   "unit": "1 pc",
+   "cat": "fruit"
+  },
+  "greenapple": {
+   "name": "Green Apple",
+   "unit": "4 pcs",
+   "cat": "fruit"
+  },
+  "fullmilk": {
+   "name": "Full Cream Milk",
+   "unit": "1 L",
+   "cat": "dairy"
+  },
+  "buttermilk": {
+   "name": "Buttermilk",
+   "unit": "500 ml",
+   "cat": "dairy"
+  },
+  "cheese": {
+   "name": "Cheese Slices",
+   "unit": "10 pcs",
+   "cat": "dairy"
+  },
+  "cream": {
+   "name": "Fresh Cream",
+   "unit": "200 ml",
+   "cat": "dairy"
+  },
+  "lassi": {
+   "name": "Sweet Lassi",
+   "unit": "200 ml",
+   "cat": "dairy"
+  },
+  "pav": {
+   "name": "Pav",
+   "unit": "6 pcs",
+   "cat": "dairy"
+  },
+  "whitebread": {
+   "name": "White Bread",
+   "unit": "400 g",
+   "cat": "dairy"
+  },
+  "bun": {
+   "name": "Burger Buns",
+   "unit": "4 pcs",
+   "cat": "dairy"
+  },
+  "basmati": {
+   "name": "Basmati Rice",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "poha": {
+   "name": "Poha",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "rava": {
+   "name": "Rava / Sooji",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "besan": {
+   "name": "Besan",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "maida": {
+   "name": "Maida",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "moongdal": {
+   "name": "Moong Dal",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "chanadal": {
+   "name": "Chana Dal",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "masoor": {
+   "name": "Masoor Dal",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "urad": {
+   "name": "Urad Dal",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "rajma": {
+   "name": "Rajma",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "kabuli": {
+   "name": "Kabuli Chana",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "jaggery": {
+   "name": "Jaggery",
+   "unit": "1 kg",
+   "cat": "staple"
+  },
+  "rocksalt": {
+   "name": "Rock Salt",
+   "unit": "500 g",
+   "cat": "staple"
+  },
+  "haldi": {
+   "name": "Turmeric Powder",
+   "unit": "200 g",
+   "cat": "masala"
+  },
+  "chillipow": {
+   "name": "Red Chilli Powder",
+   "unit": "200 g",
+   "cat": "masala"
+  },
+  "dhaniya": {
+   "name": "Coriander Powder",
+   "unit": "200 g",
+   "cat": "masala"
+  },
+  "jeera": {
+   "name": "Cumin Seeds (Jeera)",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "rai": {
+   "name": "Mustard Seeds (Rai)",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "garam": {
+   "name": "Garam Masala",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "pavbhaji": {
+   "name": "Pav Bhaji Masala",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "chole": {
+   "name": "Chole Masala",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "hing": {
+   "name": "Hing (Asafoetida)",
+   "unit": "50 g",
+   "cat": "masala"
+  },
+  "pepper": {
+   "name": "Black Pepper",
+   "unit": "100 g",
+   "cat": "masala"
+  },
+  "elaichi": {
+   "name": "Cardamom (Elaichi)",
+   "unit": "50 g",
+   "cat": "masala"
+  },
+  "tamarind": {
+   "name": "Tamarind",
+   "unit": "250 g",
+   "cat": "masala"
+  },
+  "oil": {
+   "name": "Sunflower Oil",
+   "unit": "1 L",
+   "cat": "oil"
+  },
+  "groundnut": {
+   "name": "Groundnut Oil",
+   "unit": "1 L",
+   "cat": "oil"
+  },
+  "mustardoil": {
+   "name": "Mustard Oil",
+   "unit": "1 L",
+   "cat": "oil"
+  },
+  "coconutoil": {
+   "name": "Coconut Oil",
+   "unit": "500 ml",
+   "cat": "oil"
+  },
+  "ricebran": {
+   "name": "Rice Bran Oil",
+   "unit": "1 L",
+   "cat": "oil"
+  },
+  "ghee": {
+   "name": "Cow Ghee",
+   "unit": "500 ml",
+   "cat": "oil"
+  },
+  "vanaspati": {
+   "name": "Vanaspati",
+   "unit": "1 L",
+   "cat": "oil"
+  },
+  "almond": {
+   "name": "Almonds",
+   "unit": "250 g",
+   "cat": "dryfruit"
+  },
+  "cashew": {
+   "name": "Cashews",
+   "unit": "250 g",
+   "cat": "dryfruit"
+  },
+  "raisin": {
+   "name": "Raisins",
+   "unit": "250 g",
+   "cat": "dryfruit"
+  },
+  "walnut": {
+   "name": "Walnuts",
+   "unit": "250 g",
+   "cat": "dryfruit"
+  },
+  "pista": {
+   "name": "Pistachios",
+   "unit": "200 g",
+   "cat": "dryfruit"
+  },
+  "dates": {
+   "name": "Dates",
+   "unit": "500 g",
+   "cat": "dryfruit"
+  },
+  "peanut": {
+   "name": "Raw Peanuts",
+   "unit": "500 g",
+   "cat": "dryfruit"
+  },
+  "makhana": {
+   "name": "Makhana",
+   "unit": "100 g",
+   "cat": "dryfruit"
+  },
+  "fig": {
+   "name": "Dried Figs (Anjeer)",
+   "unit": "200 g",
+   "cat": "dryfruit"
+  },
+  "biscuitglu": {
+   "name": "Glucose Biscuits",
+   "unit": "800 g",
+   "cat": "snacks"
+  },
+  "cookies": {
+   "name": "Butter Cookies",
+   "unit": "200 g",
+   "cat": "snacks"
+  },
+  "cream_bis": {
+   "name": "Cream Biscuits",
+   "unit": "300 g",
+   "cat": "snacks"
+  },
+  "chips": {
+   "name": "Potato Chips",
+   "unit": "90 g",
+   "cat": "snacks"
+  },
+  "namkeen": {
+   "name": "Bhujia Namkeen",
+   "unit": "400 g",
+   "cat": "snacks"
+  },
+  "khakhra": {
+   "name": "Khakhra",
+   "unit": "200 g",
+   "cat": "snacks"
+  },
+  "popcorn": {
+   "name": "Microwave Popcorn",
+   "unit": "90 g",
+   "cat": "snacks"
+  },
+  "rusk": {
+   "name": "Rusk",
+   "unit": "300 g",
+   "cat": "snacks"
+  },
+  "chakli": {
+   "name": "Chakli",
+   "unit": "200 g",
+   "cat": "snacks"
+  },
+  "nachos": {
+   "name": "Nachos",
+   "unit": "150 g",
+   "cat": "snacks"
+  },
+  "coffee": {
+   "name": "Instant Coffee",
+   "unit": "100 g",
+   "cat": "bev"
+  },
+  "filtercoffee": {
+   "name": "Filter Coffee Powder",
+   "unit": "200 g",
+   "cat": "bev"
+  },
+  "greentea": {
+   "name": "Green Tea Bags",
+   "unit": "25 pcs",
+   "cat": "bev"
+  },
+  "juice": {
+   "name": "Mixed Fruit Juice",
+   "unit": "1 L",
+   "cat": "bev"
+  },
+  "cola": {
+   "name": "Cold Drink",
+   "unit": "750 ml",
+   "cat": "bev"
+  },
+  "soda": {
+   "name": "Soda Water",
+   "unit": "750 ml",
+   "cat": "bev"
+  },
+  "water": {
+   "name": "Mineral Water",
+   "unit": "1 L",
+   "cat": "bev"
+  },
+  "coconutwater": {
+   "name": "Packaged Coconut Water",
+   "unit": "200 ml",
+   "cat": "bev"
+  },
+  "health": {
+   "name": "Malt Health Drink",
+   "unit": "500 g",
+   "cat": "bev"
+  },
+  "energy": {
+   "name": "Energy Drink",
+   "unit": "250 ml",
+   "cat": "bev"
+  },
+  "noodles": {
+   "name": "Instant Noodles",
+   "unit": "4 pack",
+   "cat": "instant"
+  },
+  "oats": {
+   "name": "Rolled Oats",
+   "unit": "1 kg",
+   "cat": "instant"
+  },
+  "cornflakes": {
+   "name": "Corn Flakes",
+   "unit": "475 g",
+   "cat": "instant"
+  },
+  "muesli": {
+   "name": "Fruit Muesli",
+   "unit": "500 g",
+   "cat": "instant"
+  },
+  "pasta": {
+   "name": "Pasta",
+   "unit": "500 g",
+   "cat": "instant"
+  },
+  "ketchup": {
+   "name": "Tomato Ketchup",
+   "unit": "1 kg",
+   "cat": "instant"
+  },
+  "jam": {
+   "name": "Mixed Fruit Jam",
+   "unit": "500 g",
+   "cat": "instant"
+  },
+  "honey": {
+   "name": "Honey",
+   "unit": "250 g",
+   "cat": "instant"
+  },
+  "peanutbutter": {
+   "name": "Peanut Butter",
+   "unit": "340 g",
+   "cat": "instant"
+  },
+  "readyidli": {
+   "name": "Idli / Dosa Batter",
+   "unit": "1 kg",
+   "cat": "instant"
+  },
+  "pickle": {
+   "name": "Mango Pickle",
+   "unit": "400 g",
+   "cat": "instant"
+  },
+  "papad": {
+   "name": "Papad",
+   "unit": "200 g",
+   "cat": "instant"
+  },
+  "chocobar": {
+   "name": "Milk Chocolate Bar",
+   "unit": "50 g",
+   "cat": "sweets"
+  },
+  "darkchoc": {
+   "name": "Dark Chocolate",
+   "unit": "100 g",
+   "cat": "sweets"
+  },
+  "gulabjamun": {
+   "name": "Gulab Jamun Tin",
+   "unit": "1 kg",
+   "cat": "sweets"
+  },
+  "rasgulla": {
+   "name": "Rasgulla Tin",
+   "unit": "1 kg",
+   "cat": "sweets"
+  },
+  "kajukatli": {
+   "name": "Kaju Katli",
+   "unit": "250 g",
+   "cat": "sweets"
+  },
+  "toffee": {
+   "name": "Assorted Toffees",
+   "unit": "100 pcs",
+   "cat": "sweets"
+  },
+  "soanpapdi": {
+   "name": "Soan Papdi",
+   "unit": "500 g",
+   "cat": "sweets"
+  },
+  "icecream": {
+   "name": "Vanilla Ice Cream",
+   "unit": "1 L",
+   "cat": "frozen"
+  },
+  "kulfi": {
+   "name": "Malai Kulfi",
+   "unit": "4 pcs",
+   "cat": "frozen"
+  },
+  "peasfrozen": {
+   "name": "Frozen Green Peas",
+   "unit": "500 g",
+   "cat": "frozen"
+  },
+  "fries": {
+   "name": "French Fries",
+   "unit": "420 g",
+   "cat": "frozen"
+  },
+  "paratha": {
+   "name": "Frozen Parathas",
+   "unit": "5 pcs",
+   "cat": "frozen"
+  },
+  "nuggets": {
+   "name": "Veg Nuggets",
+   "unit": "400 g",
+   "cat": "frozen"
+  },
+  "corn_frozen": {
+   "name": "Frozen Sweet Corn",
+   "unit": "500 g",
+   "cat": "frozen"
+  },
+  "chicken": {
+   "name": "Chicken Curry Cut",
+   "unit": "500 g",
+   "cat": "meat"
+  },
+  "boneless": {
+   "name": "Chicken Boneless",
+   "unit": "500 g",
+   "cat": "meat"
+  },
+  "mutton": {
+   "name": "Mutton Curry Cut",
+   "unit": "500 g",
+   "cat": "meat"
+  },
+  "rohu": {
+   "name": "Rohu Fish",
+   "unit": "500 g",
+   "cat": "meat"
+  },
+  "prawns": {
+   "name": "Prawns (cleaned)",
+   "unit": "250 g",
+   "cat": "meat"
+  },
+  "eggs12": {
+   "name": "Farm Eggs",
+   "unit": "12 pcs",
+   "cat": "meat"
+  },
+  "browneggs": {
+   "name": "Brown Eggs",
+   "unit": "6 pcs",
+   "cat": "meat"
+  },
+  "bleach": {
+   "name": "Bleach",
+   "unit": "500 ml",
+   "cat": "house"
+  },
+  "glass": {
+   "name": "Glass Cleaner",
+   "unit": "500 ml",
+   "cat": "house"
+  },
+  "mosquito": {
+   "name": "Mosquito Repellent Refill",
+   "unit": "1 pc",
+   "cat": "house"
+  },
+  "naphthalene": {
+   "name": "Naphthalene Balls",
+   "unit": "200 g",
+   "cat": "house"
+  },
+  "airfresh": {
+   "name": "Air Freshener",
+   "unit": "220 ml",
+   "cat": "house"
+  },
+  "broom": {
+   "name": "Soft Broom",
+   "unit": "1 pc",
+   "cat": "house"
+  },
+  "mop": {
+   "name": "Floor Mop",
+   "unit": "1 pc",
+   "cat": "house"
+  },
+  "bulb": {
+   "name": "LED Bulb 9W",
+   "unit": "1 pc",
+   "cat": "house"
+  },
+  "battery": {
+   "name": "AA Batteries",
+   "unit": "4 pcs",
+   "cat": "house"
+  },
+  "candle": {
+   "name": "Candles",
+   "unit": "6 pcs",
+   "cat": "house"
+  },
+  "napkin": {
+   "name": "Paper Napkins",
+   "unit": "100 pcs",
+   "cat": "house"
+  },
+  "clingfilm": {
+   "name": "Cling Film",
+   "unit": "30 m",
+   "cat": "house"
+  },
+  "liquiddet": {
+   "name": "Liquid Detergent",
+   "unit": "1 L",
+   "cat": "house"
+  },
+  "fabric": {
+   "name": "Fabric Conditioner",
+   "unit": "860 ml",
+   "cat": "house"
+  },
+  "dishbar": {
+   "name": "Dishwash Bar",
+   "unit": "3 × 200 g",
+   "cat": "house"
+  },
+  "facewash": {
+   "name": "Face Wash",
+   "unit": "100 g",
+   "cat": "toilet"
+  },
+  "bodylotion": {
+   "name": "Body Lotion",
+   "unit": "400 ml",
+   "cat": "toilet"
+  },
+  "deo": {
+   "name": "Deodorant",
+   "unit": "150 ml",
+   "cat": "toilet"
+  },
+  "razor": {
+   "name": "Disposable Razors",
+   "unit": "3 pcs",
+   "cat": "toilet"
+  },
+  "shavingfoam": {
+   "name": "Shaving Foam",
+   "unit": "200 g",
+   "cat": "toilet"
+  },
+  "conditioner": {
+   "name": "Conditioner",
+   "unit": "180 ml",
+   "cat": "toilet"
+  },
+  "sanitary": {
+   "name": "Sanitary Pads",
+   "unit": "20 pcs",
+   "cat": "toilet"
+  },
+  "cottonbuds": {
+   "name": "Cotton Buds",
+   "unit": "100 pcs",
+   "cat": "toilet"
+  },
+  "sanitizer": {
+   "name": "Hand Sanitizer",
+   "unit": "200 ml",
+   "cat": "toilet"
+  },
+  "mouthwash": {
+   "name": "Mouthwash",
+   "unit": "250 ml",
+   "cat": "toilet"
+  },
+  "talc": {
+   "name": "Talcum Powder",
+   "unit": "300 g",
+   "cat": "toilet"
+  },
+  "vaseline": {
+   "name": "Petroleum Jelly",
+   "unit": "100 ml",
+   "cat": "toilet"
+  },
+  "diapers": {
+   "name": "Baby Diapers (M)",
+   "unit": "30 pcs",
+   "cat": "baby"
+  },
+  "wipes": {
+   "name": "Baby Wipes",
+   "unit": "72 pcs",
+   "cat": "baby"
+  },
+  "babysoap": {
+   "name": "Baby Soap",
+   "unit": "75 g",
+   "cat": "baby"
+  },
+  "babyoil": {
+   "name": "Baby Massage Oil",
+   "unit": "200 ml",
+   "cat": "baby"
+  },
+  "babypowder": {
+   "name": "Baby Powder",
+   "unit": "200 g",
+   "cat": "baby"
+  },
+  "babyfood": {
+   "name": "Baby Cereal",
+   "unit": "300 g",
+   "cat": "baby"
+  },
+  "babylotion": {
+   "name": "Baby Lotion",
+   "unit": "200 ml",
+   "cat": "baby"
+  },
+  "dogfood": {
+   "name": "Dog Food (Adult)",
+   "unit": "1.2 kg",
+   "cat": "pet"
+  },
+  "catfood": {
+   "name": "Cat Food",
+   "unit": "1.2 kg",
+   "cat": "pet"
+  },
+  "dogtreat": {
+   "name": "Dog Treats",
+   "unit": "100 g",
+   "cat": "pet"
+  },
+  "catlitter": {
+   "name": "Cat Litter",
+   "unit": "5 kg",
+   "cat": "pet"
+  },
+  "petshampoo": {
+   "name": "Pet Shampoo",
+   "unit": "200 ml",
+   "cat": "pet"
+  },
+  "notebook": {
+   "name": "Long Notebook",
+   "unit": "1 pc",
+   "cat": "station"
+  },
+  "pens": {
+   "name": "Ball Pens",
+   "unit": "5 pcs",
+   "cat": "station"
+  },
+  "pencils": {
+   "name": "Pencils",
+   "unit": "10 pcs",
+   "cat": "station"
+  },
+  "eraser": {
+   "name": "Eraser & Sharpener",
+   "unit": "1 set",
+   "cat": "station"
+  },
+  "glue": {
+   "name": "Glue Stick",
+   "unit": "1 pc",
+   "cat": "station"
+  },
+  "tape": {
+   "name": "Cello Tape",
+   "unit": "1 pc",
+   "cat": "station"
+  },
+  "a4": {
+   "name": "A4 Paper",
+   "unit": "100 sheets",
+   "cat": "station"
+  },
+  "colours": {
+   "name": "Crayons",
+   "unit": "12 pcs",
+   "cat": "station"
+  }
+ },
+ "vendors": {
+  "v1": {
+   "name": "Sai Fresh Vegetables"
+  },
+  "v2": {
+   "name": "Krishna Kirana Store"
+  },
+  "v3": {
+   "name": "Green Basket Mart"
+  },
+  "v4": {
+   "name": "Shree Pooja Bhandar"
+  },
+  "v5": {
+   "name": "Gokul Dairy & Sweets"
+  },
+  "v6": {
+   "name": "Annapurna Masala & Dry Fruits"
+  },
+  "v7": {
+   "name": "Fresh Catch Meat & Fish"
+  },
+  "v8": {
+   "name": "Paws & Tails Pet Shop"
+  }
+ },
+ "prices": {
+  "tomato|v1": 40,
+  "tomato|v2": 49,
+  "tomato|v3": 48,
+  "onion|v1": 50,
+  "onion|v2": 56,
+  "onion|v3": 55,
+  "potato|v1": 32,
+  "potato|v2": 36,
+  "potato|v3": 36,
+  "chilli|v1": 9,
+  "chilli|v2": 10,
+  "chilli|v3": 10,
+  "coriander|v1": 14,
+  "coriander|v2": 16,
+  "coriander|v3": 15,
+  "carrot|v1": 28,
+  "carrot|v2": 32,
+  "carrot|v3": 32,
+  "cucumber|v1": 23,
+  "cucumber|v2": 26,
+  "cucumber|v3": 26,
+  "brinjal|v1": 27,
+  "brinjal|v2": 31,
+  "brinjal|v3": 31,
+  "capsicum|v1": 42,
+  "capsicum|v2": 47,
+  "capsicum|v3": 46,
+  "garlic|v1": 62,
+  "garlic|v2": 70,
+  "garlic|v3": 68,
+  "ginger|v1": 41,
+  "ginger|v2": 47,
+  "ginger|v3": 47,
+  "spinach|v1": 18,
+  "spinach|v2": 20,
+  "spinach|v3": 20,
+  "lemon|v1": 23,
+  "lemon|v2": 27,
+  "lemon|v3": 27,
+  "peas|v1": 55,
+  "peas|v2": 61,
+  "peas|v3": 60,
+  "corn|v1": 22,
+  "corn|v2": 27,
+  "corn|v3": 27,
+  "banana|v1": 59,
+  "banana|v3": 60,
+  "apple|v1": 149,
+  "apple|v3": 151,
+  "orange|v1": 86,
+  "orange|v3": 91,
+  "grapes|v1": 65,
+  "grapes|v3": 69,
+  "papaya|v1": 53,
+  "papaya|v3": 56,
+  "watermelon|v1": 68,
+  "watermelon|v3": 69,
+  "pineapple|v1": 76,
+  "pineapple|v3": 77,
+  "pear|v1": 83,
+  "pear|v3": 92,
+  "kiwi|v1": 88,
+  "kiwi|v3": 89,
+  "coconut|v1": 48,
+  "coconut|v3": 48,
+  "milk|v2": 29,
+  "milk|v3": 29,
+  "milk|v5": 27,
+  "curd|v2": 34,
+  "curd|v3": 37,
+  "curd|v5": 35,
+  "paneer|v2": 94,
+  "paneer|v3": 89,
+  "paneer|v5": 86,
+  "eggs|v2": 47,
+  "eggs|v3": 48,
+  "eggs|v5": 48,
+  "butter|v2": 56,
+  "butter|v3": 62,
+  "butter|v5": 57,
+  "bread|v2": 46,
+  "bread|v3": 48,
+  "bread|v5": 42,
+  "atta|v2": 252,
+  "atta|v3": 257,
+  "atta|v6": 260,
+  "rice|v2": 384,
+  "rice|v3": 391,
+  "rice|v6": 361,
+  "toordal|v2": 163,
+  "toordal|v3": 166,
+  "toordal|v6": 154,
+  "sugar|v2": 47,
+  "sugar|v3": 47,
+  "sugar|v6": 48,
+  "salt|v2": 29,
+  "salt|v3": 29,
+  "salt|v6": 27,
+  "tea|v2": 137,
+  "tea|v3": 143,
+  "tea|v6": 140,
+  "dishwash|v2": 111,
+  "dishwash|v3": 116,
+  "detergent|v2": 127,
+  "detergent|v3": 130,
+  "floor|v2": 184,
+  "floor|v3": 188,
+  "toiletclean|v2": 91,
+  "toiletclean|v3": 95,
+  "garbage|v2": 103,
+  "garbage|v3": 98,
+  "scrub|v2": 43,
+  "scrub|v3": 45,
+  "foil|v2": 96,
+  "foil|v3": 98,
+  "soap|v2": 165,
+  "soap|v3": 168,
+  "shampoo|v2": 220,
+  "shampoo|v3": 224,
+  "paste|v2": 97,
+  "paste|v3": 99,
+  "brush|v2": 62,
+  "brush|v3": 59,
+  "handwash|v2": 99,
+  "handwash|v3": 101,
+  "tissue|v2": 155,
+  "tissue|v3": 158,
+  "hairoil|v2": 110,
+  "hairoil|v3": 114,
+  "agarbatti|v2": 61,
+  "agarbatti|v3": 63,
+  "agarbatti|v4": 56,
+  "camphor|v2": 70,
+  "camphor|v3": 71,
+  "camphor|v4": 62,
+  "diya|v2": 58,
+  "diya|v3": 59,
+  "diya|v4": 56,
+  "kumkum|v2": 29,
+  "kumkum|v3": 30,
+  "kumkum|v4": 27,
+  "flowers|v2": 39,
+  "flowers|v3": 40,
+  "flowers|v4": 35,
+  "wicks|v2": 29,
+  "wicks|v3": 30,
+  "wicks|v4": 27,
+  "bhimseni|v2": 40,
+  "bhimseni|v3": 41,
+  "bhimseni|v4": 35,
+  "haldikum|v2": 52,
+  "haldikum|v3": 53,
+  "haldikum|v4": 46,
+  "tulsi|v2": 82,
+  "tulsi|v3": 84,
+  "tulsi|v4": 73,
+  "sambrani|v2": 58,
+  "sambrani|v3": 60,
+  "sambrani|v4": 53,
+  "cauli|v1": 38,
+  "cauli|v2": 43,
+  "cauli|v3": 43,
+  "cabbage|v1": 33,
+  "cabbage|v2": 37,
+  "cabbage|v3": 37,
+  "bhindi|v1": 33,
+  "bhindi|v2": 36,
+  "bhindi|v3": 36,
+  "beans|v1": 45,
+  "beans|v2": 50,
+  "beans|v3": 49,
+  "bottlegourd|v1": 33,
+  "bottlegourd|v2": 37,
+  "bottlegourd|v3": 37,
+  "bittergourd|v1": 38,
+  "bittergourd|v2": 43,
+  "bittergourd|v3": 40,
+  "beetroot|v1": 26,
+  "beetroot|v2": 32,
+  "beetroot|v3": 32,
+  "radish|v1": 23,
+  "radish|v2": 25,
+  "radish|v3": 25,
+  "mushroom|v1": 46,
+  "mushroom|v2": 52,
+  "mushroom|v3": 51,
+  "sweetpotato|v1": 32,
+  "sweetpotato|v2": 36,
+  "sweetpotato|v3": 36,
+  "mint|v1": 9,
+  "mint|v2": 11,
+  "mint|v3": 10,
+  "curryleaf|v1": 9,
+  "curryleaf|v2": 10,
+  "curryleaf|v3": 10,
+  "methi|v1": 18,
+  "methi|v2": 20,
+  "methi|v3": 20,
+  "drumstick|v1": 28,
+  "drumstick|v2": 32,
+  "drumstick|v3": 32,
+  "pumpkin|v1": 23,
+  "pumpkin|v2": 26,
+  "pumpkin|v3": 25,
+  "pomegranate|v1": 168,
+  "pomegranate|v3": 176,
+  "mosambi|v1": 79,
+  "mosambi|v3": 80,
+  "guava|v1": 47,
+  "guava|v3": 49,
+  "chikoo|v1": 59,
+  "chikoo|v3": 56,
+  "custard|v1": 83,
+  "custard|v3": 87,
+  "strawberry|v1": 86,
+  "strawberry|v3": 91,
+  "dragon|v1": 76,
+  "dragon|v3": 77,
+  "avocado|v1": 119,
+  "avocado|v3": 120,
+  "muskmelon|v1": 58,
+  "muskmelon|v3": 61,
+  "greenapple|v1": 168,
+  "greenapple|v3": 169,
+  "fullmilk|v2": 70,
+  "fullmilk|v3": 71,
+  "fullmilk|v5": 66,
+  "buttermilk|v2": 20,
+  "buttermilk|v3": 21,
+  "buttermilk|v5": 19,
+  "cheese|v2": 144,
+  "cheese|v3": 150,
+  "cheese|v5": 132,
+  "cream|v2": 67,
+  "cream|v3": 70,
+  "cream|v5": 61,
+  "lassi|v2": 25,
+  "lassi|v3": 25,
+  "lassi|v5": 25,
+  "pav|v2": 30,
+  "pav|v3": 31,
+  "pav|v5": 30,
+  "whitebread|v2": 39,
+  "whitebread|v3": 41,
+  "whitebread|v5": 39,
+  "bun|v2": 39,
+  "bun|v3": 40,
+  "bun|v5": 39,
+  "basmati|v2": 156,
+  "basmati|v3": 159,
+  "basmati|v6": 147,
+  "poha|v2": 38,
+  "poha|v3": 43,
+  "poha|v6": 40,
+  "rava|v2": 34,
+  "rava|v3": 35,
+  "rava|v6": 35,
+  "besan|v2": 60,
+  "besan|v3": 61,
+  "besan|v6": 56,
+  "maida|v2": 51,
+  "maida|v3": 53,
+  "maida|v6": 47,
+  "moongdal|v2": 141,
+  "moongdal|v3": 144,
+  "moongdal|v6": 133,
+  "chanadal|v2": 103,
+  "chanadal|v3": 107,
+  "chanadal|v6": 96,
+  "masoor|v2": 110,
+  "masoor|v3": 114,
+  "masoor|v6": 112,
+  "urad|v2": 147,
+  "urad|v3": 150,
+  "urad|v6": 151,
+  "rajma|v2": 87,
+  "rajma|v3": 91,
+  "rajma|v6": 89,
+  "kabuli|v2": 80,
+  "kabuli|v3": 83,
+  "kabuli|v6": 82,
+  "jaggery|v2": 71,
+  "jaggery|v3": 72,
+  "jaggery|v6": 67,
+  "rocksalt|v2": 45,
+  "rocksalt|v3": 47,
+  "rocksalt|v6": 46,
+  "haldi|v2": 53,
+  "haldi|v3": 55,
+  "haldi|v6": 50,
+  "chillipow|v2": 73,
+  "chillipow|v3": 74,
+  "chillipow|v6": 63,
+  "dhaniya|v2": 49,
+  "dhaniya|v3": 50,
+  "dhaniya|v6": 46,
+  "jeera|v2": 62,
+  "jeera|v3": 64,
+  "jeera|v6": 54,
+  "rai|v2": 24,
+  "rai|v3": 25,
+  "rai|v6": 23,
+  "garam|v2": 82,
+  "garam|v3": 83,
+  "garam|v6": 71,
+  "pavbhaji|v2": 64,
+  "pavbhaji|v3": 66,
+  "pavbhaji|v6": 61,
+  "chole|v2": 65,
+  "chole|v3": 68,
+  "chole|v6": 61,
+  "hing|v2": 91,
+  "hing|v3": 93,
+  "hing|v6": 79,
+  "pepper|v2": 119,
+  "pepper|v3": 124,
+  "pepper|v6": 111,
+  "elaichi|v2": 182,
+  "elaichi|v3": 189,
+  "elaichi|v6": 156,
+  "tamarind|v2": 59,
+  "tamarind|v3": 61,
+  "tamarind|v6": 56,
+  "oil|v2": 149,
+  "oil|v3": 155,
+  "groundnut|v2": 182,
+  "groundnut|v3": 204,
+  "mustardoil|v2": 168,
+  "mustardoil|v3": 172,
+  "coconutoil|v2": 140,
+  "coconutoil|v3": 143,
+  "ricebran|v2": 155,
+  "ricebran|v3": 161,
+  "ghee|v2": 327,
+  "ghee|v3": 333,
+  "vanaspati|v2": 153,
+  "vanaspati|v3": 156,
+  "almond|v2": 221,
+  "almond|v3": 230,
+  "almond|v6": 212,
+  "cashew|v2": 252,
+  "cashew|v3": 262,
+  "cashew|v6": 242,
+  "raisin|v2": 102,
+  "raisin|v3": 106,
+  "raisin|v6": 89,
+  "walnut|v2": 288,
+  "walnut|v3": 300,
+  "walnut|v6": 252,
+  "pista|v2": 252,
+  "pista|v3": 257,
+  "pista|v6": 244,
+  "dates|v2": 180,
+  "dates|v3": 187,
+  "dates|v6": 172,
+  "peanut|v2": 83,
+  "peanut|v3": 85,
+  "peanut|v6": 74,
+  "makhana|v2": 118,
+  "makhana|v3": 122,
+  "makhana|v6": 113,
+  "fig|v2": 272,
+  "fig|v3": 283,
+  "fig|v6": 260,
+  "biscuitglu|v2": 100,
+  "biscuitglu|v3": 104,
+  "cookies|v2": 59,
+  "cookies|v3": 61,
+  "cream_bis|v2": 50,
+  "cream_bis|v3": 52,
+  "chips|v2": 29,
+  "chips|v3": 30,
+  "namkeen|v2": 106,
+  "namkeen|v3": 110,
+  "khakhra|v2": 68,
+  "khakhra|v3": 69,
+  "popcorn|v2": 44,
+  "popcorn|v3": 44,
+  "rusk|v2": 57,
+  "rusk|v3": 58,
+  "chakli|v2": 71,
+  "chakli|v3": 74,
+  "nachos|v2": 60,
+  "nachos|v3": 62,
+  "coffee|v2": 265,
+  "coffee|v3": 270,
+  "filtercoffee|v2": 184,
+  "filtercoffee|v3": 187,
+  "greentea|v2": 160,
+  "greentea|v3": 163,
+  "juice|v2": 118,
+  "juice|v3": 120,
+  "cola|v2": 41,
+  "cola|v3": 42,
+  "soda|v2": 24,
+  "soda|v3": 25,
+  "water|v2": 19,
+  "water|v3": 20,
+  "coconutwater|v2": 52,
+  "coconutwater|v3": 49,
+  "health|v2": 252,
+  "health|v3": 257,
+  "energy|v2": 121,
+  "energy|v3": 126,
+  "noodles|v2": 58,
+  "noodles|v3": 60,
+  "oats|v2": 194,
+  "oats|v3": 198,
+  "cornflakes|v2": 196,
+  "cornflakes|v3": 204,
+  "muesli|v2": 300,
+  "muesli|v3": 312,
+  "pasta|v2": 89,
+  "pasta|v3": 91,
+  "ketchup|v2": 146,
+  "ketchup|v3": 149,
+  "jam|v2": 153,
+  "jam|v3": 159,
+  "honey|v2": 129,
+  "honey|v3": 134,
+  "peanutbutter|v2": 185,
+  "peanutbutter|v3": 193,
+  "readyidli|v2": 83,
+  "readyidli|v3": 79,
+  "pickle|v2": 119,
+  "pickle|v3": 121,
+  "papad|v2": 60,
+  "papad|v3": 61,
+  "chocobar|v2": 51,
+  "chocobar|v3": 52,
+  "chocobar|v5": 47,
+  "darkchoc|v2": 146,
+  "darkchoc|v3": 148,
+  "darkchoc|v5": 145,
+  "gulabjamun|v2": 192,
+  "gulabjamun|v3": 214,
+  "gulabjamun|v5": 192,
+  "rasgulla|v2": 208,
+  "rasgulla|v3": 212,
+  "rasgulla|v5": 190,
+  "kajukatli|v2": 300,
+  "kajukatli|v3": 312,
+  "kajukatli|v5": 290,
+  "toffee|v2": 121,
+  "toffee|v3": 124,
+  "toffee|v5": 111,
+  "soanpapdi|v2": 150,
+  "soanpapdi|v3": 156,
+  "soanpapdi|v5": 145,
+  "icecream|v3": 198,
+  "icecream|v5": 204,
+  "kulfi|v3": 114,
+  "kulfi|v5": 118,
+  "peasfrozen|v3": 110,
+  "peasfrozen|v5": 113,
+  "fries|v3": 125,
+  "fries|v5": 129,
+  "paratha|v3": 107,
+  "paratha|v5": 114,
+  "nuggets|v3": 163,
+  "nuggets|v5": 175,
+  "corn_frozen|v3": 112,
+  "corn_frozen|v5": 126,
+  "chicken|v3": 156,
+  "chicken|v7": 155,
+  "boneless|v3": 229,
+  "boneless|v7": 224,
+  "mutton|v3": 463,
+  "mutton|v7": 416,
+  "rohu|v3": 197,
+  "rohu|v7": 178,
+  "prawns|v3": 229,
+  "prawns|v7": 227,
+  "eggs12|v3": 94,
+  "eggs12|v7": 94,
+  "browneggs|v3": 76,
+  "browneggs|v7": 69,
+  "bleach|v2": 59,
+  "bleach|v3": 60,
+  "glass|v2": 106,
+  "glass|v3": 110,
+  "mosquito|v2": 86,
+  "mosquito|v3": 89,
+  "naphthalene|v2": 58,
+  "naphthalene|v3": 59,
+  "airfresh|v2": 182,
+  "airfresh|v3": 189,
+  "broom|v2": 122,
+  "broom|v3": 127,
+  "mop|v2": 260,
+  "mop|v3": 247,
+  "bulb|v2": 95,
+  "bulb|v3": 106,
+  "battery|v2": 79,
+  "battery|v3": 81,
+  "candle|v2": 62,
+  "candle|v3": 63,
+  "napkin|v2": 59,
+  "napkin|v3": 62,
+  "clingfilm|v2": 120,
+  "clingfilm|v3": 125,
+  "liquiddet|v2": 223,
+  "liquiddet|v3": 232,
+  "fabric|v2": 213,
+  "fabric|v3": 222,
+  "dishbar|v2": 61,
+  "dishbar|v3": 63,
+  "facewash|v2": 146,
+  "facewash|v3": 151,
+  "bodylotion|v2": 297,
+  "bodylotion|v3": 303,
+  "deo|v2": 192,
+  "deo|v3": 200,
+  "razor|v2": 122,
+  "razor|v3": 127,
+  "shavingfoam|v2": 175,
+  "shavingfoam|v3": 178,
+  "conditioner|v2": 196,
+  "conditioner|v3": 204,
+  "sanitary|v2": 175,
+  "sanitary|v3": 182,
+  "cottonbuds|v2": 51,
+  "cottonbuds|v3": 52,
+  "sanitizer|v2": 97,
+  "sanitizer|v3": 101,
+  "mouthwash|v2": 146,
+  "mouthwash|v3": 151,
+  "talc|v2": 146,
+  "talc|v3": 148,
+  "vaseline|v2": 93,
+  "vaseline|v3": 96,
+  "diapers|v2": 556,
+  "diapers|v3": 578,
+  "wipes|v2": 176,
+  "wipes|v3": 184,
+  "babysoap|v2": 71,
+  "babysoap|v3": 74,
+  "babyoil|v2": 224,
+  "babyoil|v3": 233,
+  "babypowder|v2": 165,
+  "babypowder|v3": 172,
+  "babyfood|v2": 309,
+  "babyfood|v3": 321,
+  "babylotion|v2": 235,
+  "babylotion|v3": 239,
+  "dogfood|v3": 360,
+  "dogfood|v8": 345,
+  "catfood|v3": 433,
+  "catfood|v8": 383,
+  "dogtreat|v3": 150,
+  "dogtreat|v8": 145,
+  "catlitter|v3": 473,
+  "catlitter|v8": 415,
+  "petshampoo|v3": 263,
+  "petshampoo|v8": 233,
+  "notebook|v2": 62,
+  "notebook|v3": 63,
+  "pens|v2": 52,
+  "pens|v3": 53,
+  "pencils|v2": 61,
+  "pencils|v3": 64,
+  "eraser|v2": 21,
+  "eraser|v3": 21,
+  "glue|v2": 31,
+  "glue|v3": 32,
+  "tape|v2": 24,
+  "tape|v3": 25,
+  "a4|v2": 108,
+  "a4|v3": 112,
+  "colours|v2": 69,
+  "colours|v3": 71
+ },
+ "delivery": {
+  "fee": 25,
+  "free_above": 299
+ }
+}
