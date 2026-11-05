@@ -36,28 +36,48 @@ log = logging.getLogger("society")
 
 
 # ---------------------------------------------------------------- config
+ON_VERCEL = bool(os.getenv("VERCEL"))          # Vercel sets this automatically
+MISSING: list[str] = []                        # settings that still need filling in
+
+
 def need(name: str) -> str:
     v = os.getenv(name, "").strip()
     if not v:
-        raise RuntimeError(f"Missing {name} in backend/.env — run the start script or see README.md")
+        MISSING.append(name)
     return v
 
 
 JWT_SECRET = need("JWT_SECRET")              # only used for the dashboard's short live-feed ticket
-if len(JWT_SECRET) < 32:
-    raise RuntimeError("JWT_SECRET must be at least 32 random characters")
+if JWT_SECRET and len(JWT_SECRET) < 32:
+    MISSING.append("JWT_SECRET (must be 32+ random characters)")
 AUTH0_DOMAIN = need("AUTH0_DOMAIN").removeprefix("https://").rstrip("/")
 AUTH0_CLIENT_ID = need("AUTH0_CLIENT_ID")
 AUTH0_AUDIENCE = need("AUTH0_AUDIENCE")
 ADMIN_EMAILS = {e.strip().lower() for e in need("ADMIN_EMAILS").split(",") if e.strip()}
+if MISSING:
+    log.error("Server settings missing: %s — the app will show a setup message until they're added",
+              ", ".join(MISSING))
 ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
 DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
 TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT = os.getenv("TELEGRAM_CHAT_ID", "")
-# true only when the server sits behind a tunnel/proxy (ngrok, Render) that sets X-Forwarded-For
-TRUST_PROXY = os.getenv("TRUST_PROXY", "false").lower() == "true"
-PAGES_DIR = Path(__file__).resolve().parent.parent   # where society-app.html and admin.html live
+# true when the server sits behind a tunnel/proxy (ngrok, Vercel) that sets X-Forwarded-For
+TRUST_PROXY = ON_VERCEL or os.getenv("TRUST_PROXY", "false").lower() == "true"
+# Vercel runs many short-lived copies of the server, so a live push feed can't reach every admin:
+# the dashboard polls instead, and alerts are sent before the request finishes.
+LIVE_STREAM = not ON_VERCEL
+PAGES_DIR = Path(__file__).resolve().parent.parent   # where index.html and admin.html live
+
+# Database: Postgres when DATABASE_URL is set (Vercel + Neon), otherwise a local SQLite file.
+DATABASE_URL = (os.getenv("DATABASE_URL") or os.getenv("POSTGRES_URL") or "").strip()
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
+USE_PG = DATABASE_URL.startswith("postgresql://")
 DB_PATH = os.getenv("DB_PATH", str(Path(__file__).parent / "society-auth0.db"))
+if not USE_PG and ON_VERCEL:
+    # Vercel's disk is read-only except /tmp, which is wiped often — fine for a first look, not for real use.
+    DB_PATH = "/tmp/society.db"
+    log.warning("No DATABASE_URL set: using a temporary database. Add Postgres (Neon) in Vercel → Storage.")
 
 CATALOG = json.loads((Path(__file__).parent / "catalog.json").read_text(encoding="utf-8"))
 
@@ -66,8 +86,39 @@ SLOT_LABEL = {"asap": "Express (~30 min)", "eve": "Today 6–8 pm", "tmrw": "Tom
 
 
 # ---------------------------------------------------------------- database
+_NAMED = re.compile(r"(?<!:):([a-z_]+)")
+
+
+def _pg_sql(sql: str) -> str:
+    """The SQL below is written once for SQLite; this adapts it for Postgres."""
+    return _NAMED.sub(r"%(\1)s", sql.replace("?", "%s")).replace("INTEGER", "BIGINT")
+
+
+class _PgConn:
+    def __init__(self, con):
+        self.con = con
+
+    def execute(self, sql, params=None):
+        return self.con.execute(_pg_sql(sql), params)
+
+    def executescript(self, script):
+        for stmt in script.split(";"):
+            if stmt.strip():
+                self.con.execute(_pg_sql(stmt))
+
+
 @contextmanager
 def tx():
+    if USE_PG:
+        import psycopg                      # only needed on Vercel/Postgres
+        from psycopg.rows import dict_row
+        con = psycopg.connect(DATABASE_URL, row_factory=dict_row, prepare_threshold=None, connect_timeout=10)
+        try:
+            yield _PgConn(con)
+            con.commit()
+        finally:
+            con.close()
+        return
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row
     try:
@@ -83,11 +134,11 @@ def init_db():
         CREATE TABLE IF NOT EXISTS residents(
             email TEXT PRIMARY KEY, name TEXT NOT NULL, flat TEXT NOT NULL, phone TEXT,
             active INTEGER NOT NULL DEFAULT 1, created INTEGER NOT NULL);
-        CREATE TABLE IF NOT EXISTS users(          -- everyone who has ever signed in through Auth0
+        CREATE TABLE IF NOT EXISTS users(
             sub TEXT PRIMARY KEY, email TEXT, email_verified INTEGER, auth_name TEXT, picture TEXT,
             first_seen INTEGER, last_seen INTEGER, last_ip TEXT, info_checked INTEGER);
         CREATE TABLE IF NOT EXISTS logins(
-            ts INTEGER, sub TEXT, email TEXT, name TEXT, flat TEXT, ip TEXT, device TEXT, outcome TEXT);
+            ts DOUBLE PRECISION, sub TEXT, email TEXT, name TEXT, flat TEXT, ip TEXT, device TEXT, outcome TEXT);
         CREATE TABLE IF NOT EXISTS orders(
             id TEXT PRIMARY KEY, email TEXT NOT NULL, name TEXT, flat TEXT, phone TEXT,
             items TEXT NOT NULL, subtotal INTEGER, fee INTEGER, total INTEGER,
@@ -95,10 +146,10 @@ def init_db():
             status TEXT, created INTEGER, updated INTEGER);
         CREATE TABLE IF NOT EXISTS audit(ts INTEGER, actor TEXT, action TEXT, detail TEXT);
         CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email);
-        CREATE INDEX IF NOT EXISTS idx_logins_ts ON logins(ts);
+        CREATE INDEX IF NOT EXISTS idx_logins_ts ON logins(ts)
         """)
         for e in ADMIN_EMAILS:
-            c.execute("INSERT OR IGNORE INTO residents VALUES(?,?,?,?,1,?)",
+            c.execute("INSERT INTO residents VALUES(?,?,?,?,1,?) ON CONFLICT DO NOTHING",
                       (e, "Admin", "Society Office", None, int(time.time())))
 
 
@@ -106,7 +157,12 @@ def audit(c, actor, action, detail=""):
     c.execute("INSERT INTO audit VALUES(?,?,?,?)", (int(time.time()), actor, action, detail))
 
 
-init_db()
+DB_ERROR = ""
+try:
+    init_db()
+except Exception as e:  # show a clear message instead of crashing on start
+    DB_ERROR = f"{type(e).__name__}: {e}"[:300]
+    log.exception("Database setup failed")
 
 
 # ---------------------------------------------------------------- helpers
@@ -276,7 +332,12 @@ async def telegram(text: str):
         log.warning("Telegram failed: %s", e)
 
 
-def fire(coro):
+async def fire(coro):
+    """Send a notification without slowing the request down — except on Vercel, where work left
+    running after the reply can be frozen, so there we wait for it (Telegram has a 10 s timeout)."""
+    if ON_VERCEL:
+        await coro
+        return
     t = asyncio.create_task(coro)
     _bg_tasks.add(t)
     t.add_done_callback(_bg_tasks.discard)
@@ -308,6 +369,17 @@ app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS,
 
 
 @app.middleware("http")
+async def setup_check(request: Request, call_next):
+    """Until required settings exist, every API call explains what's missing (pages still load)."""
+    p = request.url.path
+    if (MISSING or DB_ERROR) and p not in ("/", "/health", "/society-app.html") and p.lstrip("/") not in PAGES:
+        msg = (f"Server setup incomplete — add these settings: {', '.join(MISSING)}" if MISSING
+               else f"Database problem: {DB_ERROR}")
+        return JSONResponse({"detail": msg}, status_code=503)
+    return await call_next(request)
+
+
+@app.middleware("http")
 async def security_headers(request: Request, call_next):
     if int(request.headers.get("content-length") or 0) > 64_000:
         return JSONResponse({"detail": "Request too large"}, status_code=413)
@@ -320,25 +392,31 @@ async def security_headers(request: Request, call_next):
 
 
 # ---------- the pages themselves (so a phone needs just one address)
-PAGES = {"society-app.html": "text/html", "admin.html": "text/html",
+PAGES = {"index.html": "text/html", "admin.html": "text/html",
          "manifest.webmanifest": "application/manifest+json",
          "icon-192.png": "image/png", "icon-512.png": "image/png"}
 
 
 @app.get("/", include_in_schema=False)
 def home():
-    return RedirectResponse("/society-app.html")
+    return FileResponse(PAGES_DIR / "index.html", media_type="text/html")
+
+
+@app.get("/society-app.html", include_in_schema=False)
+def old_address():   # the app used to live here
+    return RedirectResponse("/")
 
 
 @app.get("/health")
 def health():
-    return {"ok": True}
+    return {"ok": not (MISSING or DB_ERROR), "missing": MISSING, "database": "postgres" if USE_PG else "sqlite",
+            "db_error": DB_ERROR or None, "host": "vercel" if ON_VERCEL else "local"}
 
 
 @app.get("/config")
 def public_config():
     """Public Auth0 settings the pages need to show the login screen (these are not secrets)."""
-    return {"domain": AUTH0_DOMAIN, "client_id": AUTH0_CLIENT_ID, "audience": AUTH0_AUDIENCE}
+    return {"domain": AUTH0_DOMAIN, "client_id": AUTH0_CLIENT_ID, "audience": AUTH0_AUDIENCE, "live": LIVE_STREAM}
 
 
 # ---------- sign-in record
@@ -359,13 +437,13 @@ async def record_login(request: Request, ident: dict = Depends(identity)):
             outcome = "not_registered"
         first_request = outcome == "not_registered" and not c.execute(
             "SELECT 1 FROM logins WHERE sub=? AND outcome='not_registered'", (ident["sub"],)).fetchone()
-        row = {"ts": int(time.time()), "sub": ident["sub"], "email": ident["email"],
+        row = {"ts": round(time.time(), 3), "sub": ident["sub"], "email": ident["email"],
                "name": r["name"] if r else ident["auth_name"], "flat": r["flat"] if r else None,
                "ip": ip, "device": device_of(request.headers.get("user-agent", "")), "outcome": outcome}
         c.execute("INSERT INTO logins VALUES(:ts,:sub,:email,:name,:flat,:ip,:device,:outcome)", row)
     broadcast("login", {k: v for k, v in row.items() if k != "sub"})
     if first_request:
-        fire(telegram(f"🔔 <b>New access request</b>\n{html.escape(row['name'] or '')} · {html.escape(row['email'] or '')}\n"
+        await fire(telegram(f"🔔 <b>New access request</b>\n{html.escape(row['name'] or '')} · {html.escape(row['email'] or '')}\n"
                       f"Approve them in the dashboard → Residents."))
     if outcome == "unverified":
         raise HTTPException(403, "unverified: Please verify your email (check your inbox), then log in again.")
@@ -437,7 +515,7 @@ async def create_order(body: OrderIn, u: dict = Depends(current_user)):
         row = c.execute("SELECT * FROM orders WHERE id=?", (oid,)).fetchone()
     o = order_out(row, admin=True)
     broadcast("order_new", o)
-    fire(telegram(order_message(o)))
+    await fire(telegram(order_message(o)))
     return order_out(row)
 
 
@@ -463,7 +541,7 @@ async def submit_utr(oid: str, body: UtrIn, u: dict = Depends(current_user)):
         row = c.execute("SELECT * FROM orders WHERE id=?", (oid,)).fetchone()
     o = order_out(row, admin=True)
     broadcast("order_update", o)
-    fire(telegram(f"💳 Payment submitted for <b>{oid}</b> ({html.escape(o['flat'])}) — UTR <code>{body.utr}</code>, ₹{o['total']}. Please verify."))
+    await fire(telegram(f"💳 Payment submitted for <b>{oid}</b> ({html.escape(o['flat'])}) — UTR <code>{body.utr}</code>, ₹{o['total']}. Please verify."))
     return order_out(row)
 
 

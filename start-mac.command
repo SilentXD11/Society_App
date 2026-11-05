@@ -25,6 +25,6 @@ URL=http://localhost:5500/admin.html
 (command -v open >/dev/null && open "$URL") || (command -v xdg-open >/dev/null && xdg-open "$URL") || true
 echo
 echo "Admin dashboard: http://localhost:5500/admin.html"
-echo "Resident app:    http://localhost:5500/society-app.html"
+echo "Resident app:    http://localhost:5500/"
 echo "Log in with the admin email you entered. Close this window to stop everything."
 wait

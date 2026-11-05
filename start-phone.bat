@@ -35,7 +35,7 @@ start "" https://%DOMAIN%/admin.html
 
 echo.
 echo ===============================================================
-echo  On your phone open:   https://%DOMAIN%/society-app.html
+echo  On your phone open:   https://%DOMAIN%/
 echo  Admin dashboard:      https://%DOMAIN%/admin.html
 echo ===============================================================
 echo  First time only: add these addresses in Auth0 (README, section "Use it on your phone").

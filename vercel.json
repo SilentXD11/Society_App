@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "mkdir -p public && cp index.html admin.html manifest.webmanifest icon-192.png icon-512.png public/",
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.py": { "includeFiles": "backend/**", "maxDuration": 30 }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+}

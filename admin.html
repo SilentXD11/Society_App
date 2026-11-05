@@ -163,7 +163,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const inr = n => '₹' + Math.round(n||0).toLocaleString('en-IN');
 const cleanMsg = m => String(m||'').replace(/^(not_registered|unverified|blocked):\s*/, '');
-let a0 = null, me = null, orders = [], logins = [], requests = [], tab = 'new', logFilter = 'all', es = null;
+let LIVE = true, a0 = null, me = null, orders = [], logins = [], requests = [], tab = 'new', logFilter = 'all', es = null;
 const freshIds = new Set(), freshLogins = new Set();
 
 /* ---------------- sign-in (Auth0) ---------------- */
@@ -176,14 +176,19 @@ function gate(kind, msg){
     login:   ['🔐','Admin sign-in','Sign in with the account listed as an admin on your server.','<button class="btn primary" onclick="login()">Log in</button>'],
     denied:  ['⏳','Can\'t open the dashboard', esc(cleanMsg(msg)),'<button class="btn" onclick="logout()">Log out</button>'],
     notadmin:['🚫','Not an admin account',`You're signed in as <b>${esc(me?.email)}</b>, which isn't in ADMIN_EMAILS on the server.`,'<button class="btn" onclick="logout()">Log in with a different account</button>'],
-    error:   ['⚠️','Sign-in problem', esc(msg),'<button class="btn primary" onclick="login()">Try again</button>']
+    error:   ['⚠️','Sign-in problem', esc(msg),'<button class="btn primary" onclick="login()">Try again</button>'],
+    setup:   ['🛠️','Server needs setting up', esc(msg),'<button class="btn primary" onclick="location.reload()">Reload</button>']
   }[kind];
   $('#gate').innerHTML = `<div class="logo">${v[0]}</div><h2>${v[1]}</h2><p>${v[2]}</p>${v[3]}`;
 }
 async function boot(){
   if (location.protocol === 'file:') return gate('file');
   let cfg;
-  try { cfg = await (await fetch(API_BASE + '/config')).json(); } catch(e){ return gate('server'); }
+  try {
+    const r = await fetch(API_BASE + '/config'); cfg = await r.json().catch(() => ({}));
+    if (!r.ok) return gate('setup', cfg.detail || 'The server is not set up yet.');
+  } catch(e){ return gate('server'); }
+  LIVE = cfg.live !== false;
   const create = window.auth0 && window.auth0.createAuth0Client;
   if (!create) return gate('sdk');
   a0 = await create({ domain: cfg.domain, clientId: cfg.client_id, cacheLocation: 'localstorage', useRefreshTokens: true,
@@ -385,10 +390,28 @@ document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => {
   if (tab==='residents') { loadRequests(); loadResidents(); }
   render();
 });
+/* Used on Vercel: fetch the latest orders/logins and alert for anything new since last time */
+let polling = false, loaded = false;
+async function poll(){
+  if (polling || !loaded) return;
+  polling = true;
+  try {
+    const [o, l] = await Promise.all([api('/admin/orders'), api('/admin/logins?limit=200')]);
+    const known = new Set(orders.map(x => x.id));
+    const fresh = o.filter(x => !known.has(x.id) && x.status === 'placed');
+    const knownL = new Set(logins.map(x => x._k));
+    const newL = l.map(x => ({...x, _k: x.ts + x.email})).filter(x => !knownL.has(x._k));
+    orders = o; logins = l.map(x => ({...x, _k: x.ts + x.email}));
+    fresh.forEach(x => { freshIds.add(x.id); alertNewOrder(x); });
+    newL.forEach(x => { freshLogins.add(x._k); if (x.outcome === 'not_registered') { toast(`${x.name || x.email} is asking for access`); loadRequests(); } });
+    render(); setLive(true, 'Checking every 10 s');
+  } catch(e){ setLive(false, 'Reconnecting…'); }
+  polling = false;
+}
 async function loadAll(){
   try {
     const [o, l] = await Promise.all([api('/admin/orders'), api('/admin/logins')]);
-    orders = o; logins = l.map(x => ({...x, _k: x.ts + x.email})); render();
+    orders = o; logins = l.map(x => ({...x, _k: x.ts + x.email})); loaded = true; render();
   } catch(e){ toast(e.message); }
   loadRequests();
 }
@@ -397,7 +420,9 @@ function start(){
   $('#who').innerHTML = (me.picture ? `<img src="${esc(me.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((me.name||me.email)[0].toUpperCase())}</span>`) + `<span>${esc(me.email)}</span>`;
   let alertsOn = false; try { alertsOn = localStorage.getItem('admin_alerts')==='1'; } catch(e){}
   $('#notifBanner').style.display = alertsOn && (!('Notification' in window) || Notification.permission==='granted') ? 'none' : 'flex';
-  loadAll(); connect();
+  loadAll();
+  if (LIVE) connect();
+  else { setLive(true, 'Checking every 10 s'); setInterval(poll, 10000); }   // Vercel: no live feed, so check regularly
   setInterval(() => { if (tab==='logins') renderLogins(); }, 60000);   // keep "x min ago" fresh
 }
 boot();

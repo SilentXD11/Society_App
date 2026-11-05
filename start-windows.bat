@@ -30,6 +30,6 @@ timeout /t 4 >nul
 start "" http://localhost:5500/admin.html
 echo.
 echo Admin dashboard: http://localhost:5500/admin.html
-echo Resident app:    http://localhost:5500/society-app.html
+echo Resident app:    http://localhost:5500/
 echo To stop everything, close the two black windows.
 pause

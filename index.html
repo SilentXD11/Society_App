@@ -1084,14 +1084,19 @@ function openLogin(kind='login', msg=''){
       <p style="color:var(--muted);font-size:14px;margin-bottom:18px;text-align:center">${v[2]}</p>${v[3]}</div>`;
   $('#scrim').classList.add('on'); $('#sheet').classList.add('on'); document.body.style.overflow='hidden';
 }
+/* One fixed address for Auth0 to return to, whether the app was opened as / or /index.html */
+const APP_URL = location.origin + location.pathname.replace(/(index|society-app)\.html$/, '');
 async function bootAuth(){
   if(!API_BASE) return;
   let cfg;
-  try{ cfg = await (await fetch(API_BASE+'/config')).json(); }catch(e){ return openLogin('server'); }
+  try{
+    const r = await fetch(API_BASE+'/config'); cfg = await r.json().catch(()=>({}));
+    if(!r.ok) return openLogin('error', cfg.detail || 'The server is not set up yet.');
+  }catch(e){ return openLogin('server'); }
   const create = window.auth0 && window.auth0.createAuth0Client;
   if(!create) return openLogin('error','The login service didn\'t load. Check your internet connection and reload.');
   a0 = await create({ domain:cfg.domain, clientId:cfg.client_id, cacheLocation:'localstorage', useRefreshTokens:true,
-    authorizationParams:{ audience:cfg.audience, redirect_uri: location.origin+location.pathname } });
+    authorizationParams:{ audience:cfg.audience, redirect_uri: APP_URL } });
   const q = new URLSearchParams(location.search); let fresh=false;
   if(q.has('error')){ history.replaceState({},'',location.pathname); return openLogin('error', q.get('error_description')||q.get('error')); }
   if(q.has('code') && q.has('state')){
@@ -1110,7 +1115,7 @@ async function loadMe(fresh){
 }
 function logout(){
   auth=null; orders=[];
-  if(a0) a0.logout({ logoutParams:{ returnTo: location.origin+location.pathname } });
+  if(a0) a0.logout({ logoutParams:{ returnTo: APP_URL } });
 }
 function applyUser(){
   const name=auth?.name||'Resident', flat=auth?.flat||'Tower B, Flat 1204';

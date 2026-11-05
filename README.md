@@ -6,7 +6,8 @@ society-app/
 ├── start-mac.command    ← double-click to run everything (Mac)
 ├── start-phone.bat      ← run it with a secure link your phone can open (Windows)
 ├── manifest.webmanifest, icon-*.png  ← lets phones install it as an app icon
-├── society-app.html     ← resident app (what members use)
+├── vercel.json, api/index.py, requirements.txt  ← lets Vercel host it
+├── index.html           ← resident app (what members use)
 ├── admin.html           ← your dashboard: orders, who logged in, residents
 └── backend/
     ├── main.py          ← the secure server
@@ -37,8 +38,8 @@ Auth0's own dashboard also keeps a full log under **Monitoring → Logs**.
 1. Sign up at **auth0.com**.
 2. **Applications → Applications → Create Application**. Name it `Society App`, choose **Single Page Web Applications**, click **Create**.
 3. Open its **Settings** tab. Copy **Domain** and **Client ID** (the start script will ask for them). Scroll down and fill in:
-   - **Allowed Callback URLs**: `http://localhost:5500/society-app.html, http://localhost:5500/admin.html`
-   - **Allowed Logout URLs**: `http://localhost:5500/society-app.html, http://localhost:5500/admin.html`
+   - **Allowed Callback URLs**: `http://localhost:5500/, http://localhost:5500/admin.html`
+   - **Allowed Logout URLs**: `http://localhost:5500/, http://localhost:5500/admin.html`
    - **Allowed Web Origins**: `http://localhost:5500`
 
    Click **Save Changes** at the bottom.
@@ -58,11 +59,11 @@ The first time, it asks for your **Auth0 Domain, Client ID, API Identifier** and
 It then starts the server and opens the dashboard. Click **Log in** and sign in to Auth0 with that email.
 Keep the windows it opens running while you use the app.
 
-To make someone a resident: they open **http://localhost:5500/society-app.html** and sign up → they appear under
+To make someone a resident: they open **http://localhost:5500/** and sign up → they appear under
 **Residents → Waiting for access** → type their flat (and mobile, so you can call them about orders) → **Approve**.
 Or add them in advance with **Add a resident** using the email they'll sign in with.
 
-Don't open admin.html by double-clicking it — it needs the server. (Double-clicking society-app.html still works, as a demo with no login.)
+Don't open admin.html by double-clicking it — it needs the server. (Double-clicking index.html still works, as a demo with no login.)
 
 **Manual way:** `cd backend`, create a venv, `pip install -r requirements.txt`, copy `.env.example` to `.env` and fill it in,
 `uvicorn main:app --port 8000`; in a second terminal from the `society-app` folder run `python -m http.server 5500`.
@@ -79,14 +80,14 @@ from anywhere (Wi-Fi or mobile data). Auth0 only works over https, which is why 
    (`ngrok config add-authtoken 2abc…`) and run it in PowerShell.
 4. Claim your free domain at https://dashboard.ngrok.com/domains — e.g. `calm-otter-123.ngrok-free.app`
 5. In Auth0 → Applications → Society App → Settings, **add** (comma after the existing entries):
-   - Allowed Callback URLs: `https://YOUR-DOMAIN/society-app.html, https://YOUR-DOMAIN/admin.html`
+   - Allowed Callback URLs: `https://YOUR-DOMAIN/, https://YOUR-DOMAIN/admin.html`
    - Allowed Logout URLs: the same two
    - Allowed Web Origins: `https://YOUR-DOMAIN`
 
    Save Changes.
 
 **Every time:** double-click **start-phone.bat** (the first time it asks for your ngrok domain). Then on your phone open
-`https://YOUR-DOMAIN/society-app.html`. ngrok shows a one-time "You are about to visit" page — tap **Visit Site**.
+`https://YOUR-DOMAIN/`. ngrok shows a one-time "You are about to visit" page — tap **Visit Site**.
 The admin dashboard is at `https://YOUR-DOMAIN/admin.html` and works on the phone too.
 
 **Make it an app icon:** Android Chrome → ⋮ → **Add to Home screen** / **Install app**. iPhone Safari → Share → **Add to Home Screen**.
@@ -95,7 +96,23 @@ It then opens full-screen like a normal app.
 The link only works while the laptop is on and the two windows stay open. Anyone with the link can reach the login
 page, but only people you approve can shop. For residents to use it any time, it needs proper hosting (see checklist below).
 
-## 4. Get order alerts on your phone (Telegram, free)
+## 4. Host it online on Vercel (always on, no laptop needed)
+
+1. **vercel.com → Add New → Project → Import** the `Society_App` GitHub repo. Leave the build settings as they are
+   (they come from `vercel.json`) and click **Deploy**. The first deploy shows a "Server needs setting up" page — expected.
+2. **Database:** project → **Storage → Create Database → Neon (Postgres)**, free plan, connect it to the project.
+   This adds `DATABASE_URL` automatically. (Vercel's own disk is wiped all the time, so without this, orders vanish.)
+3. **Settings → Environment Variables** — add `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_AUDIENCE`, `ADMIN_EMAILS`,
+   `JWT_SECRET` (any 48 random characters), and optionally `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`.
+4. **Deployments → ⋯ → Redeploy** so the settings take effect.
+5. In **Auth0** add your Vercel address (e.g. `https://society-app.vercel.app`) the same way as in section 3, step 5:
+   callback/logout `https://…vercel.app/, https://…vercel.app/admin.html`, web origin `https://…vercel.app`.
+
+Check `https://…vercel.app/health` any time: it says which settings are still missing and whether the database is connected.
+On Vercel the dashboard checks for new orders every 10 seconds (instead of the instant live feed on your laptop);
+Telegram alerts are still instant.
+
+## 5. Get order alerts on your phone (Telegram, free)
 
 1. In Telegram, open **@BotFather** → `/newbot` → pick a name → copy the **token** into `TELEGRAM_BOT_TOKEN` in `backend/.env`.
 2. Alerts to **you only**: send any message to your new bot.
@@ -104,7 +121,7 @@ page, but only people you approve can shop. For residents to use it any time, it
    (group IDs start with `-`) into `TELEGRAM_CHAT_ID`.
 4. Restart. You'll get a message for every new order, every UPI payment to check, and every new person asking for access.
 
-## 5. Before real residents use it — checklist
+## 6. Before real residents use it — checklist
 
 - [ ] Host the server with HTTPS (Render, Railway, AWS Lightsail, or a VPS with Nginx + Let's Encrypt). Never plain `http://` for real users
 - [ ] Add your real https page addresses to the three Auth0 URL fields (step 1.3), set `ALLOWED_ORIGINS` in `.env`, and put the server address in `API_BASE` in both HTML files

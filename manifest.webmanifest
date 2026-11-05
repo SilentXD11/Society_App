@@ -2,7 +2,7 @@
   "name": "Society Grocery",
   "short_name": "Society",
   "description": "Fresh groceries from shops near your society",
-  "start_url": "society-app.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f5",
