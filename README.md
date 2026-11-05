@@ -103,7 +103,7 @@ page, but only people you approve can shop. For residents to use it any time, it
 2. **Database:** project → **Storage → Create Database → Neon (Postgres)**, free plan, connect it to the project.
    This adds `DATABASE_URL` automatically. (Vercel's own disk is wiped all the time, so without this, orders vanish.)
 3. **Settings → Environment Variables** — add `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, `AUTH0_AUDIENCE`, `ADMIN_EMAILS`,
-   `JWT_SECRET` (any 48 random characters), and optionally `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`.
+   and optionally `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` (mark the Telegram token **Sensitive**).
 4. **Deployments → ⋯ → Redeploy** so the settings take effect.
 5. In **Auth0** add your Vercel address (e.g. `https://society-app.vercel.app`) the same way as in section 3, step 5:
    callback/logout `https://…vercel.app/, https://…vercel.app/admin.html`, web origin `https://…vercel.app`.

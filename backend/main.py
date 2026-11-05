@@ -47,9 +47,11 @@ def need(name: str) -> str:
     return v
 
 
-JWT_SECRET = need("JWT_SECRET")              # only used for the dashboard's short live-feed ticket
-if JWT_SECRET and len(JWT_SECRET) < 32:
-    MISSING.append("JWT_SECRET (must be 32+ random characters)")
+# Only signs the dashboard's 60-second live-feed ticket. Optional: if not set, a random one is made at start-up
+# (fine — the live feed only runs on a single laptop server; on Vercel it's switched off).
+JWT_SECRET = os.getenv("JWT_SECRET", "").strip() or secrets.token_urlsafe(48)
+if len(JWT_SECRET) < 32:
+    MISSING.append("JWT_SECRET (must be 32+ random characters, or leave it out)")
 AUTH0_DOMAIN = need("AUTH0_DOMAIN").removeprefix("https://").rstrip("/")
 AUTH0_CLIENT_ID = need("AUTH0_CLIENT_ID")
 AUTH0_AUDIENCE = need("AUTH0_AUDIENCE")
