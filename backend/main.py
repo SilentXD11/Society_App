@@ -27,7 +27,7 @@ import jwt
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 load_dotenv()
@@ -54,6 +54,9 @@ ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(","
 DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
 TG_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT = os.getenv("TELEGRAM_CHAT_ID", "")
+# true only when the server sits behind a tunnel/proxy (ngrok, Render) that sets X-Forwarded-For
+TRUST_PROXY = os.getenv("TRUST_PROXY", "false").lower() == "true"
+PAGES_DIR = Path(__file__).resolve().parent.parent   # where society-app.html and admin.html live
 DB_PATH = os.getenv("DB_PATH", str(Path(__file__).parent / "society-auth0.db"))
 
 CATALOG = json.loads((Path(__file__).parent / "catalog.json").read_text(encoding="utf-8"))
@@ -132,7 +135,12 @@ def norm_phone(raw: Optional[str]) -> Optional[str]:
 
 
 def client_ip(request: Request) -> str:
-    # Behind a host like Render/Railway/Nginx, read their trusted forwarded-for header instead.
+    # Behind ngrok/Render the real visitor's address is in X-Forwarded-For. Only trusted when TRUST_PROXY is on,
+    # because anyone can send that header straight to the server otherwise.
+    if TRUST_PROXY:
+        fwd = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        if fwd:
+            return fwd[:64]
     return request.client.host if request.client else "unknown"
 
 
@@ -309,6 +317,17 @@ async def security_headers(request: Request, call_next):
     resp.headers["Referrer-Policy"] = "no-referrer"
     resp.headers.setdefault("Cache-Control", "no-store")
     return resp
+
+
+# ---------- the pages themselves (so a phone needs just one address)
+PAGES = {"society-app.html": "text/html", "admin.html": "text/html",
+         "manifest.webmanifest": "application/manifest+json",
+         "icon-192.png": "image/png", "icon-512.png": "image/png"}
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return RedirectResponse("/society-app.html")
 
 
 @app.get("/health")
@@ -589,3 +608,11 @@ async def admin_stream(request: Request, ticket: str = Query(...)):
 
     return StreamingResponse(events(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+# Registered last so it never shadows an API route like /health or /me.
+@app.get("/{name}", include_in_schema=False)
+def page(name: str):
+    if name not in PAGES or not (PAGES_DIR / name).is_file():   # fixed list → no path tricks
+        raise HTTPException(404, "Not found")
+    return FileResponse(PAGES_DIR / name, media_type=PAGES[name])

@@ -4,6 +4,8 @@
 society-app/
 ├── start-windows.bat    ← double-click to run everything (Windows)
 ├── start-mac.command    ← double-click to run everything (Mac)
+├── start-phone.bat      ← run it with a secure link your phone can open (Windows)
+├── manifest.webmanifest, icon-*.png  ← lets phones install it as an app icon
 ├── society-app.html     ← resident app (what members use)
 ├── admin.html           ← your dashboard: orders, who logged in, residents
 └── backend/
@@ -65,7 +67,35 @@ Don't open admin.html by double-clicking it — it needs the server. (Double-cli
 **Manual way:** `cd backend`, create a venv, `pip install -r requirements.txt`, copy `.env.example` to `.env` and fill it in,
 `uvicorn main:app --port 8000`; in a second terminal from the `society-app` folder run `python -m http.server 5500`.
 
-## 3. Get order alerts on your phone (Telegram, free)
+## 3. Use it on your phone
+
+Your laptop runs the app; **ngrok** gives it a free, permanent `https://…ngrok-free.app` address your phone can open
+from anywhere (Wi-Fi or mobile data). Auth0 only works over https, which is why a plain Wi-Fi address won't do.
+
+**One-time setup (~10 min)**
+1. Sign up free at https://dashboard.ngrok.com/signup
+2. Install it: open **PowerShell** and run `winget install ngrok.ngrok`
+3. Connect your account: copy the command from https://dashboard.ngrok.com/get-started/your-authtoken
+   (`ngrok config add-authtoken 2abc…`) and run it in PowerShell.
+4. Claim your free domain at https://dashboard.ngrok.com/domains — e.g. `calm-otter-123.ngrok-free.app`
+5. In Auth0 → Applications → Society App → Settings, **add** (comma after the existing entries):
+   - Allowed Callback URLs: `https://YOUR-DOMAIN/society-app.html, https://YOUR-DOMAIN/admin.html`
+   - Allowed Logout URLs: the same two
+   - Allowed Web Origins: `https://YOUR-DOMAIN`
+
+   Save Changes.
+
+**Every time:** double-click **start-phone.bat** (the first time it asks for your ngrok domain). Then on your phone open
+`https://YOUR-DOMAIN/society-app.html`. ngrok shows a one-time "You are about to visit" page — tap **Visit Site**.
+The admin dashboard is at `https://YOUR-DOMAIN/admin.html` and works on the phone too.
+
+**Make it an app icon:** Android Chrome → ⋮ → **Add to Home screen** / **Install app**. iPhone Safari → Share → **Add to Home Screen**.
+It then opens full-screen like a normal app.
+
+The link only works while the laptop is on and the two windows stay open. Anyone with the link can reach the login
+page, but only people you approve can shop. For residents to use it any time, it needs proper hosting (see checklist below).
+
+## 4. Get order alerts on your phone (Telegram, free)
 
 1. In Telegram, open **@BotFather** → `/newbot` → pick a name → copy the **token** into `TELEGRAM_BOT_TOKEN` in `backend/.env`.
 2. Alerts to **you only**: send any message to your new bot.
@@ -74,7 +104,7 @@ Don't open admin.html by double-clicking it — it needs the server. (Double-cli
    (group IDs start with `-`) into `TELEGRAM_CHAT_ID`.
 4. Restart. You'll get a message for every new order, every UPI payment to check, and every new person asking for access.
 
-## 4. Before real residents use it — checklist
+## 5. Before real residents use it — checklist
 
 - [ ] Host the server with HTTPS (Render, Railway, AWS Lightsail, or a VPS with Nginx + Let's Encrypt). Never plain `http://` for real users
 - [ ] Add your real https page addresses to the three Auth0 URL fields (step 1.3), set `ALLOWED_ORIGINS` in `.env`, and put the server address in `API_BASE` in both HTML files

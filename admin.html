@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Society Admin</title>
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Society Admin">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
@@ -149,7 +155,9 @@ header h1{font-size:20px;font-weight:800;flex:1}
 
 <script>
 /* Server address. Opened via the start script → your laptop's server. When you go live, put your https address in the second part. */
-const API_BASE = ['localhost','127.0.0.1'].includes(location.hostname) ? 'http://127.0.0.1:8000' : 'https://YOUR-SERVER-ADDRESS';
+const API_BASE = location.protocol === 'file:' ? '' : location.port === '5500' ? 'http://127.0.0.1:8000' : location.origin;
+/* ↑ Double-clicked file → demo mode. Opened via the start script on this laptop → local server.
+     Opened from the server's own address (phone link, or later your hosted site) → that same server. */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
