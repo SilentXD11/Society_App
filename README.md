@@ -1,5 +1,7 @@
 # Society Grocery App — setup guide
 
+**Live:** https://society-grocery.vercel.app · admin dashboard: https://society-grocery.vercel.app/admin.html
+
 ```
 society-app/
 ├── start-windows.bat    ← double-click to run everything (Windows)
